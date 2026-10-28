@@ -1,0 +1,146 @@
+[
+  {
+    "id": 1001,
+    "restaurantId": 1,
+    "status": "delivered",
+    "items": [
+      {
+        "menuItemId": 1,
+        "name": "Classic Cheeseburger",
+        "quantity": 2,
+        "unitPrice": 7.5
+      },
+      {
+        "menuItemId": 4,
+        "name": "Loaded Fries",
+        "quantity": 1,
+        "unitPrice": 4.5
+      }
+    ],
+    "subtotal": 19.5,
+    "deliveryFee": 1.5,
+    "total": 21.0,
+    "deliveryAddress": "Building 4, Tishreen St, Latakia",
+    "createdAt": "2026-10-20T13:15:00Z"
+  },
+  {
+    "id": 1002,
+    "restaurantId": 3,
+    "status": "delivered",
+    "items": [
+      {
+        "menuItemId": 11,
+        "name": "Chicken Shawarma Wrap",
+        "quantity": 3,
+        "unitPrice": 4.0
+      },
+      {
+        "menuItemId": 14,
+        "name": "Hummus",
+        "quantity": 2,
+        "unitPrice": 3.2
+      }
+    ],
+    "subtotal": 18.4,
+    "deliveryFee": 1.0,
+    "total": 19.4,
+    "deliveryAddress": "Building 4, Tishreen St, Latakia",
+    "createdAt": "2026-10-21T19:40:00Z"
+  },
+  {
+    "id": 1003,
+    "restaurantId": 2,
+    "status": "on_the_way",
+    "items": [
+      {
+        "menuItemId": 6,
+        "name": "Margherita",
+        "quantity": 1,
+        "unitPrice": 8.5
+      },
+      {
+        "menuItemId": 7,
+        "name": "Pepperoni",
+        "quantity": 1,
+        "unitPrice": 10.0
+      },
+      {
+        "menuItemId": 9,
+        "name": "Garlic Bread",
+        "quantity": 2,
+        "unitPrice": 3.5
+      }
+    ],
+    "subtotal": 25.5,
+    "deliveryFee": 2.0,
+    "total": 27.5,
+    "deliveryAddress": "Building 4, Tishreen St, Latakia",
+    "createdAt": "2026-10-28T12:05:00Z"
+  },
+  {
+    "id": 1004,
+    "restaurantId": 6,
+    "status": "preparing",
+    "items": [
+      {
+        "menuItemId": 26,
+        "name": "Mixed Grill Platter",
+        "quantity": 1,
+        "unitPrice": 15.0
+      },
+      {
+        "menuItemId": 27,
+        "name": "Chicken Tawook",
+        "quantity": 2,
+        "unitPrice": 8.5
+      }
+    ],
+    "subtotal": 32.0,
+    "deliveryFee": 2.0,
+    "total": 34.0,
+    "deliveryAddress": "Building 4, Tishreen St, Latakia",
+    "createdAt": "2026-10-28T12:30:00Z"
+  },
+  {
+    "id": 1005,
+    "restaurantId": 7,
+    "status": "cancelled",
+    "items": [
+      {
+        "menuItemId": 31,
+        "name": "Chocolate Lava Cake",
+        "quantity": 2,
+        "unitPrice": 5.0
+      }
+    ],
+    "subtotal": 10.0,
+    "deliveryFee": 1.2,
+    "total": 11.2,
+    "deliveryAddress": "Building 4, Tishreen St, Latakia",
+    "createdAt": "2026-10-19T17:10:00Z"
+  },
+  {
+    "id": 1006,
+    "restaurantId": 8,
+    "status": "pending",
+    "items": [
+      {
+        "menuItemId": 36,
+        "name": "Cappuccino",
+        "quantity": 2,
+        "unitPrice": 3.0
+      },
+      {
+        "menuItemId": 38,
+        "name": "Turkish Coffee",
+        "quantity": 2,
+        "unitPrice": 2.0
+      }
+    ],
+    "subtotal": 10.0,
+    "deliveryFee": 1.0,
+    "total": 11.0,
+    "deliveryAddress": "Building 4, Tishreen St, Latakia",
+    "createdAt": "2026-10-28T13:00:00Z"
+  }
+]
