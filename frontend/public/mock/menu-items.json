@@ -1,0 +1,402 @@
+[
+  {
+    "id": 1,
+    "restaurantId": 1,
+    "name": "Classic Cheeseburger",
+    "description": "Beef patty, cheddar, pickles, house sauce",
+    "price": 7.5,
+    "category": "Burgers",
+    "image": "https://picsum.photos/seed/menu1-classic/400/300",
+    "isAvailable": true
+  },
+  {
+    "id": 2,
+    "restaurantId": 1,
+    "name": "Double Smash Burger",
+    "description": "Two smashed patties, caramelized onions",
+    "price": 9.5,
+    "category": "Burgers",
+    "image": "https://picsum.photos/seed/menu2-double/400/300",
+    "isAvailable": true
+  },
+  {
+    "id": 3,
+    "restaurantId": 1,
+    "name": "Crispy Chicken Burger",
+    "description": "Fried chicken, slaw, spicy mayo",
+    "price": 8.0,
+    "category": "Burgers",
+    "image": "https://picsum.photos/seed/menu3-crispy/400/300",
+    "isAvailable": true
+  },
+  {
+    "id": 4,
+    "restaurantId": 1,
+    "name": "Loaded Fries",
+    "description": "Fries with cheese sauce and jalapeno",
+    "price": 4.5,
+    "category": "Sides",
+    "image": "https://picsum.photos/seed/menu4-loaded/400/300",
+    "isAvailable": true
+  },
+  {
+    "id": 5,
+    "restaurantId": 1,
+    "name": "Chocolate Shake",
+    "description": "Thick chocolate milkshake",
+    "price": 3.8,
+    "category": "Drinks",
+    "image": "https://picsum.photos/seed/menu5-chocolate/400/300",
+    "isAvailable": true
+  },
+  {
+    "id": 6,
+    "restaurantId": 2,
+    "name": "Margherita",
+    "description": "Tomato, mozzarella, basil",
+    "price": 8.5,
+    "category": "Pizza",
+    "image": "https://picsum.photos/seed/menu6-margherita/400/300",
+    "isAvailable": true
+  },
+  {
+    "id": 7,
+    "restaurantId": 2,
+    "name": "Pepperoni",
+    "description": "Mozzarella and spicy pepperoni",
+    "price": 10.0,
+    "category": "Pizza",
+    "image": "https://picsum.photos/seed/menu7-pepperoni/400/300",
+    "isAvailable": true
+  },
+  {
+    "id": 8,
+    "restaurantId": 2,
+    "name": "Four Cheese",
+    "description": "Mozzarella, gorgonzola, parmesan, ricotta",
+    "price": 11.0,
+    "category": "Pizza",
+    "image": "https://picsum.photos/seed/menu8-four/400/300",
+    "isAvailable": true
+  },
+  {
+    "id": 9,
+    "restaurantId": 2,
+    "name": "Garlic Bread",
+    "description": "Oven-baked with garlic butter",
+    "price": 3.5,
+    "category": "Sides",
+    "image": "https://picsum.photos/seed/menu9-garlic/400/300",
+    "isAvailable": true
+  },
+  {
+    "id": 10,
+    "restaurantId": 2,
+    "name": "Lemonade",
+    "description": "Fresh mint lemonade",
+    "price": 2.5,
+    "category": "Drinks",
+    "image": "https://picsum.photos/seed/menu10-lemonade/400/300",
+    "isAvailable": true
+  },
+  {
+    "id": 11,
+    "restaurantId": 3,
+    "name": "Chicken Shawarma Wrap",
+    "description": "Marinated chicken, garlic sauce, pickles",
+    "price": 4.0,
+    "category": "Wraps",
+    "image": "https://picsum.photos/seed/menu11-chicken/400/300",
+    "isAvailable": true
+  },
+  {
+    "id": 12,
+    "restaurantId": 3,
+    "name": "Beef Shawarma Plate",
+    "description": "Beef shawarma with rice and salad",
+    "price": 7.0,
+    "category": "Plates",
+    "image": "https://picsum.photos/seed/menu12-beef/400/300",
+    "isAvailable": true
+  },
+  {
+    "id": 13,
+    "restaurantId": 3,
+    "name": "Falafel Sandwich",
+    "description": "Falafel, tahini, tomato, parsley",
+    "price": 3.0,
+    "category": "Wraps",
+    "image": "https://picsum.photos/seed/menu13-falafel/400/300",
+    "isAvailable": true
+  },
+  {
+    "id": 14,
+    "restaurantId": 3,
+    "name": "Hummus",
+    "description": "Chickpea dip with olive oil",
+    "price": 3.2,
+    "category": "Starters",
+    "image": "https://picsum.photos/seed/menu14-hummus/400/300",
+    "isAvailable": true
+  },
+  {
+    "id": 15,
+    "restaurantId": 3,
+    "name": "Ayran",
+    "description": "Cold salted yogurt drink",
+    "price": 1.5,
+    "category": "Drinks",
+    "image": "https://picsum.photos/seed/menu15-ayran/400/300",
+    "isAvailable": true
+  },
+  {
+    "id": 16,
+    "restaurantId": 4,
+    "name": "Salmon Nigiri (4 pcs)",
+    "description": "Fresh salmon over seasoned rice",
+    "price": 9.0,
+    "category": "Sushi",
+    "image": "https://picsum.photos/seed/menu16-salmon/400/300",
+    "isAvailable": true
+  },
+  {
+    "id": 17,
+    "restaurantId": 4,
+    "name": "California Roll (8 pcs)",
+    "description": "Crab, avocado, cucumber",
+    "price": 8.5,
+    "category": "Sushi",
+    "image": "https://picsum.photos/seed/menu17-california/400/300",
+    "isAvailable": true
+  },
+  {
+    "id": 18,
+    "restaurantId": 4,
+    "name": "Dragon Roll (8 pcs)",
+    "description": "Shrimp tempura, eel, avocado",
+    "price": 12.5,
+    "category": "Sushi",
+    "image": "https://picsum.photos/seed/menu18-dragon/400/300",
+    "isAvailable": true
+  },
+  {
+    "id": 19,
+    "restaurantId": 4,
+    "name": "Miso Soup",
+    "description": "Tofu, seaweed, scallions",
+    "price": 3.0,
+    "category": "Starters",
+    "image": "https://picsum.photos/seed/menu19-miso/400/300",
+    "isAvailable": true
+  },
+  {
+    "id": 20,
+    "restaurantId": 4,
+    "name": "Green Tea",
+    "description": "Hot Japanese green tea",
+    "price": 2.0,
+    "category": "Drinks",
+    "image": "https://picsum.photos/seed/menu20-green/400/300",
+    "isAvailable": true
+  },
+  {
+    "id": 21,
+    "restaurantId": 5,
+    "name": "Chicken Quinoa Bowl",
+    "description": "Grilled chicken, quinoa, greens",
+    "price": 8.8,
+    "category": "Bowls",
+    "image": "https://picsum.photos/seed/menu21-chicken/400/300",
+    "isAvailable": true
+  },
+  {
+    "id": 22,
+    "restaurantId": 5,
+    "name": "Falafel Power Bowl",
+    "description": "Falafel, hummus, roasted veggies",
+    "price": 7.9,
+    "category": "Bowls",
+    "image": "https://picsum.photos/seed/menu22-falafel/400/300",
+    "isAvailable": true
+  },
+  {
+    "id": 23,
+    "restaurantId": 5,
+    "name": "Caesar Salad",
+    "description": "Romaine, parmesan, croutons",
+    "price": 6.5,
+    "category": "Salads",
+    "image": "https://picsum.photos/seed/menu23-caesar/400/300",
+    "isAvailable": true
+  },
+  {
+    "id": 24,
+    "restaurantId": 5,
+    "name": "Avocado Toast",
+    "description": "Sourdough, avocado, chili flakes",
+    "price": 5.5,
+    "category": "Breakfast",
+    "image": "https://picsum.photos/seed/menu24-avocado/400/300",
+    "isAvailable": true
+  },
+  {
+    "id": 25,
+    "restaurantId": 5,
+    "name": "Green Smoothie",
+    "description": "Spinach, apple, banana",
+    "price": 4.0,
+    "category": "Drinks",
+    "image": "https://picsum.photos/seed/menu25-green/400/300",
+    "isAvailable": false
+  },
+  {
+    "id": 26,
+    "restaurantId": 6,
+    "name": "Mixed Grill Platter",
+    "description": "Kebab, tawook and ribs with sides",
+    "price": 15.0,
+    "category": "Grill",
+    "image": "https://picsum.photos/seed/menu26-mixed/400/300",
+    "isAvailable": true
+  },
+  {
+    "id": 27,
+    "restaurantId": 6,
+    "name": "Chicken Tawook",
+    "description": "Marinated skewers with garlic dip",
+    "price": 8.5,
+    "category": "Grill",
+    "image": "https://picsum.photos/seed/menu27-chicken/400/300",
+    "isAvailable": true
+  },
+  {
+    "id": 28,
+    "restaurantId": 6,
+    "name": "Lamb Kebab",
+    "description": "Minced lamb skewers, grilled tomatoes",
+    "price": 10.5,
+    "category": "Grill",
+    "image": "https://picsum.photos/seed/menu28-lamb/400/300",
+    "isAvailable": true
+  },
+  {
+    "id": 29,
+    "restaurantId": 6,
+    "name": "Grilled Corn",
+    "description": "Charred corn with butter and spices",
+    "price": 2.5,
+    "category": "Sides",
+    "image": "https://picsum.photos/seed/menu29-grilled/400/300",
+    "isAvailable": true
+  },
+  {
+    "id": 30,
+    "restaurantId": 6,
+    "name": "Fattoush",
+    "description": "Crispy bread salad with sumac",
+    "price": 4.0,
+    "category": "Starters",
+    "image": "https://picsum.photos/seed/menu30-fattoush/400/300",
+    "isAvailable": true
+  },
+  {
+    "id": 31,
+    "restaurantId": 7,
+    "name": "Chocolate Lava Cake",
+    "description": "Warm cake with molten center",
+    "price": 5.0,
+    "category": "Cakes",
+    "image": "https://picsum.photos/seed/menu31-chocolate/400/300",
+    "isAvailable": true
+  },
+  {
+    "id": 32,
+    "restaurantId": 7,
+    "name": "Kunafa Nabulsia",
+    "description": "Cheese kunafa with sugar syrup",
+    "price": 4.5,
+    "category": "Arabic Sweets",
+    "image": "https://picsum.photos/seed/menu32-kunafa/400/300",
+    "isAvailable": true
+  },
+  {
+    "id": 33,
+    "restaurantId": 7,
+    "name": "Cheesecake Slice",
+    "description": "Baked New York cheesecake",
+    "price": 4.8,
+    "category": "Cakes",
+    "image": "https://picsum.photos/seed/menu33-cheesecake/400/300",
+    "isAvailable": true
+  },
+  {
+    "id": 34,
+    "restaurantId": 7,
+    "name": "Baklava (6 pcs)",
+    "description": "Pistachio baklava",
+    "price": 6.0,
+    "category": "Arabic Sweets",
+    "image": "https://picsum.photos/seed/menu34-baklava/400/300",
+    "isAvailable": true
+  },
+  {
+    "id": 35,
+    "restaurantId": 7,
+    "name": "Vanilla Ice Cream",
+    "description": "Two scoops with toppings",
+    "price": 3.0,
+    "category": "Ice Cream",
+    "image": "https://picsum.photos/seed/menu35-vanilla/400/300",
+    "isAvailable": true
+  },
+  {
+    "id": 36,
+    "restaurantId": 8,
+    "name": "Cappuccino",
+    "description": "Espresso with steamed milk foam",
+    "price": 3.0,
+    "category": "Coffee",
+    "image": "https://picsum.photos/seed/menu36-cappuccino/400/300",
+    "isAvailable": true
+  },
+  {
+    "id": 37,
+    "restaurantId": 8,
+    "name": "Iced Latte",
+    "description": "Espresso, cold milk, ice",
+    "price": 3.5,
+    "category": "Coffee",
+    "image": "https://picsum.photos/seed/menu37-iced/400/300",
+    "isAvailable": true
+  },
+  {
+    "id": 38,
+    "restaurantId": 8,
+    "name": "Turkish Coffee",
+    "description": "Traditional, cardamom optional",
+    "price": 2.0,
+    "category": "Coffee",
+    "image": "https://picsum.photos/seed/menu38-turkish/400/300",
+    "isAvailable": true
+  },
+  {
+    "id": 39,
+    "restaurantId": 8,
+    "name": "Croissant",
+    "description": "Butter croissant baked daily",
+    "price": 2.2,
+    "category": "Bakery",
+    "image": "https://picsum.photos/seed/menu39-croissant/400/300",
+    "isAvailable": true
+  },
+  {
+    "id": 40,
+    "restaurantId": 8,
+    "name": "Blueberry Muffin",
+    "description": "Moist muffin with fresh blueberries",
+    "price": 2.5,
+    "category": "Bakery",
+    "image": "https://picsum.photos/seed/menu40-blueberry/400/300",
+    "isAvailable": true
+  }
+]
