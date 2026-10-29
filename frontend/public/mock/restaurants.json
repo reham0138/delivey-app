@@ -1,0 +1,98 @@
+[
+  {
+    "id": 1,
+    "name": "Burger Hub",
+    "cuisine": "Burgers",
+    "rating": 4.6,
+    "deliveryTimeMinutes": 25,
+    "deliveryFee": 1.5,
+    "minOrder": 8,
+    "isOpen": true,
+    "address": "12 Main St, Latakia",
+    "image": "https://picsum.photos/seed/rest1-burger/600/400"
+  },
+  {
+    "id": 2,
+    "name": "Napoli Pizza",
+    "cuisine": "Pizza",
+    "rating": 4.4,
+    "deliveryTimeMinutes": 35,
+    "deliveryFee": 2.0,
+    "minOrder": 10,
+    "isOpen": true,
+    "address": "5 Corniche Rd, Latakia",
+    "image": "https://picsum.photos/seed/rest2-napoli/600/400"
+  },
+  {
+    "id": 3,
+    "name": "Shawarma King",
+    "cuisine": "Middle Eastern",
+    "rating": 4.8,
+    "deliveryTimeMinutes": 20,
+    "deliveryFee": 1.0,
+    "minOrder": 5,
+    "isOpen": true,
+    "address": "Al-Jumhuriyah St, Latakia",
+    "image": "https://picsum.photos/seed/rest3-shawarma/600/400"
+  },
+  {
+    "id": 4,
+    "name": "Sakura Sushi",
+    "cuisine": "Japanese",
+    "rating": 4.5,
+    "deliveryTimeMinutes": 40,
+    "deliveryFee": 2.5,
+    "minOrder": 15,
+    "isOpen": false,
+    "address": "27 Palm Ave, Latakia",
+    "image": "https://picsum.photos/seed/rest4-sakura/600/400"
+  },
+  {
+    "id": 5,
+    "name": "Green Bowl",
+    "cuisine": "Healthy",
+    "rating": 4.3,
+    "deliveryTimeMinutes": 30,
+    "deliveryFee": 1.8,
+    "minOrder": 9,
+    "isOpen": true,
+    "address": "9 University St, Latakia",
+    "image": "https://picsum.photos/seed/rest5-green/600/400"
+  },
+  {
+    "id": 6,
+    "name": "Grill Master",
+    "cuisine": "Grill",
+    "rating": 4.7,
+    "deliveryTimeMinutes": 35,
+    "deliveryFee": 2.0,
+    "minOrder": 12,
+    "isOpen": true,
+    "address": "3 Harbor Rd, Latakia",
+    "image": "https://picsum.photos/seed/rest6-grill/600/400"
+  },
+  {
+    "id": 7,
+    "name": "Sweet Corner",
+    "cuisine": "Desserts",
+    "rating": 4.2,
+    "deliveryTimeMinutes": 25,
+    "deliveryFee": 1.2,
+    "minOrder": 6,
+    "isOpen": true,
+    "address": "14 Garden St, Latakia",
+    "image": "https://picsum.photos/seed/rest7-sweet/600/400"
+  },
+  {
+    "id": 8,
+    "name": "Bean & Brew",
+    "cuisine": "Coffee",
+    "rating": 4.5,
+    "deliveryTimeMinutes": 15,
+    "deliveryFee": 1.0,
+    "minOrder": 4,
+    "isOpen": true,
+    "address": "21 Al-Azhar St, Latakia",
+    "image": "https://picsum.photos/seed/rest8-bean/600/400"
+  }
+]
