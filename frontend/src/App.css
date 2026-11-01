@@ -1,1 +1,201 @@
 @import "tailwindcss";
+
+@theme {
+  --color-brand-navy: #0B2D4A;
+  --color-brand-gold: #D4AF37;
+  --color-surface-cream: #F8F7F4;
+  --color-text-slate: #64748B;
+  --color-text-main: #1F2937;
+  --color-surface-white: #FFFFFF;
+  --color-border-subtle: #E5E7EB;
+
+  --font-sans: "Inter", "Cairo", system-ui, sans-serif;
+  --font-arabic: "Cairo", system-ui, sans-serif;
+  --font-latin: "Inter", system-ui, sans-serif;
+}
+
+:root {
+  font-family: "Inter", "Cairo", system-ui, sans-serif;
+  color: var(--color-text-main);
+  background: var(--color-surface-cream);
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+}
+
+html {
+  min-width: 320px;
+  scroll-behavior: smooth;
+}
+
+body {
+  min-width: 320px;
+  min-height: 100vh;
+  margin: 0;
+  background: var(--color-surface-cream);
+  color: var(--color-text-main);
+  line-height: 1.6;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+:focus-visible {
+  outline: 3px solid var(--color-brand-gold);
+  outline-offset: 2px;
+}
+
+a {
+  color: inherit;
+}
+
+.app-shell {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.site-header {
+  border-bottom: 1px solid var(--color-border-subtle);
+  background: var(--color-surface-white);
+}
+
+.site-nav,
+.site-footer__inner {
+  width: min(100% - 2rem, 72rem);
+  margin-inline: auto;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1.5rem;
+}
+
+.site-nav {
+  min-height: 5.5rem;
+}
+
+.brand {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.75rem;
+  text-decoration: none;
+}
+
+.brand__logo {
+  width: 3.5rem;
+  height: 3.5rem;
+  object-fit: contain;
+}
+
+.brand__copy {
+  display: grid;
+  gap: 0.125rem;
+}
+
+.brand__name {
+  color: var(--color-brand-navy);
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: 1.05rem;
+  font-weight: 700;
+  line-height: 1.2;
+}
+
+.brand__tagline {
+  color: var(--color-text-slate);
+  font-size: 0.65rem;
+  letter-spacing: 0.08em;
+}
+
+.site-nav__links {
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+}
+
+.site-nav__links a {
+  color: var(--color-text-main);
+  font-size: 0.9rem;
+  text-decoration: none;
+}
+
+.site-nav__links a:hover {
+  color: var(--color-brand-navy);
+}
+
+.site-nav__links .site-nav__action {
+  padding: 0.55rem 1rem;
+  border-radius: 0.5rem;
+  background: var(--color-brand-navy);
+  color: var(--color-surface-white);
+}
+
+.site-nav__links .site-nav__action:hover {
+  background: #09263e;
+}
+
+.site-footer {
+  border-top: 1px solid var(--color-border-subtle);
+  background: var(--color-brand-navy);
+}
+
+.site-footer__inner {
+  min-height: 6rem;
+}
+
+.site-footer__logo {
+  width: 4rem;
+  height: 4rem;
+  object-fit: contain;
+}
+
+.brand--footer .brand__name {
+  color: var(--color-surface-white);
+  font-size: 0.95rem;
+}
+
+.brand--footer .brand__tagline {
+  color: var(--color-brand-gold);
+}
+
+.site-footer__copyright {
+  margin: 0;
+  color: rgb(255 255 255 / 75%);
+  font-size: 0.8rem;
+}
+
+@media (max-width: 600px) {
+  .site-nav {
+    align-items: flex-start;
+    flex-direction: column;
+    justify-content: center;
+    gap: 0.75rem;
+    padding-block: 0.75rem;
+  }
+
+  .site-nav__links {
+    width: 100%;
+    justify-content: space-between;
+    gap: 0.75rem;
+  }
+
+  .site-nav__links a {
+    font-size: 0.8rem;
+  }
+
+  .site-footer__inner {
+    align-items: flex-start;
+    flex-direction: column;
+    justify-content: center;
+    gap: 0.5rem;
+    padding-block: 1rem;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+}
