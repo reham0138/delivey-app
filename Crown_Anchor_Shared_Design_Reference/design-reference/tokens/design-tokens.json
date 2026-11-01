@@ -1,0 +1,19 @@
+{
+  "brand": {
+    "navy": "#0B2D4A",
+    "gold": "#D4AF37",
+    "cream": "#F8F7F4",
+    "slate": "#64748B",
+    "text": "#1F2937",
+    "white": "#FFFFFF"
+  },
+  "tagline": "MORE THAN JUST A STORE",
+  "typography": {
+    "english": "Inter",
+    "arabic": "Cairo",
+    "icons": "lucide-react"
+  },
+  "spacingPx": [4, 8, 12, 16, 24, 32, 48, 64],
+  "radiusPx": { "small": 8, "medium": 12, "large": 16 },
+  "direction": { "english": "ltr", "arabic": "rtl" }
+}
