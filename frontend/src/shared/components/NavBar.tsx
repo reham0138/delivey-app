@@ -16,7 +16,7 @@ export default function NavBar() {
             className="size-12 shrink-0 object-contain"
           />
           <span className="min-w-0">
-            <span className="block truncate font-semibold text-brand-navy">
+            <span className="block truncate font-semibold text-brand-red">
               The Crown &amp; Anchor
             </span>
             <span className="hidden text-xs tracking-[0.16em] text-text-slate sm:block">

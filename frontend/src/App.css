@@ -1,13 +1,13 @@
 @import "tailwindcss";
 
 @theme {
-  --color-brand-navy: #0B2D4A;
-  --color-brand-gold: #D4AF37;
-  --color-surface-cream: #F8F7F4;
-  --color-text-slate: #64748B;
-  --color-text-main: #1F2937;
+  --color-brand-red: #E63946;
+  --color-brand-yellow: #FFC857;
+  --color-surface-cream: #FFF8EF;
+  --color-text-slate: #78716C;
+  --color-text-main: #292524;
   --color-surface-white: #FFFFFF;
-  --color-border-subtle: #E5E7EB;
+  --color-border-subtle: #E7E5E4;
 
   --font-sans: "Inter", "Cairo", system-ui, sans-serif;
   --font-arabic: "Cairo", system-ui, sans-serif;
@@ -43,7 +43,7 @@ body {
 }
 
 :focus-visible {
-  outline: 3px solid var(--color-brand-gold);
+  outline: 3px solid var(--color-brand-yellow);
   outline-offset: 2px;
 }
 
@@ -96,7 +96,7 @@ a {
 }
 
 .brand__name {
-  color: var(--color-brand-navy);
+  color: var(--color-brand-red);
   font-family: Georgia, "Times New Roman", serif;
   font-size: 1.05rem;
   font-weight: 700;
@@ -122,23 +122,23 @@ a {
 }
 
 .site-nav__links a:hover {
-  color: var(--color-brand-navy);
+  color: var(--color-brand-red);
 }
 
 .site-nav__links .site-nav__action {
   padding: 0.55rem 1rem;
   border-radius: 0.5rem;
-  background: var(--color-brand-navy);
+  background: var(--color-brand-red);
   color: var(--color-surface-white);
 }
 
 .site-nav__links .site-nav__action:hover {
-  background: #09263e;
+  background: #C92F3B;
 }
 
 .site-footer {
   border-top: 1px solid var(--color-border-subtle);
-  background: var(--color-brand-navy);
+  background: var(--color-brand-red);
 }
 
 .site-footer__inner {
@@ -157,12 +157,12 @@ a {
 }
 
 .brand--footer .brand__tagline {
-  color: var(--color-brand-gold);
+  color: var(--color-brand-yellow);
 }
 
 .site-footer__copyright {
   margin: 0;
-  color: rgb(255 255 255 / 75%);
+  color: rgb(255 255 255 / 85%);
   font-size: 0.8rem;
 }
 

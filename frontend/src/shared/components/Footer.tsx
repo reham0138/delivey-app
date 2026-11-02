@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom'
 
 export default function Footer() {
   return (
-    <footer className="bg-brand-navy text-surface-white">
+    <footer className="bg-brand-red text-surface-white">
       <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
         <div className="flex flex-col gap-6 border-b border-surface-white/20 pb-6 sm:flex-row sm:items-center sm:justify-between">
           <div className="flex items-center gap-4">
@@ -14,7 +14,7 @@ export default function Footer() {
             />
             <div>
               <p className="font-semibold">The Crown &amp; Anchor</p>
-              <p className="mt-1 text-xs tracking-[0.16em] text-surface-white/75">
+              <p className="mt-1 text-xs tracking-[0.16em] text-brand-yellow">
                 MORE THAN JUST A DELIVERY APP
               </p>
             </div>
@@ -29,7 +29,7 @@ export default function Footer() {
           </Link>
         </div>
 
-        <p className="pt-5 text-sm text-surface-white/75">
+        <p className="pt-5 text-sm text-surface-white/85">
           &copy; {new Date().getFullYear()} The Crown &amp; Anchor
         </p>
       </div>
