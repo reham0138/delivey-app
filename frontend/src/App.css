@@ -25,13 +25,16 @@
 
 :root[data-theme='dark'] {
   color-scheme: dark;
-  --color-surface-cream: #181716;
-  --color-surface-white: #242220;
-  --color-text-main: #F5F5F4;
-  --color-text-slate: #B0AAA3;
-  --color-border-subtle: #45413D;
-  --color-danger: #F87171;
-  --color-danger-hover: #EF4444;
+    --color-brand-red: #C96A75;
+  --color-brand-red-hover: #B75A66;
+  --color-brand-yellow: #D7B16B;
+  --color-surface-cream: #21191B;
+  --color-surface-white: #2B2023;
+  --color-text-main: #F1E7E8;
+  --color-text-slate: #BDAFB2;
+  --color-border-subtle: #49383D;
+  --color-danger: #D98282;
+  --color-danger-hover: #C96F73;
 }
 
 :root {
@@ -185,6 +188,22 @@ a {
   margin: 0;
   color: rgb(255 255 255 / 85%);
   font-size: 0.8rem;
+}
+
+:root[data-theme='dark'] .site-nav__links .site-nav__action {
+  color: #FFF8F7;
+}
+
+:root[data-theme='dark'] .site-footer {
+  background: #38252A;
+}
+
+:root[data-theme='dark'] .brand--footer .brand__name {
+  color: #FFF3F2;
+}
+
+:root[data-theme='dark'] .site-footer__copyright {
+  color: #E8DADC;
 }
 
 @media (max-width: 600px) {
