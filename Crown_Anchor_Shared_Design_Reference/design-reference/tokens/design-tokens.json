@@ -1,11 +1,13 @@
 {
   "brand": {
-    "navy": "#0B2D4A",
-    "gold": "#D4AF37",
-    "cream": "#F8F7F4",
-    "slate": "#64748B",
-    "text": "#1F2937",
-    "white": "#FFFFFF"
+    "red": "#E63946",
+    "redHover": "#C92F3B",
+    "yellow": "#FFC857",
+    "cream": "#FFF8EF",
+    "slate": "#78716C",
+    "text": "#292524",
+    "white": "#FFFFFF",
+    "border": "#E7E5E4"
   },
   "tagline": "MORE THAN JUST A STORE",
   "typography": {
