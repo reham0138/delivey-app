@@ -26,8 +26,13 @@ export default function NavBar() {
         </Link>
 
         <nav aria-label="Main navigation" className="flex items-center gap-3 sm:gap-5">
-          <a href="#categories" className="hidden text-sm font-medium text-text-main transition-colors hover:text-brand-red sm:inline-flex">Explore</a>
-          <a href="#how-it-works" className="hidden text-sm font-medium text-text-main transition-colors hover:text-brand-red sm:inline-flex">How it works</a>
+          <Link
+            to="/"
+            aria-current="page"
+            className="inline-flex items-center rounded-lg px-2 py-2 text-sm font-semibold text-brand-red transition-colors hover:bg-brand-red/10"
+          >
+            Home
+          </Link>
           <button
             type="button"
             onClick={toggleTheme}
