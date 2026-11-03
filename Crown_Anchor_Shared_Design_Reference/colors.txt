@@ -1,6 +1,9 @@
-1. #022947  (63% of logo)
-2. #C6963B  (24% of logo)
-3. #58667A  (8% of logo)
-4. #798695  (2% of logo)
-5. #D8B777  (2% of logo)
-6. #2D425B  (1% of logo)
+Delivery application color palette:
+1. Brand red: #E63946
+2. Brand red hover: #C92F3B
+3. Brand yellow: #FFC857
+4. Surface cream: #FFF8EF
+5. Text slate: #78716C
+6. Main text: #292524
+7. Surface white: #FFFFFF
+8. Subtle border: #E7E5E4
