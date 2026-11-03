@@ -7,7 +7,7 @@ export default function NavBar() {
   const nextThemeLabel = theme === 'dark' ? 'light' : 'dark'
 
   return (
-    <header className="border-b border-border-subtle bg-surface-white">
+    <div className="border-b border-border-subtle bg-surface-white">
       <div className="mx-auto flex w-full max-w-[1440px] items-center justify-between gap-4 px-4 py-3 sm:px-6 lg:px-10">
         <Link
           to="/"
@@ -39,6 +39,6 @@ export default function NavBar() {
           </button>
         </nav>
       </div>
-    </header>
+    </div>
   )
 }
