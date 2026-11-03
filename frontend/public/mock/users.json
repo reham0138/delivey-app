@@ -1,0 +1,231 @@
+[
+  {
+    "id": 1,
+    "name": "Admin Layth",
+    "email": "admin@crownanchor.test",
+    "phone": "+963 900 000 001",
+    "role": "admin",
+    "status": "active",
+    "createdAt": "2026-01-01T08:00:00Z",
+    "mockPassword": "Demo@1234"
+  },
+  {
+    "id": 2,
+    "name": "Admin Rana",
+    "email": "rana.admin@crownanchor.test",
+    "phone": "+963 900 000 002",
+    "role": "admin",
+    "status": "active",
+    "createdAt": "2026-01-01T08:05:00Z",
+    "mockPassword": "Demo@1234"
+  },
+  {
+    "id": 3,
+    "name": "Burger Hub Owner",
+    "email": "owner.burgerhub@crownanchor.test",
+    "phone": "+963 900 200 003",
+    "role": "restaurant",
+    "status": "active",
+    "restaurantId": 1,
+    "createdAt": "2026-01-10T08:30:00Z",
+    "mockPassword": "Demo@1234"
+  },
+  {
+    "id": 4,
+    "name": "Napoli Pizza Owner",
+    "email": "owner.napoli@crownanchor.test",
+    "phone": "+963 900 200 004",
+    "role": "restaurant",
+    "status": "active",
+    "restaurantId": 2,
+    "createdAt": "2026-01-12T08:30:00Z",
+    "mockPassword": "Demo@1234"
+  },
+  {
+    "id": 5,
+    "name": "Shawarma King Owner",
+    "email": "owner.shawarma@crownanchor.test",
+    "phone": "+963 900 200 005",
+    "role": "restaurant",
+    "status": "active",
+    "restaurantId": 3,
+    "createdAt": "2026-01-15T08:30:00Z",
+    "mockPassword": "Demo@1234"
+  },
+  {
+    "id": 6,
+    "name": "Sakura Sushi Owner",
+    "email": "owner.sakura@crownanchor.test",
+    "phone": "+963 900 200 006",
+    "role": "restaurant",
+    "status": "active",
+    "restaurantId": 4,
+    "createdAt": "2026-02-01T08:30:00Z",
+    "mockPassword": "Demo@1234"
+  },
+  {
+    "id": 7,
+    "name": "Green Bowl Owner",
+    "email": "owner.greenbowl@crownanchor.test",
+    "phone": "+963 900 200 007",
+    "role": "restaurant",
+    "status": "active",
+    "restaurantId": 5,
+    "createdAt": "2026-02-10T08:30:00Z",
+    "mockPassword": "Demo@1234"
+  },
+  {
+    "id": 8,
+    "name": "Grill Master Owner",
+    "email": "owner.grill@crownanchor.test",
+    "phone": "+963 900 200 008",
+    "role": "restaurant",
+    "status": "active",
+    "restaurantId": 6,
+    "createdAt": "2026-02-20T08:30:00Z",
+    "mockPassword": "Demo@1234"
+  },
+  {
+    "id": 9,
+    "name": "Sweet Corner Owner",
+    "email": "owner.sweetcorner@crownanchor.test",
+    "phone": "+963 900 200 009",
+    "role": "restaurant",
+    "status": "active",
+    "restaurantId": 7,
+    "createdAt": "2026-03-05T08:30:00Z",
+    "mockPassword": "Demo@1234"
+  },
+  {
+    "id": 10,
+    "name": "Bean & Brew Owner",
+    "email": "owner.beanbrew@crownanchor.test",
+    "phone": "+963 900 200 010",
+    "role": "restaurant",
+    "status": "active",
+    "restaurantId": 8,
+    "createdAt": "2026-03-15T08:30:00Z",
+    "mockPassword": "Demo@1234"
+  },
+  {
+    "id": 11,
+    "name": "Fresh Start Owner",
+    "email": "owner.freshstart@crownanchor.test",
+    "phone": "+963 900 200 011",
+    "role": "restaurant",
+    "status": "active",
+    "restaurantId": 9,
+    "createdAt": "2026-11-01T08:30:00Z",
+    "mockPassword": "Demo@1234"
+  },
+  {
+    "id": 12,
+    "name": "Old Town Bakery Owner",
+    "email": "owner.oldtown@crownanchor.test",
+    "phone": "+963 900 200 012",
+    "role": "restaurant",
+    "status": "suspended",
+    "restaurantId": 10,
+    "createdAt": "2026-01-20T08:30:00Z",
+    "mockPassword": "Demo@1234"
+  },
+  {
+    "id": 13,
+    "name": "Layla Hassan",
+    "email": "layla@example.com",
+    "phone": "+963 900 300 013",
+    "role": "customer",
+    "status": "active",
+    "address": "Building 4, Tishreen St, Latakia",
+    "createdAt": "2026-09-01T10:00:00Z",
+    "mockPassword": "Demo@1234"
+  },
+  {
+    "id": 14,
+    "name": "Omar Khaled",
+    "email": "omar@example.com",
+    "phone": "+963 900 300 014",
+    "role": "customer",
+    "status": "active",
+    "address": "Palm Residence, Block B, Al-Ziraa, Latakia",
+    "createdAt": "2026-09-10T10:00:00Z",
+    "mockPassword": "Demo@1234"
+  },
+  {
+    "id": 15,
+    "name": "سارة العلي",
+    "email": "sara@example.com",
+    "phone": "+963 900 300 015",
+    "role": "customer",
+    "status": "active",
+    "address": "شارع بغداد، بناء ٢٢، اللاذقية",
+    "createdAt": "2026-09-15T10:00:00Z",
+    "mockPassword": "Demo@1234"
+  },
+  {
+    "id": 16,
+    "name": "Ahmad Nasser",
+    "email": "ahmad@example.com",
+    "phone": "+963 900 300 016",
+    "role": "customer",
+    "status": "active",
+    "address": "University Housing, Room 214, Tishreen University, Latakia",
+    "createdAt": "2026-09-20T10:00:00Z",
+    "mockPassword": "Demo@1234"
+  },
+  {
+    "id": 17,
+    "name": "Maya Ibrahim",
+    "email": "maya@example.com",
+    "phone": "+963 900 300 017",
+    "role": "customer",
+    "status": "active",
+    "address": "Al-Sleibeh, Villa 7, Latakia",
+    "createdAt": "2026-09-25T10:00:00Z",
+    "mockPassword": "Demo@1234"
+  },
+  {
+    "id": 18,
+    "name": "Karim Haddad",
+    "email": "karim@example.com",
+    "phone": "+963 900 300 018",
+    "role": "customer",
+    "status": "active",
+    "address": "Port Area, Shop 3, Latakia",
+    "createdAt": "2026-10-01T10:00:00Z",
+    "mockPassword": "Demo@1234"
+  },
+  {
+    "id": 19,
+    "name": "Nour Suleiman",
+    "email": "nour@example.com",
+    "phone": "+963 900 300 019",
+    "role": "customer",
+    "status": "active",
+    "address": "Al-Mushrefa, Building 9, Latakia",
+    "createdAt": "2026-11-02T10:00:00Z",
+    "mockPassword": "Demo@1234"
+  },
+  {
+    "id": 20,
+    "name": "Yara Darwish",
+    "email": "yara@example.com",
+    "phone": "+963 900 300 020",
+    "role": "customer",
+    "status": "active",
+    "address": "Ugarit St, Building 12, Latakia",
+    "createdAt": "2026-11-03T10:00:00Z",
+    "mockPassword": "Demo@1234"
+  },
+  {
+    "id": 21,
+    "name": "Tarek Mansour",
+    "email": "tarek@example.com",
+    "phone": "+963 900 300 021",
+    "role": "customer",
+    "status": "suspended",
+    "address": "Corniche Rd, Building 2, Latakia",
+    "createdAt": "2026-08-20T10:00:00Z",
+    "mockPassword": "Demo@1234"
+  }
+]

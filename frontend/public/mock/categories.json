@@ -1,0 +1,110 @@
+[
+  {
+    "id": 1,
+    "name": "Burgers",
+    "isActive": true,
+    "itemsCount": 4
+  },
+  {
+    "id": 2,
+    "name": "Sides",
+    "isActive": true,
+    "itemsCount": 3
+  },
+  {
+    "id": 3,
+    "name": "Drinks",
+    "isActive": true,
+    "itemsCount": 5
+  },
+  {
+    "id": 4,
+    "name": "Pizza",
+    "isActive": true,
+    "itemsCount": 4
+  },
+  {
+    "id": 5,
+    "name": "Wraps",
+    "isActive": true,
+    "itemsCount": 2
+  },
+  {
+    "id": 6,
+    "name": "Plates",
+    "isActive": true,
+    "itemsCount": 2
+  },
+  {
+    "id": 7,
+    "name": "Starters",
+    "isActive": true,
+    "itemsCount": 3
+  },
+  {
+    "id": 8,
+    "name": "Sushi",
+    "isActive": true,
+    "itemsCount": 3
+  },
+  {
+    "id": 9,
+    "name": "Bowls",
+    "isActive": true,
+    "itemsCount": 2
+  },
+  {
+    "id": 10,
+    "name": "Salads",
+    "isActive": true,
+    "itemsCount": 1
+  },
+  {
+    "id": 11,
+    "name": "Breakfast",
+    "isActive": true,
+    "itemsCount": 1
+  },
+  {
+    "id": 12,
+    "name": "Grill",
+    "isActive": true,
+    "itemsCount": 3
+  },
+  {
+    "id": 13,
+    "name": "Cakes",
+    "isActive": true,
+    "itemsCount": 2
+  },
+  {
+    "id": 14,
+    "name": "Arabic Sweets",
+    "isActive": true,
+    "itemsCount": 2
+  },
+  {
+    "id": 15,
+    "name": "Ice Cream",
+    "isActive": true,
+    "itemsCount": 1
+  },
+  {
+    "id": 16,
+    "name": "Coffee",
+    "isActive": true,
+    "itemsCount": 4
+  },
+  {
+    "id": 17,
+    "name": "Bakery",
+    "isActive": true,
+    "itemsCount": 4
+  },
+  {
+    "id": 18,
+    "name": "Seasonal",
+    "isActive": false,
+    "itemsCount": 0
+  }
+]

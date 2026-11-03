@@ -1,6 +1,9 @@
 [
   {
     "id": 1001,
+    "customerId": 13,
+    "customerName": "Layla Hassan",
+    "phone": "+963 900 300 013",
     "restaurantId": 1,
     "status": "delivered",
     "items": [
@@ -21,10 +24,39 @@
     "deliveryFee": 1.5,
     "total": 21.0,
     "deliveryAddress": "Building 4, Tishreen St, Latakia",
-    "createdAt": "2026-10-20T13:15:00Z"
+    "paymentMethod": "cash",
+    "notes": null,
+    "createdAt": "2026-10-20T13:15:00Z",
+    "statusHistory": [
+      {
+        "status": "pending",
+        "at": "2026-10-20T13:15:00Z"
+      },
+      {
+        "status": "preparing",
+        "at": "2026-10-20T13:18:00Z"
+      },
+      {
+        "status": "ready",
+        "at": "2026-10-20T13:33:00Z"
+      },
+      {
+        "status": "on_the_way",
+        "at": "2026-10-20T13:40:00Z"
+      },
+      {
+        "status": "delivered",
+        "at": "2026-10-20T13:50:00Z"
+      }
+    ],
+    "cancelledBy": null,
+    "cancellationReason": null
   },
   {
     "id": 1002,
+    "customerId": 13,
+    "customerName": "Layla Hassan",
+    "phone": "+963 900 300 013",
     "restaurantId": 3,
     "status": "delivered",
     "items": [
@@ -45,10 +77,39 @@
     "deliveryFee": 1.0,
     "total": 19.4,
     "deliveryAddress": "Building 4, Tishreen St, Latakia",
-    "createdAt": "2026-10-21T19:40:00Z"
+    "paymentMethod": "card",
+    "notes": null,
+    "createdAt": "2026-10-21T19:40:00Z",
+    "statusHistory": [
+      {
+        "status": "pending",
+        "at": "2026-10-21T19:40:00Z"
+      },
+      {
+        "status": "preparing",
+        "at": "2026-10-21T19:43:00Z"
+      },
+      {
+        "status": "ready",
+        "at": "2026-10-21T19:58:00Z"
+      },
+      {
+        "status": "on_the_way",
+        "at": "2026-10-21T20:05:00Z"
+      },
+      {
+        "status": "delivered",
+        "at": "2026-10-21T20:10:00Z"
+      }
+    ],
+    "cancelledBy": null,
+    "cancellationReason": null
   },
   {
     "id": 1003,
+    "customerId": 13,
+    "customerName": "Layla Hassan",
+    "phone": "+963 900 300 013",
     "restaurantId": 2,
     "status": "on_the_way",
     "items": [
@@ -75,10 +136,35 @@
     "deliveryFee": 2.0,
     "total": 27.5,
     "deliveryAddress": "Building 4, Tishreen St, Latakia",
-    "createdAt": "2026-10-28T12:05:00Z"
+    "paymentMethod": "card",
+    "notes": null,
+    "createdAt": "2026-11-03T11:05:00Z",
+    "statusHistory": [
+      {
+        "status": "pending",
+        "at": "2026-11-03T11:05:00Z"
+      },
+      {
+        "status": "preparing",
+        "at": "2026-11-03T11:08:00Z"
+      },
+      {
+        "status": "ready",
+        "at": "2026-11-03T11:23:00Z"
+      },
+      {
+        "status": "on_the_way",
+        "at": "2026-11-03T11:30:00Z"
+      }
+    ],
+    "cancelledBy": null,
+    "cancellationReason": null
   },
   {
     "id": 1004,
+    "customerId": 13,
+    "customerName": "Layla Hassan",
+    "phone": "+963 900 300 013",
     "restaurantId": 6,
     "status": "preparing",
     "items": [
@@ -99,10 +185,27 @@
     "deliveryFee": 2.0,
     "total": 34.0,
     "deliveryAddress": "Building 4, Tishreen St, Latakia",
-    "createdAt": "2026-10-28T12:30:00Z"
+    "paymentMethod": "cash",
+    "notes": "Please ring the bell twice",
+    "createdAt": "2026-11-03T11:40:00Z",
+    "statusHistory": [
+      {
+        "status": "pending",
+        "at": "2026-11-03T11:40:00Z"
+      },
+      {
+        "status": "preparing",
+        "at": "2026-11-03T11:43:00Z"
+      }
+    ],
+    "cancelledBy": null,
+    "cancellationReason": null
   },
   {
     "id": 1005,
+    "customerId": 13,
+    "customerName": "Layla Hassan",
+    "phone": "+963 900 300 013",
     "restaurantId": 7,
     "status": "cancelled",
     "items": [
@@ -117,10 +220,27 @@
     "deliveryFee": 1.2,
     "total": 11.2,
     "deliveryAddress": "Building 4, Tishreen St, Latakia",
-    "createdAt": "2026-10-19T17:10:00Z"
+    "paymentMethod": "cash",
+    "notes": null,
+    "createdAt": "2026-10-19T17:10:00Z",
+    "statusHistory": [
+      {
+        "status": "pending",
+        "at": "2026-10-19T17:10:00Z"
+      },
+      {
+        "status": "cancelled",
+        "at": "2026-10-19T17:14:00Z"
+      }
+    ],
+    "cancelledBy": "customer",
+    "cancellationReason": "Changed my mind"
   },
   {
     "id": 1006,
+    "customerId": 13,
+    "customerName": "Layla Hassan",
+    "phone": "+963 900 300 013",
     "restaurantId": 8,
     "status": "pending",
     "items": [
@@ -141,6 +261,1509 @@
     "deliveryFee": 1.0,
     "total": 11.0,
     "deliveryAddress": "Building 4, Tishreen St, Latakia",
-    "createdAt": "2026-10-28T13:00:00Z"
+    "paymentMethod": "cash",
+    "notes": null,
+    "createdAt": "2026-11-03T12:25:00Z",
+    "statusHistory": [
+      {
+        "status": "pending",
+        "at": "2026-11-03T12:25:00Z"
+      }
+    ],
+    "cancelledBy": null,
+    "cancellationReason": null
+  },
+  {
+    "id": 1007,
+    "customerId": 13,
+    "customerName": "Layla Hassan",
+    "phone": "+963 900 300 013",
+    "restaurantId": 1,
+    "status": "delivered",
+    "items": [
+      {
+        "menuItemId": 2,
+        "name": "Double Smash Burger",
+        "quantity": 1,
+        "unitPrice": 9.5
+      },
+      {
+        "menuItemId": 5,
+        "name": "Chocolate Shake",
+        "quantity": 1,
+        "unitPrice": 3.8
+      }
+    ],
+    "subtotal": 13.3,
+    "deliveryFee": 1.5,
+    "total": 14.8,
+    "deliveryAddress": "Building 4, Tishreen St, Latakia",
+    "paymentMethod": "cash",
+    "notes": null,
+    "createdAt": "2026-10-05T12:10:00Z",
+    "statusHistory": [
+      {
+        "status": "pending",
+        "at": "2026-10-05T12:10:00Z"
+      },
+      {
+        "status": "preparing",
+        "at": "2026-10-05T12:13:00Z"
+      },
+      {
+        "status": "ready",
+        "at": "2026-10-05T12:28:00Z"
+      },
+      {
+        "status": "on_the_way",
+        "at": "2026-10-05T12:35:00Z"
+      },
+      {
+        "status": "delivered",
+        "at": "2026-10-05T12:45:00Z"
+      }
+    ],
+    "cancelledBy": null,
+    "cancellationReason": null
+  },
+  {
+    "id": 1008,
+    "customerId": 13,
+    "customerName": "Layla Hassan",
+    "phone": "+963 900 300 013",
+    "restaurantId": 5,
+    "status": "delivered",
+    "items": [
+      {
+        "menuItemId": 21,
+        "name": "Chicken Quinoa Bowl",
+        "quantity": 1,
+        "unitPrice": 8.8
+      },
+      {
+        "menuItemId": 23,
+        "name": "Caesar Salad",
+        "quantity": 1,
+        "unitPrice": 6.5
+      }
+    ],
+    "subtotal": 15.3,
+    "deliveryFee": 1.8,
+    "total": 17.1,
+    "deliveryAddress": "Building 4, Tishreen St, Latakia",
+    "paymentMethod": "card",
+    "notes": null,
+    "createdAt": "2026-10-08T18:30:00Z",
+    "statusHistory": [
+      {
+        "status": "pending",
+        "at": "2026-10-08T18:30:00Z"
+      },
+      {
+        "status": "preparing",
+        "at": "2026-10-08T18:33:00Z"
+      },
+      {
+        "status": "ready",
+        "at": "2026-10-08T18:48:00Z"
+      },
+      {
+        "status": "on_the_way",
+        "at": "2026-10-08T18:55:00Z"
+      },
+      {
+        "status": "delivered",
+        "at": "2026-10-08T19:10:00Z"
+      }
+    ],
+    "cancelledBy": null,
+    "cancellationReason": null
+  },
+  {
+    "id": 1009,
+    "customerId": 13,
+    "customerName": "Layla Hassan",
+    "phone": "+963 900 300 013",
+    "restaurantId": 3,
+    "status": "delivered",
+    "items": [
+      {
+        "menuItemId": 12,
+        "name": "Beef Shawarma Plate",
+        "quantity": 1,
+        "unitPrice": 7.0
+      },
+      {
+        "menuItemId": 15,
+        "name": "Ayran",
+        "quantity": 1,
+        "unitPrice": 1.5
+      }
+    ],
+    "subtotal": 8.5,
+    "deliveryFee": 1.0,
+    "total": 9.5,
+    "deliveryAddress": "Building 4, Tishreen St, Latakia",
+    "paymentMethod": "cash",
+    "notes": null,
+    "createdAt": "2026-10-12T13:00:00Z",
+    "statusHistory": [
+      {
+        "status": "pending",
+        "at": "2026-10-12T13:00:00Z"
+      },
+      {
+        "status": "preparing",
+        "at": "2026-10-12T13:03:00Z"
+      },
+      {
+        "status": "ready",
+        "at": "2026-10-12T13:18:00Z"
+      },
+      {
+        "status": "on_the_way",
+        "at": "2026-10-12T13:25:00Z"
+      },
+      {
+        "status": "delivered",
+        "at": "2026-10-12T13:30:00Z"
+      }
+    ],
+    "cancelledBy": null,
+    "cancellationReason": null
+  },
+  {
+    "id": 1010,
+    "customerId": 13,
+    "customerName": "Layla Hassan",
+    "phone": "+963 900 300 013",
+    "restaurantId": 8,
+    "status": "delivered",
+    "items": [
+      {
+        "menuItemId": 37,
+        "name": "Iced Latte",
+        "quantity": 1,
+        "unitPrice": 3.5
+      },
+      {
+        "menuItemId": 39,
+        "name": "Croissant",
+        "quantity": 2,
+        "unitPrice": 2.2
+      }
+    ],
+    "subtotal": 7.9,
+    "deliveryFee": 1.0,
+    "total": 8.9,
+    "deliveryAddress": "Building 4, Tishreen St, Latakia",
+    "paymentMethod": "cash",
+    "notes": null,
+    "createdAt": "2026-10-14T09:20:00Z",
+    "statusHistory": [
+      {
+        "status": "pending",
+        "at": "2026-10-14T09:20:00Z"
+      },
+      {
+        "status": "preparing",
+        "at": "2026-10-14T09:23:00Z"
+      },
+      {
+        "status": "ready",
+        "at": "2026-10-14T09:38:00Z"
+      },
+      {
+        "status": "on_the_way",
+        "at": "2026-10-14T09:45:00Z"
+      },
+      {
+        "status": "delivered",
+        "at": "2026-10-14T09:45:00Z"
+      }
+    ],
+    "cancelledBy": null,
+    "cancellationReason": null
+  },
+  {
+    "id": 1011,
+    "customerId": 13,
+    "customerName": "Layla Hassan",
+    "phone": "+963 900 300 013",
+    "restaurantId": 2,
+    "status": "delivered",
+    "items": [
+      {
+        "menuItemId": 8,
+        "name": "Four Cheese",
+        "quantity": 1,
+        "unitPrice": 11.0
+      },
+      {
+        "menuItemId": 10,
+        "name": "Lemonade",
+        "quantity": 2,
+        "unitPrice": 2.5
+      }
+    ],
+    "subtotal": 16.0,
+    "deliveryFee": 2.0,
+    "total": 18.0,
+    "deliveryAddress": "Building 4, Tishreen St, Latakia",
+    "paymentMethod": "card",
+    "notes": null,
+    "createdAt": "2026-10-16T20:05:00Z",
+    "statusHistory": [
+      {
+        "status": "pending",
+        "at": "2026-10-16T20:05:00Z"
+      },
+      {
+        "status": "preparing",
+        "at": "2026-10-16T20:08:00Z"
+      },
+      {
+        "status": "ready",
+        "at": "2026-10-16T20:23:00Z"
+      },
+      {
+        "status": "on_the_way",
+        "at": "2026-10-16T20:30:00Z"
+      },
+      {
+        "status": "delivered",
+        "at": "2026-10-16T20:50:00Z"
+      }
+    ],
+    "cancelledBy": null,
+    "cancellationReason": null
+  },
+  {
+    "id": 1012,
+    "customerId": 13,
+    "customerName": "Layla Hassan",
+    "phone": "+963 900 300 013",
+    "restaurantId": 6,
+    "status": "cancelled",
+    "items": [
+      {
+        "menuItemId": 28,
+        "name": "Lamb Kebab",
+        "quantity": 2,
+        "unitPrice": 10.5
+      }
+    ],
+    "subtotal": 21.0,
+    "deliveryFee": 2.0,
+    "total": 23.0,
+    "deliveryAddress": "Building 4, Tishreen St, Latakia",
+    "paymentMethod": "cash",
+    "notes": null,
+    "createdAt": "2026-10-17T19:15:00Z",
+    "statusHistory": [
+      {
+        "status": "pending",
+        "at": "2026-10-17T19:15:00Z"
+      },
+      {
+        "status": "cancelled",
+        "at": "2026-10-17T19:19:00Z"
+      }
+    ],
+    "cancelledBy": "restaurant",
+    "cancellationReason": "Item out of stock"
+  },
+  {
+    "id": 1013,
+    "customerId": 14,
+    "customerName": "Omar Khaled",
+    "phone": "+963 900 300 014",
+    "restaurantId": 1,
+    "status": "delivered",
+    "items": [
+      {
+        "menuItemId": 3,
+        "name": "Crispy Chicken Burger",
+        "quantity": 2,
+        "unitPrice": 7.5
+      },
+      {
+        "menuItemId": 4,
+        "name": "Loaded Fries",
+        "quantity": 2,
+        "unitPrice": 4.5
+      }
+    ],
+    "subtotal": 24.0,
+    "deliveryFee": 1.5,
+    "total": 25.5,
+    "deliveryAddress": "Palm Residence, Block B, Al-Ziraa, Latakia",
+    "paymentMethod": "card",
+    "notes": null,
+    "createdAt": "2026-10-22T14:00:00Z",
+    "statusHistory": [
+      {
+        "status": "pending",
+        "at": "2026-10-22T14:00:00Z"
+      },
+      {
+        "status": "preparing",
+        "at": "2026-10-22T14:03:00Z"
+      },
+      {
+        "status": "ready",
+        "at": "2026-10-22T14:18:00Z"
+      },
+      {
+        "status": "on_the_way",
+        "at": "2026-10-22T14:25:00Z"
+      },
+      {
+        "status": "delivered",
+        "at": "2026-10-22T14:35:00Z"
+      }
+    ],
+    "cancelledBy": null,
+    "cancellationReason": null
+  },
+  {
+    "id": 1014,
+    "customerId": 14,
+    "customerName": "Omar Khaled",
+    "phone": "+963 900 300 014",
+    "restaurantId": 6,
+    "status": "delivered",
+    "items": [
+      {
+        "menuItemId": 26,
+        "name": "Mixed Grill Platter",
+        "quantity": 2,
+        "unitPrice": 15.0
+      },
+      {
+        "menuItemId": 30,
+        "name": "Fattoush",
+        "quantity": 1,
+        "unitPrice": 4.0
+      }
+    ],
+    "subtotal": 34.0,
+    "deliveryFee": 2.0,
+    "total": 36.0,
+    "deliveryAddress": "Palm Residence, Block B, Al-Ziraa, Latakia",
+    "paymentMethod": "cash",
+    "notes": null,
+    "createdAt": "2026-10-24T20:30:00Z",
+    "statusHistory": [
+      {
+        "status": "pending",
+        "at": "2026-10-24T20:30:00Z"
+      },
+      {
+        "status": "preparing",
+        "at": "2026-10-24T20:33:00Z"
+      },
+      {
+        "status": "ready",
+        "at": "2026-10-24T20:48:00Z"
+      },
+      {
+        "status": "on_the_way",
+        "at": "2026-10-24T20:55:00Z"
+      },
+      {
+        "status": "delivered",
+        "at": "2026-10-24T21:15:00Z"
+      }
+    ],
+    "cancelledBy": null,
+    "cancellationReason": null
+  },
+  {
+    "id": 1015,
+    "customerId": 14,
+    "customerName": "Omar Khaled",
+    "phone": "+963 900 300 014",
+    "restaurantId": 2,
+    "status": "ready",
+    "items": [
+      {
+        "menuItemId": 7,
+        "name": "Pepperoni",
+        "quantity": 2,
+        "unitPrice": 10.0
+      }
+    ],
+    "subtotal": 20.0,
+    "deliveryFee": 2.0,
+    "total": 22.0,
+    "deliveryAddress": "Palm Residence, Block B, Al-Ziraa, Latakia",
+    "paymentMethod": "cash",
+    "notes": null,
+    "createdAt": "2026-11-03T12:00:00Z",
+    "statusHistory": [
+      {
+        "status": "pending",
+        "at": "2026-11-03T12:00:00Z"
+      },
+      {
+        "status": "preparing",
+        "at": "2026-11-03T12:03:00Z"
+      },
+      {
+        "status": "ready",
+        "at": "2026-11-03T12:18:00Z"
+      }
+    ],
+    "cancelledBy": null,
+    "cancellationReason": null
+  },
+  {
+    "id": 1016,
+    "customerId": 14,
+    "customerName": "Omar Khaled",
+    "phone": "+963 900 300 014",
+    "restaurantId": 3,
+    "status": "delivered",
+    "items": [
+      {
+        "menuItemId": 11,
+        "name": "Chicken Shawarma Wrap",
+        "quantity": 2,
+        "unitPrice": 4.0
+      },
+      {
+        "menuItemId": 13,
+        "name": "Falafel Sandwich",
+        "quantity": 2,
+        "unitPrice": 3.0
+      }
+    ],
+    "subtotal": 14.0,
+    "deliveryFee": 1.0,
+    "total": 15.0,
+    "deliveryAddress": "Palm Residence, Block B, Al-Ziraa, Latakia",
+    "paymentMethod": "cash",
+    "notes": null,
+    "createdAt": "2026-10-30T13:40:00Z",
+    "statusHistory": [
+      {
+        "status": "pending",
+        "at": "2026-10-30T13:40:00Z"
+      },
+      {
+        "status": "preparing",
+        "at": "2026-10-30T13:43:00Z"
+      },
+      {
+        "status": "ready",
+        "at": "2026-10-30T13:58:00Z"
+      },
+      {
+        "status": "on_the_way",
+        "at": "2026-10-30T14:05:00Z"
+      },
+      {
+        "status": "delivered",
+        "at": "2026-10-30T14:10:00Z"
+      }
+    ],
+    "cancelledBy": null,
+    "cancellationReason": null
+  },
+  {
+    "id": 1017,
+    "customerId": 14,
+    "customerName": "Omar Khaled",
+    "phone": "+963 900 300 014",
+    "restaurantId": 7,
+    "status": "delivered",
+    "items": [
+      {
+        "menuItemId": 32,
+        "name": "Kunafa Nabulsia",
+        "quantity": 2,
+        "unitPrice": 4.5
+      },
+      {
+        "menuItemId": 34,
+        "name": "Baklava (6 pcs)",
+        "quantity": 1,
+        "unitPrice": 6.0
+      }
+    ],
+    "subtotal": 15.0,
+    "deliveryFee": 1.2,
+    "total": 16.2,
+    "deliveryAddress": "Palm Residence, Block B, Al-Ziraa, Latakia",
+    "paymentMethod": "card",
+    "notes": null,
+    "createdAt": "2026-10-27T21:00:00Z",
+    "statusHistory": [
+      {
+        "status": "pending",
+        "at": "2026-10-27T21:00:00Z"
+      },
+      {
+        "status": "preparing",
+        "at": "2026-10-27T21:03:00Z"
+      },
+      {
+        "status": "ready",
+        "at": "2026-10-27T21:18:00Z"
+      },
+      {
+        "status": "on_the_way",
+        "at": "2026-10-27T21:25:00Z"
+      },
+      {
+        "status": "delivered",
+        "at": "2026-10-27T21:35:00Z"
+      }
+    ],
+    "cancelledBy": null,
+    "cancellationReason": null
+  },
+  {
+    "id": 1018,
+    "customerId": 14,
+    "customerName": "Omar Khaled",
+    "phone": "+963 900 300 014",
+    "restaurantId": 1,
+    "status": "pending",
+    "items": [
+      {
+        "menuItemId": 1,
+        "name": "Classic Cheeseburger",
+        "quantity": 3,
+        "unitPrice": 7.5
+      }
+    ],
+    "subtotal": 22.5,
+    "deliveryFee": 1.5,
+    "total": 24.0,
+    "deliveryAddress": "Palm Residence, Block B, Al-Ziraa, Latakia",
+    "paymentMethod": "cash",
+    "notes": "No pickles please",
+    "createdAt": "2026-11-03T12:30:00Z",
+    "statusHistory": [
+      {
+        "status": "pending",
+        "at": "2026-11-03T12:30:00Z"
+      }
+    ],
+    "cancelledBy": null,
+    "cancellationReason": null
+  },
+  {
+    "id": 1019,
+    "customerId": 15,
+    "customerName": "سارة العلي",
+    "phone": "+963 900 300 015",
+    "restaurantId": 5,
+    "status": "delivered",
+    "items": [
+      {
+        "menuItemId": 22,
+        "name": "Falafel Power Bowl",
+        "quantity": 1,
+        "unitPrice": 7.9
+      },
+      {
+        "menuItemId": 24,
+        "name": "Avocado Toast",
+        "quantity": 1,
+        "unitPrice": 5.5
+      }
+    ],
+    "subtotal": 13.4,
+    "deliveryFee": 1.8,
+    "total": 15.2,
+    "deliveryAddress": "شارع بغداد، بناء ٢٢، اللاذقية",
+    "paymentMethod": "card",
+    "notes": "بدون صوص",
+    "createdAt": "2026-10-25T12:30:00Z",
+    "statusHistory": [
+      {
+        "status": "pending",
+        "at": "2026-10-25T12:30:00Z"
+      },
+      {
+        "status": "preparing",
+        "at": "2026-10-25T12:33:00Z"
+      },
+      {
+        "status": "ready",
+        "at": "2026-10-25T12:48:00Z"
+      },
+      {
+        "status": "on_the_way",
+        "at": "2026-10-25T12:55:00Z"
+      },
+      {
+        "status": "delivered",
+        "at": "2026-10-25T13:10:00Z"
+      }
+    ],
+    "cancelledBy": null,
+    "cancellationReason": null
+  },
+  {
+    "id": 1020,
+    "customerId": 15,
+    "customerName": "سارة العلي",
+    "phone": "+963 900 300 015",
+    "restaurantId": 3,
+    "status": "delivered",
+    "items": [
+      {
+        "menuItemId": 12,
+        "name": "Beef Shawarma Plate",
+        "quantity": 2,
+        "unitPrice": 7.0
+      },
+      {
+        "menuItemId": 14,
+        "name": "Hummus",
+        "quantity": 1,
+        "unitPrice": 3.2
+      }
+    ],
+    "subtotal": 17.2,
+    "deliveryFee": 1.0,
+    "total": 18.2,
+    "deliveryAddress": "شارع بغداد، بناء ٢٢، اللاذقية",
+    "paymentMethod": "cash",
+    "notes": null,
+    "createdAt": "2026-10-26T14:15:00Z",
+    "statusHistory": [
+      {
+        "status": "pending",
+        "at": "2026-10-26T14:15:00Z"
+      },
+      {
+        "status": "preparing",
+        "at": "2026-10-26T14:18:00Z"
+      },
+      {
+        "status": "ready",
+        "at": "2026-10-26T14:33:00Z"
+      },
+      {
+        "status": "on_the_way",
+        "at": "2026-10-26T14:40:00Z"
+      },
+      {
+        "status": "delivered",
+        "at": "2026-10-26T14:45:00Z"
+      }
+    ],
+    "cancelledBy": null,
+    "cancellationReason": null
+  },
+  {
+    "id": 1021,
+    "customerId": 15,
+    "customerName": "سارة العلي",
+    "phone": "+963 900 300 015",
+    "restaurantId": 7,
+    "status": "delivered",
+    "items": [
+      {
+        "menuItemId": 33,
+        "name": "Cheesecake Slice",
+        "quantity": 1,
+        "unitPrice": 4.8
+      },
+      {
+        "menuItemId": 35,
+        "name": "Vanilla Ice Cream",
+        "quantity": 2,
+        "unitPrice": 3.0
+      }
+    ],
+    "subtotal": 10.8,
+    "deliveryFee": 1.2,
+    "total": 12.0,
+    "deliveryAddress": "شارع بغداد، بناء ٢٢، اللاذقية",
+    "paymentMethod": "cash",
+    "notes": null,
+    "createdAt": "2026-10-29T18:45:00Z",
+    "statusHistory": [
+      {
+        "status": "pending",
+        "at": "2026-10-29T18:45:00Z"
+      },
+      {
+        "status": "preparing",
+        "at": "2026-10-29T18:48:00Z"
+      },
+      {
+        "status": "ready",
+        "at": "2026-10-29T19:03:00Z"
+      },
+      {
+        "status": "on_the_way",
+        "at": "2026-10-29T19:10:00Z"
+      },
+      {
+        "status": "delivered",
+        "at": "2026-10-29T19:20:00Z"
+      }
+    ],
+    "cancelledBy": null,
+    "cancellationReason": null
+  },
+  {
+    "id": 1022,
+    "customerId": 15,
+    "customerName": "سارة العلي",
+    "phone": "+963 900 300 015",
+    "restaurantId": 8,
+    "status": "preparing",
+    "items": [
+      {
+        "menuItemId": 36,
+        "name": "Cappuccino",
+        "quantity": 1,
+        "unitPrice": 3.0
+      },
+      {
+        "menuItemId": 40,
+        "name": "Blueberry Muffin",
+        "quantity": 2,
+        "unitPrice": 2.5
+      }
+    ],
+    "subtotal": 8.0,
+    "deliveryFee": 1.0,
+    "total": 9.0,
+    "deliveryAddress": "شارع بغداد، بناء ٢٢، اللاذقية",
+    "paymentMethod": "card",
+    "notes": "من فضلك بدون سكر",
+    "createdAt": "2026-11-03T11:50:00Z",
+    "statusHistory": [
+      {
+        "status": "pending",
+        "at": "2026-11-03T11:50:00Z"
+      },
+      {
+        "status": "preparing",
+        "at": "2026-11-03T11:53:00Z"
+      }
+    ],
+    "cancelledBy": null,
+    "cancellationReason": null
+  },
+  {
+    "id": 1023,
+    "customerId": 15,
+    "customerName": "سارة العلي",
+    "phone": "+963 900 300 015",
+    "restaurantId": 4,
+    "status": "cancelled",
+    "items": [
+      {
+        "menuItemId": 16,
+        "name": "Salmon Nigiri (4 pcs)",
+        "quantity": 1,
+        "unitPrice": 9.0
+      },
+      {
+        "menuItemId": 17,
+        "name": "California Roll (8 pcs)",
+        "quantity": 1,
+        "unitPrice": 8.5
+      }
+    ],
+    "subtotal": 17.5,
+    "deliveryFee": 2.5,
+    "total": 20.0,
+    "deliveryAddress": "شارع بغداد، بناء ٢٢، اللاذقية",
+    "paymentMethod": "card",
+    "notes": null,
+    "createdAt": "2026-10-31T11:00:00Z",
+    "statusHistory": [
+      {
+        "status": "pending",
+        "at": "2026-10-31T11:00:00Z"
+      },
+      {
+        "status": "cancelled",
+        "at": "2026-10-31T11:04:00Z"
+      }
+    ],
+    "cancelledBy": "restaurant",
+    "cancellationReason": "Restaurant closed for the day"
+  },
+  {
+    "id": 1024,
+    "customerId": 16,
+    "customerName": "Ahmad Nasser",
+    "phone": "+963 900 300 016",
+    "restaurantId": 6,
+    "status": "delivered",
+    "items": [
+      {
+        "menuItemId": 27,
+        "name": "Chicken Tawook",
+        "quantity": 2,
+        "unitPrice": 8.5
+      },
+      {
+        "menuItemId": 29,
+        "name": "Grilled Corn",
+        "quantity": 2,
+        "unitPrice": 2.5
+      }
+    ],
+    "subtotal": 22.0,
+    "deliveryFee": 2.0,
+    "total": 24.0,
+    "deliveryAddress": "University Housing, Room 214, Tishreen University, Latakia",
+    "paymentMethod": "cash",
+    "notes": null,
+    "createdAt": "2026-10-18T19:00:00Z",
+    "statusHistory": [
+      {
+        "status": "pending",
+        "at": "2026-10-18T19:00:00Z"
+      },
+      {
+        "status": "preparing",
+        "at": "2026-10-18T19:03:00Z"
+      },
+      {
+        "status": "ready",
+        "at": "2026-10-18T19:18:00Z"
+      },
+      {
+        "status": "on_the_way",
+        "at": "2026-10-18T19:25:00Z"
+      },
+      {
+        "status": "delivered",
+        "at": "2026-10-18T19:45:00Z"
+      }
+    ],
+    "cancelledBy": null,
+    "cancellationReason": null
+  },
+  {
+    "id": 1025,
+    "customerId": 16,
+    "customerName": "Ahmad Nasser",
+    "phone": "+963 900 300 016",
+    "restaurantId": 1,
+    "status": "delivered",
+    "items": [
+      {
+        "menuItemId": 2,
+        "name": "Double Smash Burger",
+        "quantity": 2,
+        "unitPrice": 9.5
+      }
+    ],
+    "subtotal": 19.0,
+    "deliveryFee": 1.5,
+    "total": 20.5,
+    "deliveryAddress": "University Housing, Room 214, Tishreen University, Latakia",
+    "paymentMethod": "cash",
+    "notes": null,
+    "createdAt": "2026-10-23T13:10:00Z",
+    "statusHistory": [
+      {
+        "status": "pending",
+        "at": "2026-10-23T13:10:00Z"
+      },
+      {
+        "status": "preparing",
+        "at": "2026-10-23T13:13:00Z"
+      },
+      {
+        "status": "ready",
+        "at": "2026-10-23T13:28:00Z"
+      },
+      {
+        "status": "on_the_way",
+        "at": "2026-10-23T13:35:00Z"
+      },
+      {
+        "status": "delivered",
+        "at": "2026-10-23T13:45:00Z"
+      }
+    ],
+    "cancelledBy": null,
+    "cancellationReason": null
+  },
+  {
+    "id": 1026,
+    "customerId": 16,
+    "customerName": "Ahmad Nasser",
+    "phone": "+963 900 300 016",
+    "restaurantId": 2,
+    "status": "on_the_way",
+    "items": [
+      {
+        "menuItemId": 6,
+        "name": "Margherita",
+        "quantity": 2,
+        "unitPrice": 8.5
+      },
+      {
+        "menuItemId": 10,
+        "name": "Lemonade",
+        "quantity": 2,
+        "unitPrice": 2.5
+      }
+    ],
+    "subtotal": 22.0,
+    "deliveryFee": 2.0,
+    "total": 24.0,
+    "deliveryAddress": "University Housing, Room 214, Tishreen University, Latakia",
+    "paymentMethod": "cash",
+    "notes": null,
+    "createdAt": "2026-11-03T11:30:00Z",
+    "statusHistory": [
+      {
+        "status": "pending",
+        "at": "2026-11-03T11:30:00Z"
+      },
+      {
+        "status": "preparing",
+        "at": "2026-11-03T11:33:00Z"
+      },
+      {
+        "status": "ready",
+        "at": "2026-11-03T11:48:00Z"
+      },
+      {
+        "status": "on_the_way",
+        "at": "2026-11-03T11:55:00Z"
+      }
+    ],
+    "cancelledBy": null,
+    "cancellationReason": null
+  },
+  {
+    "id": 1027,
+    "customerId": 16,
+    "customerName": "Ahmad Nasser",
+    "phone": "+963 900 300 016",
+    "restaurantId": 8,
+    "status": "delivered",
+    "items": [
+      {
+        "menuItemId": 38,
+        "name": "Turkish Coffee",
+        "quantity": 3,
+        "unitPrice": 2.0
+      }
+    ],
+    "subtotal": 6.0,
+    "deliveryFee": 1.0,
+    "total": 7.0,
+    "deliveryAddress": "University Housing, Room 214, Tishreen University, Latakia",
+    "paymentMethod": "cash",
+    "notes": null,
+    "createdAt": "2026-10-31T08:45:00Z",
+    "statusHistory": [
+      {
+        "status": "pending",
+        "at": "2026-10-31T08:45:00Z"
+      },
+      {
+        "status": "preparing",
+        "at": "2026-10-31T08:48:00Z"
+      },
+      {
+        "status": "ready",
+        "at": "2026-10-31T09:03:00Z"
+      },
+      {
+        "status": "on_the_way",
+        "at": "2026-10-31T09:10:00Z"
+      },
+      {
+        "status": "delivered",
+        "at": "2026-10-31T09:10:00Z"
+      }
+    ],
+    "cancelledBy": null,
+    "cancellationReason": null
+  },
+  {
+    "id": 1028,
+    "customerId": 17,
+    "customerName": "Maya Ibrahim",
+    "phone": "+963 900 300 017",
+    "restaurantId": 4,
+    "status": "delivered",
+    "items": [
+      {
+        "menuItemId": 16,
+        "name": "Salmon Nigiri (4 pcs)",
+        "quantity": 2,
+        "unitPrice": 9.0
+      },
+      {
+        "menuItemId": 18,
+        "name": "Dragon Roll (8 pcs)",
+        "quantity": 1,
+        "unitPrice": 12.5
+      },
+      {
+        "menuItemId": 19,
+        "name": "Miso Soup",
+        "quantity": 2,
+        "unitPrice": 3.0
+      }
+    ],
+    "subtotal": 36.5,
+    "deliveryFee": 2.5,
+    "total": 39.0,
+    "deliveryAddress": "Al-Sleibeh, Villa 7, Latakia",
+    "paymentMethod": "card",
+    "notes": null,
+    "createdAt": "2026-10-15T20:20:00Z",
+    "statusHistory": [
+      {
+        "status": "pending",
+        "at": "2026-10-15T20:20:00Z"
+      },
+      {
+        "status": "preparing",
+        "at": "2026-10-15T20:23:00Z"
+      },
+      {
+        "status": "ready",
+        "at": "2026-10-15T20:38:00Z"
+      },
+      {
+        "status": "on_the_way",
+        "at": "2026-10-15T20:45:00Z"
+      },
+      {
+        "status": "delivered",
+        "at": "2026-10-15T21:10:00Z"
+      }
+    ],
+    "cancelledBy": null,
+    "cancellationReason": null
+  },
+  {
+    "id": 1029,
+    "customerId": 17,
+    "customerName": "Maya Ibrahim",
+    "phone": "+963 900 300 017",
+    "restaurantId": 5,
+    "status": "delivered",
+    "items": [
+      {
+        "menuItemId": 21,
+        "name": "Chicken Quinoa Bowl",
+        "quantity": 2,
+        "unitPrice": 8.8
+      },
+      {
+        "menuItemId": 25,
+        "name": "Green Smoothie",
+        "quantity": 1,
+        "unitPrice": 4.0
+      }
+    ],
+    "subtotal": 21.6,
+    "deliveryFee": 1.8,
+    "total": 23.4,
+    "deliveryAddress": "Al-Sleibeh, Villa 7, Latakia",
+    "paymentMethod": "card",
+    "notes": null,
+    "createdAt": "2026-10-28T13:30:00Z",
+    "statusHistory": [
+      {
+        "status": "pending",
+        "at": "2026-10-28T13:30:00Z"
+      },
+      {
+        "status": "preparing",
+        "at": "2026-10-28T13:33:00Z"
+      },
+      {
+        "status": "ready",
+        "at": "2026-10-28T13:48:00Z"
+      },
+      {
+        "status": "on_the_way",
+        "at": "2026-10-28T13:55:00Z"
+      },
+      {
+        "status": "delivered",
+        "at": "2026-10-28T14:10:00Z"
+      }
+    ],
+    "cancelledBy": null,
+    "cancellationReason": null
+  },
+  {
+    "id": 1030,
+    "customerId": 17,
+    "customerName": "Maya Ibrahim",
+    "phone": "+963 900 300 017",
+    "restaurantId": 7,
+    "status": "pending",
+    "items": [
+      {
+        "menuItemId": 31,
+        "name": "Chocolate Lava Cake",
+        "quantity": 1,
+        "unitPrice": 5.0
+      },
+      {
+        "menuItemId": 34,
+        "name": "Baklava (6 pcs)",
+        "quantity": 1,
+        "unitPrice": 6.0
+      }
+    ],
+    "subtotal": 11.0,
+    "deliveryFee": 1.2,
+    "total": 12.2,
+    "deliveryAddress": "Al-Sleibeh, Villa 7, Latakia",
+    "paymentMethod": "card",
+    "notes": null,
+    "createdAt": "2026-11-03T12:20:00Z",
+    "statusHistory": [
+      {
+        "status": "pending",
+        "at": "2026-11-03T12:20:00Z"
+      }
+    ],
+    "cancelledBy": null,
+    "cancellationReason": null
+  },
+  {
+    "id": 1031,
+    "customerId": 18,
+    "customerName": "Karim Haddad",
+    "phone": "+963 900 300 018",
+    "restaurantId": 3,
+    "status": "delivered",
+    "items": [
+      {
+        "menuItemId": 11,
+        "name": "Chicken Shawarma Wrap",
+        "quantity": 1,
+        "unitPrice": 4.0
+      },
+      {
+        "menuItemId": 13,
+        "name": "Falafel Sandwich",
+        "quantity": 1,
+        "unitPrice": 3.0
+      },
+      {
+        "menuItemId": 15,
+        "name": "Ayran",
+        "quantity": 1,
+        "unitPrice": 1.5
+      }
+    ],
+    "subtotal": 8.5,
+    "deliveryFee": 1.0,
+    "total": 9.5,
+    "deliveryAddress": "Port Area, Shop 3, Latakia",
+    "paymentMethod": "cash",
+    "notes": null,
+    "createdAt": "2026-10-29T14:30:00Z",
+    "statusHistory": [
+      {
+        "status": "pending",
+        "at": "2026-10-29T14:30:00Z"
+      },
+      {
+        "status": "preparing",
+        "at": "2026-10-29T14:33:00Z"
+      },
+      {
+        "status": "ready",
+        "at": "2026-10-29T14:48:00Z"
+      },
+      {
+        "status": "on_the_way",
+        "at": "2026-10-29T14:55:00Z"
+      },
+      {
+        "status": "delivered",
+        "at": "2026-10-29T15:00:00Z"
+      }
+    ],
+    "cancelledBy": null,
+    "cancellationReason": null
+  },
+  {
+    "id": 1032,
+    "customerId": 18,
+    "customerName": "Karim Haddad",
+    "phone": "+963 900 300 018",
+    "restaurantId": 6,
+    "status": "delivered",
+    "items": [
+      {
+        "menuItemId": 26,
+        "name": "Mixed Grill Platter",
+        "quantity": 1,
+        "unitPrice": 15.0
+      }
+    ],
+    "subtotal": 15.0,
+    "deliveryFee": 2.0,
+    "total": 17.0,
+    "deliveryAddress": "Port Area, Shop 3, Latakia",
+    "paymentMethod": "cash",
+    "notes": null,
+    "createdAt": "2026-11-01T19:50:00Z",
+    "statusHistory": [
+      {
+        "status": "pending",
+        "at": "2026-11-01T19:50:00Z"
+      },
+      {
+        "status": "preparing",
+        "at": "2026-11-01T19:53:00Z"
+      },
+      {
+        "status": "ready",
+        "at": "2026-11-01T20:08:00Z"
+      },
+      {
+        "status": "on_the_way",
+        "at": "2026-11-01T20:15:00Z"
+      },
+      {
+        "status": "delivered",
+        "at": "2026-11-01T20:35:00Z"
+      }
+    ],
+    "cancelledBy": null,
+    "cancellationReason": null
+  },
+  {
+    "id": 1033,
+    "customerId": 19,
+    "customerName": "Nour Suleiman",
+    "phone": "+963 900 300 019",
+    "restaurantId": 8,
+    "status": "pending",
+    "items": [
+      {
+        "menuItemId": 37,
+        "name": "Iced Latte",
+        "quantity": 2,
+        "unitPrice": 3.5
+      }
+    ],
+    "subtotal": 7.0,
+    "deliveryFee": 1.0,
+    "total": 8.0,
+    "deliveryAddress": "Al-Mushrefa, Building 9, Latakia",
+    "paymentMethod": "cash",
+    "notes": null,
+    "createdAt": "2026-11-03T12:33:00Z",
+    "statusHistory": [
+      {
+        "status": "pending",
+        "at": "2026-11-03T12:33:00Z"
+      }
+    ],
+    "cancelledBy": null,
+    "cancellationReason": null
+  },
+  {
+    "id": 1034,
+    "customerId": 21,
+    "customerName": "Tarek Mansour",
+    "phone": "+963 900 300 021",
+    "restaurantId": 1,
+    "status": "delivered",
+    "items": [
+      {
+        "menuItemId": 1,
+        "name": "Classic Cheeseburger",
+        "quantity": 1,
+        "unitPrice": 7.5
+      },
+      {
+        "menuItemId": 3,
+        "name": "Crispy Chicken Burger",
+        "quantity": 1,
+        "unitPrice": 8.0
+      }
+    ],
+    "subtotal": 15.5,
+    "deliveryFee": 1.5,
+    "total": 17.0,
+    "deliveryAddress": "Corniche Rd, Building 2, Latakia",
+    "paymentMethod": "cash",
+    "notes": null,
+    "createdAt": "2026-09-28T17:00:00Z",
+    "statusHistory": [
+      {
+        "status": "pending",
+        "at": "2026-09-28T17:00:00Z"
+      },
+      {
+        "status": "preparing",
+        "at": "2026-09-28T17:03:00Z"
+      },
+      {
+        "status": "ready",
+        "at": "2026-09-28T17:18:00Z"
+      },
+      {
+        "status": "on_the_way",
+        "at": "2026-09-28T17:25:00Z"
+      },
+      {
+        "status": "delivered",
+        "at": "2026-09-28T17:35:00Z"
+      }
+    ],
+    "cancelledBy": null,
+    "cancellationReason": null
+  },
+  {
+    "id": 1035,
+    "customerId": 14,
+    "customerName": "Omar Khaled",
+    "phone": "+963 900 300 014",
+    "restaurantId": 10,
+    "status": "delivered",
+    "items": [
+      {
+        "menuItemId": 41,
+        "name": "Zaatar Manousheh",
+        "quantity": 2,
+        "unitPrice": 2.0
+      },
+      {
+        "menuItemId": 42,
+        "name": "Cheese Fatayer",
+        "quantity": 1,
+        "unitPrice": 3.0
+      }
+    ],
+    "subtotal": 7.0,
+    "deliveryFee": 1.0,
+    "total": 8.0,
+    "deliveryAddress": "Palm Residence, Block B, Al-Ziraa, Latakia",
+    "paymentMethod": "cash",
+    "notes": null,
+    "createdAt": "2026-10-02T10:30:00Z",
+    "statusHistory": [
+      {
+        "status": "pending",
+        "at": "2026-10-02T10:30:00Z"
+      },
+      {
+        "status": "preparing",
+        "at": "2026-10-02T10:33:00Z"
+      },
+      {
+        "status": "ready",
+        "at": "2026-10-02T10:48:00Z"
+      },
+      {
+        "status": "on_the_way",
+        "at": "2026-10-02T10:55:00Z"
+      },
+      {
+        "status": "delivered",
+        "at": "2026-10-02T11:05:00Z"
+      }
+    ],
+    "cancelledBy": null,
+    "cancellationReason": null
+  },
+  {
+    "id": 1036,
+    "customerId": 17,
+    "customerName": "Maya Ibrahim",
+    "phone": "+963 900 300 017",
+    "restaurantId": 2,
+    "status": "cancelled",
+    "items": [
+      {
+        "menuItemId": 9,
+        "name": "Garlic Bread",
+        "quantity": 2,
+        "unitPrice": 3.5
+      },
+      {
+        "menuItemId": 8,
+        "name": "Four Cheese",
+        "quantity": 1,
+        "unitPrice": 11.0
+      }
+    ],
+    "subtotal": 18.0,
+    "deliveryFee": 2.0,
+    "total": 20.0,
+    "deliveryAddress": "Al-Sleibeh, Villa 7, Latakia",
+    "paymentMethod": "card",
+    "notes": null,
+    "createdAt": "2026-11-02T16:00:00Z",
+    "statusHistory": [
+      {
+        "status": "pending",
+        "at": "2026-11-02T16:00:00Z"
+      },
+      {
+        "status": "cancelled",
+        "at": "2026-11-02T16:04:00Z"
+      }
+    ],
+    "cancelledBy": "customer",
+    "cancellationReason": "Ordered by mistake"
+  },
+  {
+    "id": 1037,
+    "customerId": 18,
+    "customerName": "Karim Haddad",
+    "phone": "+963 900 300 018",
+    "restaurantId": 5,
+    "status": "cancelled",
+    "items": [
+      {
+        "menuItemId": 21,
+        "name": "Chicken Quinoa Bowl",
+        "quantity": 1,
+        "unitPrice": 8.8
+      },
+      {
+        "menuItemId": 22,
+        "name": "Falafel Power Bowl",
+        "quantity": 1,
+        "unitPrice": 7.9
+      }
+    ],
+    "subtotal": 16.7,
+    "deliveryFee": 1.8,
+    "total": 18.5,
+    "deliveryAddress": "Port Area, Shop 3, Latakia",
+    "paymentMethod": "card",
+    "notes": null,
+    "createdAt": "2026-10-26T15:00:00Z",
+    "statusHistory": [
+      {
+        "status": "pending",
+        "at": "2026-10-26T15:00:00Z"
+      },
+      {
+        "status": "cancelled",
+        "at": "2026-10-26T15:04:00Z"
+      }
+    ],
+    "cancelledBy": "admin",
+    "cancellationReason": "Card payment failed"
   }
 ]

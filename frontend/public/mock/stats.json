@@ -1,0 +1,362 @@
+{
+  "asOf": "2026-11-03T12:35:00Z",
+  "admin": {
+    "totalOrders": 37,
+    "ordersByStatus": {
+      "delivered": 23,
+      "on_the_way": 2,
+      "preparing": 2,
+      "cancelled": 5,
+      "pending": 4,
+      "ready": 1
+    },
+    "totalRevenue": 412.2,
+    "usersByRole": {
+      "admin": 2,
+      "restaurant": 10,
+      "customer": 9
+    },
+    "suspendedUsers": 2,
+    "activeRestaurants": 9,
+    "reportedReviews": 2,
+    "last14Days": [
+      {
+        "date": "2026-10-21",
+        "orders": 1,
+        "revenue": 19.4
+      },
+      {
+        "date": "2026-10-22",
+        "orders": 1,
+        "revenue": 25.5
+      },
+      {
+        "date": "2026-10-23",
+        "orders": 1,
+        "revenue": 20.5
+      },
+      {
+        "date": "2026-10-24",
+        "orders": 1,
+        "revenue": 36.0
+      },
+      {
+        "date": "2026-10-25",
+        "orders": 1,
+        "revenue": 15.2
+      },
+      {
+        "date": "2026-10-26",
+        "orders": 2,
+        "revenue": 18.2
+      },
+      {
+        "date": "2026-10-27",
+        "orders": 1,
+        "revenue": 16.2
+      },
+      {
+        "date": "2026-10-28",
+        "orders": 1,
+        "revenue": 23.4
+      },
+      {
+        "date": "2026-10-29",
+        "orders": 2,
+        "revenue": 21.5
+      },
+      {
+        "date": "2026-10-30",
+        "orders": 1,
+        "revenue": 15.0
+      },
+      {
+        "date": "2026-10-31",
+        "orders": 2,
+        "revenue": 7.0
+      },
+      {
+        "date": "2026-11-01",
+        "orders": 1,
+        "revenue": 17.0
+      },
+      {
+        "date": "2026-11-02",
+        "orders": 1,
+        "revenue": 0
+      },
+      {
+        "date": "2026-11-03",
+        "orders": 9,
+        "revenue": 0
+      }
+    ],
+    "topRestaurants": [
+      {
+        "restaurantId": 1,
+        "name": "Burger Hub",
+        "orders": 6,
+        "revenue": 98.8
+      },
+      {
+        "restaurantId": 6,
+        "name": "Grill Master",
+        "orders": 5,
+        "revenue": 77.0
+      },
+      {
+        "restaurantId": 3,
+        "name": "Shawarma King",
+        "orders": 5,
+        "revenue": 71.6
+      },
+      {
+        "restaurantId": 5,
+        "name": "Green Bowl",
+        "orders": 4,
+        "revenue": 55.7
+      },
+      {
+        "restaurantId": 4,
+        "name": "Sakura Sushi",
+        "orders": 2,
+        "revenue": 39.0
+      }
+    ]
+  },
+  "restaurants": {
+    "1": {
+      "restaurantId": 1,
+      "totalOrders": 6,
+      "ordersByStatus": {
+        "delivered": 5,
+        "pending": 1
+      },
+      "revenue": 91.3,
+      "averageRating": 3.8,
+      "reviewsCount": 5,
+      "topItems": [
+        {
+          "name": "Classic Cheeseburger",
+          "units": 6
+        },
+        {
+          "name": "Loaded Fries",
+          "units": 3
+        },
+        {
+          "name": "Double Smash Burger",
+          "units": 3
+        }
+      ]
+    },
+    "2": {
+      "restaurantId": 2,
+      "totalOrders": 5,
+      "ordersByStatus": {
+        "on_the_way": 2,
+        "delivered": 1,
+        "ready": 1,
+        "cancelled": 1
+      },
+      "revenue": 16.0,
+      "averageRating": 2.0,
+      "reviewsCount": 1,
+      "topItems": [
+        {
+          "name": "Lemonade",
+          "units": 4
+        },
+        {
+          "name": "Margherita",
+          "units": 3
+        },
+        {
+          "name": "Pepperoni",
+          "units": 3
+        }
+      ]
+    },
+    "3": {
+      "restaurantId": 3,
+      "totalOrders": 5,
+      "ordersByStatus": {
+        "delivered": 5
+      },
+      "revenue": 66.6,
+      "averageRating": 3.6,
+      "reviewsCount": 7,
+      "topItems": [
+        {
+          "name": "Chicken Shawarma Wrap",
+          "units": 6
+        },
+        {
+          "name": "Hummus",
+          "units": 3
+        },
+        {
+          "name": "Beef Shawarma Plate",
+          "units": 3
+        }
+      ]
+    },
+    "4": {
+      "restaurantId": 4,
+      "totalOrders": 2,
+      "ordersByStatus": {
+        "cancelled": 1,
+        "delivered": 1
+      },
+      "revenue": 36.5,
+      "averageRating": 4.5,
+      "reviewsCount": 2,
+      "topItems": [
+        {
+          "name": "Salmon Nigiri (4 pcs)",
+          "units": 2
+        },
+        {
+          "name": "Miso Soup",
+          "units": 2
+        },
+        {
+          "name": "Dragon Roll (8 pcs)",
+          "units": 1
+        }
+      ]
+    },
+    "5": {
+      "restaurantId": 5,
+      "totalOrders": 4,
+      "ordersByStatus": {
+        "delivered": 3,
+        "cancelled": 1
+      },
+      "revenue": 50.3,
+      "averageRating": 4.3,
+      "reviewsCount": 3,
+      "topItems": [
+        {
+          "name": "Chicken Quinoa Bowl",
+          "units": 3
+        },
+        {
+          "name": "Caesar Salad",
+          "units": 1
+        },
+        {
+          "name": "Falafel Power Bowl",
+          "units": 1
+        }
+      ]
+    },
+    "6": {
+      "restaurantId": 6,
+      "totalOrders": 5,
+      "ordersByStatus": {
+        "preparing": 1,
+        "cancelled": 1,
+        "delivered": 3
+      },
+      "revenue": 71.0,
+      "averageRating": 5.0,
+      "reviewsCount": 3,
+      "topItems": [
+        {
+          "name": "Mixed Grill Platter",
+          "units": 4
+        },
+        {
+          "name": "Chicken Tawook",
+          "units": 4
+        },
+        {
+          "name": "Grilled Corn",
+          "units": 2
+        }
+      ]
+    },
+    "7": {
+      "restaurantId": 7,
+      "totalOrders": 4,
+      "ordersByStatus": {
+        "cancelled": 1,
+        "delivered": 2,
+        "pending": 1
+      },
+      "revenue": 25.8,
+      "averageRating": 4.7,
+      "reviewsCount": 3,
+      "topItems": [
+        {
+          "name": "Kunafa Nabulsia",
+          "units": 2
+        },
+        {
+          "name": "Baklava (6 pcs)",
+          "units": 2
+        },
+        {
+          "name": "Vanilla Ice Cream",
+          "units": 2
+        }
+      ]
+    },
+    "8": {
+      "restaurantId": 8,
+      "totalOrders": 5,
+      "ordersByStatus": {
+        "pending": 2,
+        "delivered": 2,
+        "preparing": 1
+      },
+      "revenue": 13.9,
+      "averageRating": 4.0,
+      "reviewsCount": 1,
+      "topItems": [
+        {
+          "name": "Turkish Coffee",
+          "units": 5
+        },
+        {
+          "name": "Cappuccino",
+          "units": 3
+        },
+        {
+          "name": "Iced Latte",
+          "units": 3
+        }
+      ]
+    },
+    "9": {
+      "restaurantId": 9,
+      "totalOrders": 0,
+      "ordersByStatus": {},
+      "revenue": 0,
+      "averageRating": 0,
+      "reviewsCount": 0,
+      "topItems": []
+    },
+    "10": {
+      "restaurantId": 10,
+      "totalOrders": 1,
+      "ordersByStatus": {
+        "delivered": 1
+      },
+      "revenue": 7.0,
+      "averageRating": 0,
+      "reviewsCount": 0,
+      "topItems": [
+        {
+          "name": "Zaatar Manousheh",
+          "units": 2
+        },
+        {
+          "name": "Cheese Fatayer",
+          "units": 1
+        }
+      ]
+    }
+  }
+}

@@ -9,7 +9,11 @@
     "minOrder": 8,
     "isOpen": true,
     "address": "12 Main St, Latakia",
-    "image": "https://picsum.photos/seed/rest1-burger/600/400"
+    "image": "https://picsum.photos/seed/rest1-burger/600/400",
+    "ownerId": 3,
+    "phone": "+963 900 100 001",
+    "isActive": true,
+    "createdAt": "2026-01-10T09:00:00Z"
   },
   {
     "id": 2,
@@ -21,7 +25,11 @@
     "minOrder": 10,
     "isOpen": true,
     "address": "5 Corniche Rd, Latakia",
-    "image": "https://picsum.photos/seed/rest2-napoli/600/400"
+    "image": "https://picsum.photos/seed/rest2-napoli/600/400",
+    "ownerId": 4,
+    "phone": "+963 900 100 002",
+    "isActive": true,
+    "createdAt": "2026-01-12T09:00:00Z"
   },
   {
     "id": 3,
@@ -33,7 +41,11 @@
     "minOrder": 5,
     "isOpen": true,
     "address": "Al-Jumhuriyah St, Latakia",
-    "image": "https://picsum.photos/seed/rest3-shawarma/600/400"
+    "image": "https://picsum.photos/seed/rest3-shawarma/600/400",
+    "ownerId": 5,
+    "phone": "+963 900 100 003",
+    "isActive": true,
+    "createdAt": "2026-01-15T09:00:00Z"
   },
   {
     "id": 4,
@@ -45,7 +57,11 @@
     "minOrder": 15,
     "isOpen": false,
     "address": "27 Palm Ave, Latakia",
-    "image": "https://picsum.photos/seed/rest4-sakura/600/400"
+    "image": "https://picsum.photos/seed/rest4-sakura/600/400",
+    "ownerId": 6,
+    "phone": "+963 900 100 004",
+    "isActive": true,
+    "createdAt": "2026-02-01T09:00:00Z"
   },
   {
     "id": 5,
@@ -57,7 +73,11 @@
     "minOrder": 9,
     "isOpen": true,
     "address": "9 University St, Latakia",
-    "image": "https://picsum.photos/seed/rest5-green/600/400"
+    "image": "https://picsum.photos/seed/rest5-green/600/400",
+    "ownerId": 7,
+    "phone": "+963 900 100 005",
+    "isActive": true,
+    "createdAt": "2026-02-10T09:00:00Z"
   },
   {
     "id": 6,
@@ -69,7 +89,11 @@
     "minOrder": 12,
     "isOpen": true,
     "address": "3 Harbor Rd, Latakia",
-    "image": "https://picsum.photos/seed/rest6-grill/600/400"
+    "image": "https://picsum.photos/seed/rest6-grill/600/400",
+    "ownerId": 8,
+    "phone": "+963 900 100 006",
+    "isActive": true,
+    "createdAt": "2026-02-20T09:00:00Z"
   },
   {
     "id": 7,
@@ -81,7 +105,11 @@
     "minOrder": 6,
     "isOpen": true,
     "address": "14 Garden St, Latakia",
-    "image": "https://picsum.photos/seed/rest7-sweet/600/400"
+    "image": "https://picsum.photos/seed/rest7-sweet/600/400",
+    "ownerId": 9,
+    "phone": "+963 900 100 007",
+    "isActive": true,
+    "createdAt": "2026-03-05T09:00:00Z"
   },
   {
     "id": 8,
@@ -93,6 +121,42 @@
     "minOrder": 4,
     "isOpen": true,
     "address": "21 Al-Azhar St, Latakia",
-    "image": "https://picsum.photos/seed/rest8-bean/600/400"
+    "image": "https://picsum.photos/seed/rest8-bean/600/400",
+    "ownerId": 10,
+    "phone": "+963 900 100 008",
+    "isActive": true,
+    "createdAt": "2026-03-15T09:00:00Z"
+  },
+  {
+    "id": 9,
+    "name": "Fresh Start Kitchen",
+    "cuisine": "Home Cooking",
+    "rating": 0,
+    "deliveryTimeMinutes": 30,
+    "deliveryFee": 1.5,
+    "minOrder": 7,
+    "isOpen": false,
+    "address": "2 New Rd, Latakia",
+    "image": "https://picsum.photos/seed/rest9-fresh/600/400",
+    "ownerId": 11,
+    "phone": "+963 900 100 009",
+    "isActive": true,
+    "createdAt": "2026-11-01T09:00:00Z"
+  },
+  {
+    "id": 10,
+    "name": "Old Town Bakery",
+    "cuisine": "Bakery",
+    "rating": 4.1,
+    "deliveryTimeMinutes": 25,
+    "deliveryFee": 1.0,
+    "minOrder": 5,
+    "isOpen": false,
+    "address": "8 Old Souq, Latakia",
+    "image": "https://picsum.photos/seed/rest10-oldtown/600/400",
+    "ownerId": 12,
+    "phone": "+963 900 100 010",
+    "isActive": false,
+    "createdAt": "2026-01-20T09:00:00Z"
   }
 ]

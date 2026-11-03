@@ -7,7 +7,24 @@
     "price": 7.5,
     "category": "Burgers",
     "image": "https://picsum.photos/seed/menu1-classic/400/300",
-    "isAvailable": true
+    "isAvailable": true,
+    "ingredients": [
+      "Beef patty",
+      "Cheddar",
+      "Pickles",
+      "Bun",
+      "House sauce"
+    ],
+    "preparationTimeMinutes": 12,
+    "nutrition": {
+      "calories": 620,
+      "protein": 32,
+      "carbs": 40,
+      "fat": 35
+    },
+    "rating": 5.0,
+    "reviewsCount": 1,
+    "isPopular": true
   },
   {
     "id": 2,
@@ -17,7 +34,23 @@
     "price": 9.5,
     "category": "Burgers",
     "image": "https://picsum.photos/seed/menu2-double/400/300",
-    "isAvailable": true
+    "isAvailable": true,
+    "ingredients": [
+      "Beef patties",
+      "Caramelized onions",
+      "Cheddar",
+      "Bun"
+    ],
+    "preparationTimeMinutes": 14,
+    "nutrition": {
+      "calories": 840,
+      "protein": 48,
+      "carbs": 42,
+      "fat": 52
+    },
+    "rating": 3.0,
+    "reviewsCount": 2,
+    "isPopular": false
   },
   {
     "id": 3,
@@ -27,7 +60,23 @@
     "price": 8.0,
     "category": "Burgers",
     "image": "https://picsum.photos/seed/menu3-crispy/400/300",
-    "isAvailable": true
+    "isAvailable": true,
+    "ingredients": [
+      "Fried chicken",
+      "Slaw",
+      "Spicy mayo",
+      "Bun"
+    ],
+    "preparationTimeMinutes": 13,
+    "nutrition": {
+      "calories": 690,
+      "protein": 33,
+      "carbs": 58,
+      "fat": 34
+    },
+    "rating": 4.0,
+    "reviewsCount": 1,
+    "isPopular": false
   },
   {
     "id": 4,
@@ -37,7 +86,22 @@
     "price": 4.5,
     "category": "Sides",
     "image": "https://picsum.photos/seed/menu4-loaded/400/300",
-    "isAvailable": true
+    "isAvailable": true,
+    "ingredients": [
+      "Potatoes",
+      "Cheese sauce",
+      "Jalapeno"
+    ],
+    "preparationTimeMinutes": 8,
+    "nutrition": {
+      "calories": 520,
+      "protein": 9,
+      "carbs": 60,
+      "fat": 26
+    },
+    "rating": 4.0,
+    "reviewsCount": 1,
+    "isPopular": true
   },
   {
     "id": 5,
@@ -47,7 +111,22 @@
     "price": 3.8,
     "category": "Drinks",
     "image": "https://picsum.photos/seed/menu5-chocolate/400/300",
-    "isAvailable": true
+    "isAvailable": true,
+    "ingredients": [
+      "Milk",
+      "Chocolate",
+      "Ice cream"
+    ],
+    "preparationTimeMinutes": 5,
+    "nutrition": {
+      "calories": 450,
+      "protein": 9,
+      "carbs": 62,
+      "fat": 18
+    },
+    "rating": 0,
+    "reviewsCount": 0,
+    "isPopular": false
   },
   {
     "id": 6,
@@ -57,7 +136,23 @@
     "price": 8.5,
     "category": "Pizza",
     "image": "https://picsum.photos/seed/menu6-margherita/400/300",
-    "isAvailable": true
+    "isAvailable": true,
+    "ingredients": [
+      "Tomato",
+      "Mozzarella",
+      "Basil",
+      "Dough"
+    ],
+    "preparationTimeMinutes": 15,
+    "nutrition": {
+      "calories": 780,
+      "protein": 32,
+      "carbs": 96,
+      "fat": 28
+    },
+    "rating": 0,
+    "reviewsCount": 0,
+    "isPopular": false
   },
   {
     "id": 7,
@@ -67,7 +162,23 @@
     "price": 10.0,
     "category": "Pizza",
     "image": "https://picsum.photos/seed/menu7-pepperoni/400/300",
-    "isAvailable": true
+    "isAvailable": true,
+    "ingredients": [
+      "Mozzarella",
+      "Pepperoni",
+      "Tomato sauce",
+      "Dough"
+    ],
+    "preparationTimeMinutes": 15,
+    "nutrition": {
+      "calories": 900,
+      "protein": 38,
+      "carbs": 98,
+      "fat": 40
+    },
+    "rating": 0,
+    "reviewsCount": 0,
+    "isPopular": false
   },
   {
     "id": 8,
@@ -77,7 +188,24 @@
     "price": 11.0,
     "category": "Pizza",
     "image": "https://picsum.photos/seed/menu8-four/400/300",
-    "isAvailable": true
+    "isAvailable": true,
+    "ingredients": [
+      "Mozzarella",
+      "Gorgonzola",
+      "Parmesan",
+      "Ricotta",
+      "Dough"
+    ],
+    "preparationTimeMinutes": 16,
+    "nutrition": {
+      "calories": 980,
+      "protein": 44,
+      "carbs": 96,
+      "fat": 46
+    },
+    "rating": 2.0,
+    "reviewsCount": 1,
+    "isPopular": false
   },
   {
     "id": 9,
@@ -87,7 +215,23 @@
     "price": 3.5,
     "category": "Sides",
     "image": "https://picsum.photos/seed/menu9-garlic/400/300",
-    "isAvailable": true
+    "isAvailable": true,
+    "ingredients": [
+      "Bread",
+      "Garlic",
+      "Butter",
+      "Parsley"
+    ],
+    "preparationTimeMinutes": 8,
+    "nutrition": {
+      "calories": 340,
+      "protein": 8,
+      "carbs": 42,
+      "fat": 15
+    },
+    "rating": 0,
+    "reviewsCount": 0,
+    "isPopular": false
   },
   {
     "id": 10,
@@ -97,7 +241,23 @@
     "price": 2.5,
     "category": "Drinks",
     "image": "https://picsum.photos/seed/menu10-lemonade/400/300",
-    "isAvailable": true
+    "isAvailable": true,
+    "ingredients": [
+      "Lemon",
+      "Mint",
+      "Sugar",
+      "Water"
+    ],
+    "preparationTimeMinutes": 3,
+    "nutrition": {
+      "calories": 120,
+      "protein": 0,
+      "carbs": 31,
+      "fat": 0
+    },
+    "rating": 0,
+    "reviewsCount": 0,
+    "isPopular": true
   },
   {
     "id": 11,
@@ -107,7 +267,23 @@
     "price": 4.0,
     "category": "Wraps",
     "image": "https://picsum.photos/seed/menu11-chicken/400/300",
-    "isAvailable": true
+    "isAvailable": true,
+    "ingredients": [
+      "Chicken",
+      "Garlic sauce",
+      "Pickles",
+      "Flatbread"
+    ],
+    "preparationTimeMinutes": 8,
+    "nutrition": {
+      "calories": 480,
+      "protein": 30,
+      "carbs": 42,
+      "fat": 20
+    },
+    "rating": 3.3,
+    "reviewsCount": 3,
+    "isPopular": true
   },
   {
     "id": 12,
@@ -117,7 +293,23 @@
     "price": 7.0,
     "category": "Plates",
     "image": "https://picsum.photos/seed/menu12-beef/400/300",
-    "isAvailable": true
+    "isAvailable": true,
+    "ingredients": [
+      "Beef shawarma",
+      "Rice",
+      "Salad",
+      "Tahini"
+    ],
+    "preparationTimeMinutes": 12,
+    "nutrition": {
+      "calories": 760,
+      "protein": 42,
+      "carbs": 70,
+      "fat": 32
+    },
+    "rating": 3.5,
+    "reviewsCount": 2,
+    "isPopular": false
   },
   {
     "id": 13,
@@ -127,7 +319,24 @@
     "price": 3.0,
     "category": "Wraps",
     "image": "https://picsum.photos/seed/menu13-falafel/400/300",
-    "isAvailable": true
+    "isAvailable": true,
+    "ingredients": [
+      "Falafel",
+      "Tahini",
+      "Tomato",
+      "Parsley",
+      "Flatbread"
+    ],
+    "preparationTimeMinutes": 7,
+    "nutrition": {
+      "calories": 430,
+      "protein": 14,
+      "carbs": 55,
+      "fat": 17
+    },
+    "rating": 5.0,
+    "reviewsCount": 1,
+    "isPopular": false
   },
   {
     "id": 14,
@@ -137,7 +346,23 @@
     "price": 3.2,
     "category": "Starters",
     "image": "https://picsum.photos/seed/menu14-hummus/400/300",
-    "isAvailable": true
+    "isAvailable": true,
+    "ingredients": [
+      "Chickpeas",
+      "Tahini",
+      "Olive oil",
+      "Lemon"
+    ],
+    "preparationTimeMinutes": 4,
+    "nutrition": {
+      "calories": 280,
+      "protein": 9,
+      "carbs": 24,
+      "fat": 17
+    },
+    "rating": 3.0,
+    "reviewsCount": 1,
+    "isPopular": true
   },
   {
     "id": 15,
@@ -147,7 +372,22 @@
     "price": 1.5,
     "category": "Drinks",
     "image": "https://picsum.photos/seed/menu15-ayran/400/300",
-    "isAvailable": true
+    "isAvailable": true,
+    "ingredients": [
+      "Yogurt",
+      "Salt",
+      "Water"
+    ],
+    "preparationTimeMinutes": 2,
+    "nutrition": {
+      "calories": 80,
+      "protein": 4,
+      "carbs": 6,
+      "fat": 4
+    },
+    "rating": 0,
+    "reviewsCount": 0,
+    "isPopular": false
   },
   {
     "id": 16,
@@ -157,7 +397,22 @@
     "price": 9.0,
     "category": "Sushi",
     "image": "https://picsum.photos/seed/menu16-salmon/400/300",
-    "isAvailable": true
+    "isAvailable": true,
+    "ingredients": [
+      "Salmon",
+      "Sushi rice",
+      "Rice vinegar"
+    ],
+    "preparationTimeMinutes": 10,
+    "nutrition": {
+      "calories": 320,
+      "protein": 20,
+      "carbs": 40,
+      "fat": 8
+    },
+    "rating": 5.0,
+    "reviewsCount": 1,
+    "isPopular": false
   },
   {
     "id": 17,
@@ -167,7 +422,24 @@
     "price": 8.5,
     "category": "Sushi",
     "image": "https://picsum.photos/seed/menu17-california/400/300",
-    "isAvailable": true
+    "isAvailable": true,
+    "ingredients": [
+      "Crab",
+      "Avocado",
+      "Cucumber",
+      "Nori",
+      "Rice"
+    ],
+    "preparationTimeMinutes": 12,
+    "nutrition": {
+      "calories": 400,
+      "protein": 12,
+      "carbs": 62,
+      "fat": 11
+    },
+    "rating": 0,
+    "reviewsCount": 0,
+    "isPopular": false
   },
   {
     "id": 18,
@@ -177,7 +449,24 @@
     "price": 12.5,
     "category": "Sushi",
     "image": "https://picsum.photos/seed/menu18-dragon/400/300",
-    "isAvailable": true
+    "isAvailable": true,
+    "ingredients": [
+      "Shrimp tempura",
+      "Eel",
+      "Avocado",
+      "Nori",
+      "Rice"
+    ],
+    "preparationTimeMinutes": 15,
+    "nutrition": {
+      "calories": 540,
+      "protein": 22,
+      "carbs": 68,
+      "fat": 18
+    },
+    "rating": 4.0,
+    "reviewsCount": 1,
+    "isPopular": false
   },
   {
     "id": 19,
@@ -187,7 +476,23 @@
     "price": 3.0,
     "category": "Starters",
     "image": "https://picsum.photos/seed/menu19-miso/400/300",
-    "isAvailable": true
+    "isAvailable": true,
+    "ingredients": [
+      "Tofu",
+      "Seaweed",
+      "Scallions",
+      "Miso paste"
+    ],
+    "preparationTimeMinutes": 6,
+    "nutrition": {
+      "calories": 70,
+      "protein": 5,
+      "carbs": 6,
+      "fat": 3
+    },
+    "rating": 0,
+    "reviewsCount": 0,
+    "isPopular": false
   },
   {
     "id": 20,
@@ -197,7 +502,16 @@
     "price": 2.0,
     "category": "Drinks",
     "image": "https://picsum.photos/seed/menu20-green/400/300",
-    "isAvailable": true
+    "isAvailable": true,
+    "ingredients": [
+      "Green tea leaves",
+      "Water"
+    ],
+    "preparationTimeMinutes": 3,
+    "nutrition": null,
+    "rating": 0,
+    "reviewsCount": 0,
+    "isPopular": false
   },
   {
     "id": 21,
@@ -207,7 +521,23 @@
     "price": 8.8,
     "category": "Bowls",
     "image": "https://picsum.photos/seed/menu21-chicken/400/300",
-    "isAvailable": true
+    "isAvailable": true,
+    "ingredients": [
+      "Grilled chicken",
+      "Quinoa",
+      "Mixed greens",
+      "Lemon dressing"
+    ],
+    "preparationTimeMinutes": 12,
+    "nutrition": {
+      "calories": 520,
+      "protein": 42,
+      "carbs": 48,
+      "fat": 14
+    },
+    "rating": 4.0,
+    "reviewsCount": 2,
+    "isPopular": false
   },
   {
     "id": 22,
@@ -217,7 +547,23 @@
     "price": 7.9,
     "category": "Bowls",
     "image": "https://picsum.photos/seed/menu22-falafel/400/300",
-    "isAvailable": true
+    "isAvailable": true,
+    "ingredients": [
+      "Falafel",
+      "Hummus",
+      "Roasted vegetables",
+      "Quinoa"
+    ],
+    "preparationTimeMinutes": 12,
+    "nutrition": {
+      "calories": 560,
+      "protein": 20,
+      "carbs": 66,
+      "fat": 22
+    },
+    "rating": 5.0,
+    "reviewsCount": 1,
+    "isPopular": false
   },
   {
     "id": 23,
@@ -227,7 +573,23 @@
     "price": 6.5,
     "category": "Salads",
     "image": "https://picsum.photos/seed/menu23-caesar/400/300",
-    "isAvailable": true
+    "isAvailable": true,
+    "ingredients": [
+      "Romaine",
+      "Parmesan",
+      "Croutons",
+      "Caesar dressing"
+    ],
+    "preparationTimeMinutes": 6,
+    "nutrition": {
+      "calories": 340,
+      "protein": 11,
+      "carbs": 20,
+      "fat": 24
+    },
+    "rating": 0,
+    "reviewsCount": 0,
+    "isPopular": false
   },
   {
     "id": 24,
@@ -237,7 +599,23 @@
     "price": 5.5,
     "category": "Breakfast",
     "image": "https://picsum.photos/seed/menu24-avocado/400/300",
-    "isAvailable": true
+    "isAvailable": true,
+    "ingredients": [
+      "Sourdough",
+      "Avocado",
+      "Chili flakes",
+      "Lemon"
+    ],
+    "preparationTimeMinutes": 7,
+    "nutrition": {
+      "calories": 380,
+      "protein": 9,
+      "carbs": 38,
+      "fat": 22
+    },
+    "rating": 0,
+    "reviewsCount": 0,
+    "isPopular": false
   },
   {
     "id": 25,
@@ -247,7 +625,23 @@
     "price": 4.0,
     "category": "Drinks",
     "image": "https://picsum.photos/seed/menu25-green/400/300",
-    "isAvailable": false
+    "isAvailable": false,
+    "ingredients": [
+      "Spinach",
+      "Apple",
+      "Banana",
+      "Water"
+    ],
+    "preparationTimeMinutes": 4,
+    "nutrition": {
+      "calories": 140,
+      "protein": 3,
+      "carbs": 32,
+      "fat": 1
+    },
+    "rating": 0,
+    "reviewsCount": 0,
+    "isPopular": false
   },
   {
     "id": 26,
@@ -257,7 +651,24 @@
     "price": 15.0,
     "category": "Grill",
     "image": "https://picsum.photos/seed/menu26-mixed/400/300",
-    "isAvailable": true
+    "isAvailable": true,
+    "ingredients": [
+      "Lamb kebab",
+      "Chicken tawook",
+      "Ribs",
+      "Grilled vegetables",
+      "Rice"
+    ],
+    "preparationTimeMinutes": 25,
+    "nutrition": {
+      "calories": 1250,
+      "protein": 88,
+      "carbs": 62,
+      "fat": 70
+    },
+    "rating": 5.0,
+    "reviewsCount": 2,
+    "isPopular": true
   },
   {
     "id": 27,
@@ -267,7 +678,24 @@
     "price": 8.5,
     "category": "Grill",
     "image": "https://picsum.photos/seed/menu27-chicken/400/300",
-    "isAvailable": true
+    "isAvailable": true,
+    "ingredients": [
+      "Chicken",
+      "Garlic",
+      "Yogurt",
+      "Lemon",
+      "Spices"
+    ],
+    "preparationTimeMinutes": 18,
+    "nutrition": {
+      "calories": 480,
+      "protein": 52,
+      "carbs": 6,
+      "fat": 26
+    },
+    "rating": 5.0,
+    "reviewsCount": 1,
+    "isPopular": true
   },
   {
     "id": 28,
@@ -277,7 +705,24 @@
     "price": 10.5,
     "category": "Grill",
     "image": "https://picsum.photos/seed/menu28-lamb/400/300",
-    "isAvailable": true
+    "isAvailable": true,
+    "ingredients": [
+      "Minced lamb",
+      "Parsley",
+      "Onion",
+      "Tomato",
+      "Spices"
+    ],
+    "preparationTimeMinutes": 20,
+    "nutrition": {
+      "calories": 620,
+      "protein": 44,
+      "carbs": 8,
+      "fat": 44
+    },
+    "rating": 0,
+    "reviewsCount": 0,
+    "isPopular": false
   },
   {
     "id": 29,
@@ -287,7 +732,22 @@
     "price": 2.5,
     "category": "Sides",
     "image": "https://picsum.photos/seed/menu29-grilled/400/300",
-    "isAvailable": true
+    "isAvailable": true,
+    "ingredients": [
+      "Corn",
+      "Butter",
+      "Spices"
+    ],
+    "preparationTimeMinutes": 8,
+    "nutrition": {
+      "calories": 210,
+      "protein": 4,
+      "carbs": 34,
+      "fat": 8
+    },
+    "rating": 0,
+    "reviewsCount": 0,
+    "isPopular": false
   },
   {
     "id": 30,
@@ -297,7 +757,24 @@
     "price": 4.0,
     "category": "Starters",
     "image": "https://picsum.photos/seed/menu30-fattoush/400/300",
-    "isAvailable": true
+    "isAvailable": true,
+    "ingredients": [
+      "Bread",
+      "Lettuce",
+      "Tomato",
+      "Cucumber",
+      "Sumac"
+    ],
+    "preparationTimeMinutes": 7,
+    "nutrition": {
+      "calories": 190,
+      "protein": 4,
+      "carbs": 24,
+      "fat": 9
+    },
+    "rating": 0,
+    "reviewsCount": 0,
+    "isPopular": false
   },
   {
     "id": 31,
@@ -307,7 +784,24 @@
     "price": 5.0,
     "category": "Cakes",
     "image": "https://picsum.photos/seed/menu31-chocolate/400/300",
-    "isAvailable": true
+    "isAvailable": true,
+    "ingredients": [
+      "Chocolate",
+      "Flour",
+      "Eggs",
+      "Butter",
+      "Sugar"
+    ],
+    "preparationTimeMinutes": 14,
+    "nutrition": {
+      "calories": 480,
+      "protein": 7,
+      "carbs": 52,
+      "fat": 28
+    },
+    "rating": 0,
+    "reviewsCount": 0,
+    "isPopular": false
   },
   {
     "id": 32,
@@ -317,7 +811,23 @@
     "price": 4.5,
     "category": "Arabic Sweets",
     "image": "https://picsum.photos/seed/menu32-kunafa/400/300",
-    "isAvailable": true
+    "isAvailable": true,
+    "ingredients": [
+      "Kunafa dough",
+      "Akkawi cheese",
+      "Sugar syrup",
+      "Pistachio"
+    ],
+    "preparationTimeMinutes": 15,
+    "nutrition": {
+      "calories": 560,
+      "protein": 14,
+      "carbs": 64,
+      "fat": 28
+    },
+    "rating": 5.0,
+    "reviewsCount": 1,
+    "isPopular": false
   },
   {
     "id": 33,
@@ -327,7 +837,23 @@
     "price": 4.8,
     "category": "Cakes",
     "image": "https://picsum.photos/seed/menu33-cheesecake/400/300",
-    "isAvailable": true
+    "isAvailable": true,
+    "ingredients": [
+      "Cream cheese",
+      "Biscuit base",
+      "Eggs",
+      "Sugar"
+    ],
+    "preparationTimeMinutes": 6,
+    "nutrition": {
+      "calories": 430,
+      "protein": 8,
+      "carbs": 36,
+      "fat": 29
+    },
+    "rating": 5.0,
+    "reviewsCount": 1,
+    "isPopular": false
   },
   {
     "id": 34,
@@ -337,7 +863,23 @@
     "price": 6.0,
     "category": "Arabic Sweets",
     "image": "https://picsum.photos/seed/menu34-baklava/400/300",
-    "isAvailable": true
+    "isAvailable": true,
+    "ingredients": [
+      "Phyllo",
+      "Pistachio",
+      "Butter",
+      "Sugar syrup"
+    ],
+    "preparationTimeMinutes": 6,
+    "nutrition": {
+      "calories": 640,
+      "protein": 9,
+      "carbs": 72,
+      "fat": 36
+    },
+    "rating": 4.0,
+    "reviewsCount": 1,
+    "isPopular": false
   },
   {
     "id": 35,
@@ -347,7 +889,21 @@
     "price": 3.0,
     "category": "Ice Cream",
     "image": "https://picsum.photos/seed/menu35-vanilla/400/300",
-    "isAvailable": true
+    "isAvailable": true,
+    "ingredients": [
+      "Vanilla ice cream",
+      "Toppings"
+    ],
+    "preparationTimeMinutes": 3,
+    "nutrition": {
+      "calories": 290,
+      "protein": 5,
+      "carbs": 34,
+      "fat": 15
+    },
+    "rating": 0,
+    "reviewsCount": 0,
+    "isPopular": false
   },
   {
     "id": 36,
@@ -357,7 +913,21 @@
     "price": 3.0,
     "category": "Coffee",
     "image": "https://picsum.photos/seed/menu36-cappuccino/400/300",
-    "isAvailable": true
+    "isAvailable": true,
+    "ingredients": [
+      "Espresso",
+      "Steamed milk"
+    ],
+    "preparationTimeMinutes": 5,
+    "nutrition": {
+      "calories": 120,
+      "protein": 6,
+      "carbs": 10,
+      "fat": 6
+    },
+    "rating": 0,
+    "reviewsCount": 0,
+    "isPopular": false
   },
   {
     "id": 37,
@@ -367,7 +937,22 @@
     "price": 3.5,
     "category": "Coffee",
     "image": "https://picsum.photos/seed/menu37-iced/400/300",
-    "isAvailable": true
+    "isAvailable": true,
+    "ingredients": [
+      "Espresso",
+      "Cold milk",
+      "Ice"
+    ],
+    "preparationTimeMinutes": 4,
+    "nutrition": {
+      "calories": 140,
+      "protein": 7,
+      "carbs": 12,
+      "fat": 6
+    },
+    "rating": 0,
+    "reviewsCount": 0,
+    "isPopular": false
   },
   {
     "id": 38,
@@ -377,7 +962,17 @@
     "price": 2.0,
     "category": "Coffee",
     "image": "https://picsum.photos/seed/menu38-turkish/400/300",
-    "isAvailable": true
+    "isAvailable": true,
+    "ingredients": [
+      "Coffee",
+      "Cardamom (optional)",
+      "Water"
+    ],
+    "preparationTimeMinutes": 5,
+    "nutrition": null,
+    "rating": 4.0,
+    "reviewsCount": 1,
+    "isPopular": true
   },
   {
     "id": 39,
@@ -387,7 +982,22 @@
     "price": 2.2,
     "category": "Bakery",
     "image": "https://picsum.photos/seed/menu39-croissant/400/300",
-    "isAvailable": true
+    "isAvailable": true,
+    "ingredients": [
+      "Flour",
+      "Butter",
+      "Yeast"
+    ],
+    "preparationTimeMinutes": 3,
+    "nutrition": {
+      "calories": 270,
+      "protein": 5,
+      "carbs": 28,
+      "fat": 15
+    },
+    "rating": 0,
+    "reviewsCount": 0,
+    "isPopular": false
   },
   {
     "id": 40,
@@ -397,6 +1007,176 @@
     "price": 2.5,
     "category": "Bakery",
     "image": "https://picsum.photos/seed/menu40-blueberry/400/300",
-    "isAvailable": true
+    "isAvailable": true,
+    "ingredients": [
+      "Flour",
+      "Blueberries",
+      "Eggs",
+      "Sugar"
+    ],
+    "preparationTimeMinutes": 3,
+    "nutrition": {
+      "calories": 380,
+      "protein": 5,
+      "carbs": 52,
+      "fat": 17
+    },
+    "rating": 0,
+    "reviewsCount": 0,
+    "isPopular": false
+  },
+  {
+    "id": 41,
+    "restaurantId": 10,
+    "name": "Zaatar Manousheh",
+    "description": "Flatbread with thyme, sesame and olive oil",
+    "price": 2.0,
+    "category": "Bakery",
+    "image": "https://picsum.photos/seed/menu41-zaatar/400/300",
+    "isAvailable": true,
+    "ingredients": [
+      "Flour",
+      "Thyme",
+      "Sesame",
+      "Olive oil"
+    ],
+    "preparationTimeMinutes": 8,
+    "nutrition": {
+      "calories": 310,
+      "protein": 8,
+      "carbs": 44,
+      "fat": 11
+    },
+    "rating": 0,
+    "reviewsCount": 0,
+    "isPopular": false
+  },
+  {
+    "id": 42,
+    "restaurantId": 10,
+    "name": "Cheese Fatayer",
+    "description": "Baked pastry filled with white cheese",
+    "price": 3.0,
+    "category": "Bakery",
+    "image": "https://picsum.photos/seed/menu42-fatayer/400/300",
+    "isAvailable": true,
+    "ingredients": [
+      "Flour",
+      "White cheese",
+      "Yeast"
+    ],
+    "preparationTimeMinutes": 10,
+    "nutrition": {
+      "calories": 360,
+      "protein": 12,
+      "carbs": 38,
+      "fat": 18
+    },
+    "rating": 0,
+    "reviewsCount": 0,
+    "isPopular": false
+  },
+  {
+    "id": 43,
+    "restaurantId": 3,
+    "name": "Family Falafel & Hummus Platter with Extra Tahini, Pickled Turnips and Fresh Mint Lemonade for Four People",
+    "description": "A generous sharing platter: 24 crispy falafel balls, two large bowls of hummus, baba ghanoush, tahini sauce, pickled turnips, fresh vegetables, warm flatbread and a jug of mint lemonade. Perfect for a family dinner or a group of friends.",
+    "price": 24.0,
+    "category": "Plates",
+    "image": "https://picsum.photos/seed/menu43-family/400/300",
+    "isAvailable": true,
+    "ingredients": [
+      "Falafel",
+      "Hummus",
+      "Baba ghanoush",
+      "Tahini",
+      "Pickled turnips",
+      "Flatbread",
+      "Mint lemonade"
+    ],
+    "preparationTimeMinutes": 25,
+    "nutrition": null,
+    "rating": 0,
+    "reviewsCount": 0,
+    "isPopular": false
+  },
+  {
+    "id": 44,
+    "restaurantId": 1,
+    "name": "Kids Meal",
+    "description": "Mini cheeseburger, small fries and a juice box",
+    "price": 5.5,
+    "category": "Burgers",
+    "image": null,
+    "isAvailable": true,
+    "ingredients": [
+      "Mini beef patty",
+      "Cheddar",
+      "Bun",
+      "Fries",
+      "Juice"
+    ],
+    "preparationTimeMinutes": 10,
+    "nutrition": {
+      "calories": 540,
+      "protein": 22,
+      "carbs": 62,
+      "fat": 22
+    },
+    "rating": 0,
+    "reviewsCount": 0,
+    "isPopular": false
+  },
+  {
+    "id": 45,
+    "restaurantId": 8,
+    "name": "قهوة عربية",
+    "description": "قهوة عربية بالهيل تقدم مع التمر",
+    "price": 2.8,
+    "category": "Coffee",
+    "image": "https://picsum.photos/seed/menu45-arabic/400/300",
+    "isAvailable": true,
+    "ingredients": [
+      "Arabic coffee",
+      "Cardamom",
+      "Dates"
+    ],
+    "preparationTimeMinutes": 6,
+    "nutrition": {
+      "calories": 90,
+      "protein": 2,
+      "carbs": 18,
+      "fat": 1
+    },
+    "rating": 0,
+    "reviewsCount": 0,
+    "isPopular": false
+  },
+  {
+    "id": 46,
+    "restaurantId": 2,
+    "name": "Truffle Pizza (limited)",
+    "description": "Truffle cream, mushrooms, mozzarella, parmesan",
+    "price": 18.0,
+    "category": "Pizza",
+    "image": "https://picsum.photos/seed/menu46-truffle/400/300",
+    "isAvailable": false,
+    "ingredients": [
+      "Truffle cream",
+      "Mushrooms",
+      "Mozzarella",
+      "Parmesan",
+      "Dough"
+    ],
+    "preparationTimeMinutes": 18,
+    "nutrition": {
+      "calories": 920,
+      "protein": 36,
+      "carbs": 90,
+      "fat": 44
+    },
+    "rating": 0,
+    "reviewsCount": 0,
+    "isPopular": false
   }
 ]
