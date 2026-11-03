@@ -6,6 +6,21 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="theme-color" content="#E63946" />
     <meta name="description" content="Order your favorite meals for delivery with Crown &amp; Anchor." />
+    <script>
+      (() => {
+        try {
+          const savedTheme = localStorage.getItem('crown-anchor-theme')
+          const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches
+          const theme = savedTheme === 'light' || savedTheme === 'dark'
+            ? savedTheme
+            : prefersDark ? 'dark' : 'light'
+          document.documentElement.dataset.theme = theme
+          document.documentElement.style.colorScheme = theme
+        } catch {
+          document.documentElement.dataset.theme = 'light'
+        }
+      })()
+    </script>
     <title>Crown &amp; Anchor Delivery</title>
   </head>
   <body>
