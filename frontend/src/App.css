@@ -17,6 +17,26 @@
   --font-latin: "Inter", system-ui, sans-serif;
 }
 
+/* The dark palette overrides semantic tokens, so existing Tailwind classes adapt automatically. */
+:root,
+:root[data-theme='light'] {
+  color-scheme: light;
+}
+
+:root[data-theme='dark'] {
+  color-scheme: dark;
+  --color-brand-red: #B6533F;
+  --color-brand-red-hover: #9F4535;
+  --color-brand-yellow: #D9AD55;
+  --color-surface-cream: #211A17;
+  --color-surface-white: #2B211D;
+  --color-text-main: #F5EDE4;
+  --color-text-slate: #C6B5A7;
+  --color-border-subtle: #4B3A31;
+  --color-danger: #D98272;
+  --color-danger-hover: #BD6658;
+}
+
 :root {
   font-family: "Inter", "Cairo", system-ui, sans-serif;
   color: var(--color-text-main);
@@ -37,6 +57,7 @@ body {
   background: var(--color-surface-cream);
   color: var(--color-text-main);
   line-height: 1.6;
+  transition: background-color 180ms ease, color 180ms ease;
 }
 
 *,
@@ -169,6 +190,22 @@ a {
   font-size: 0.8rem;
 }
 
+:root[data-theme='dark'] .site-nav__links .site-nav__action {
+  color: #FFF8F7;
+}
+
+:root[data-theme='dark'] .site-footer {
+  background: #382A24;
+}
+
+:root[data-theme='dark'] .brand--footer .brand__name {
+  color: #F5EDE4;
+}
+
+:root[data-theme='dark'] .site-footer__copyright {
+  color: #C6B5A7;
+}
+
 @media (max-width: 600px) {
   .site-nav {
     align-items: flex-start;
@@ -200,5 +237,13 @@ a {
 @media (prefers-reduced-motion: reduce) {
   html {
     scroll-behavior: auto;
+  }
+
+  *,
+  *::before,
+  *::after {
+    transition-duration: 0.01ms !important;
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
   }
 }

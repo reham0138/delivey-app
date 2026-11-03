@@ -14,7 +14,7 @@ const buttonSizes: ButtonSize[] = ['sm', 'md', 'lg']
 const cardPaddings: CardPadding[] = ['none', 'sm', 'md', 'lg']
 const modalSizes: ModalSize[] = ['sm', 'md', 'lg', 'xl']
 const spinnerSizes: SpinnerSize[] = ['sm', 'md', 'lg']
-const orderStatuses: OrderStatus[] = ['pending', 'preparing', 'ready', 'delivered', 'cancelled']
+const orderStatuses: OrderStatus[] = ['pending', 'preparing', 'ready', 'on_the_way', 'delivered', 'cancelled']
 
 export default function Preview() {
   const [direction, setDirection] = useState<'ltr' | 'rtl'>('ltr')
