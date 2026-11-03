@@ -17,6 +17,23 @@
   --font-latin: "Inter", system-ui, sans-serif;
 }
 
+/* The dark palette overrides semantic tokens, so existing Tailwind classes adapt automatically. */
+:root,
+:root[data-theme='light'] {
+  color-scheme: light;
+}
+
+:root[data-theme='dark'] {
+  color-scheme: dark;
+  --color-surface-cream: #181716;
+  --color-surface-white: #242220;
+  --color-text-main: #F5F5F4;
+  --color-text-slate: #B0AAA3;
+  --color-border-subtle: #45413D;
+  --color-danger: #F87171;
+  --color-danger-hover: #EF4444;
+}
+
 :root {
   font-family: "Inter", "Cairo", system-ui, sans-serif;
   color: var(--color-text-main);
@@ -37,6 +54,7 @@ body {
   background: var(--color-surface-cream);
   color: var(--color-text-main);
   line-height: 1.6;
+  transition: background-color 180ms ease, color 180ms ease;
 }
 
 *,
@@ -200,5 +218,13 @@ a {
 @media (prefers-reduced-motion: reduce) {
   html {
     scroll-behavior: auto;
+  }
+
+  *,
+  *::before,
+  *::after {
+    transition-duration: 0.01ms !important;
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
   }
 }
