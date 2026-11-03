@@ -51,20 +51,20 @@ export default function HomePage() {
 
   return (
     <main className="bg-surface-cream text-text-main">
-      <section aria-label="Featured food" className="mx-auto w-full max-w-[1440px] px-4 pb-12 pt-6 sm:px-6 lg:px-10 lg:pb-16 lg:pt-10">
-        <div className="relative isolate min-h-[540px] overflow-hidden rounded-2xl bg-text-main sm:min-h-[590px] lg:min-h-[620px]">
+      <section aria-label="Featured food" className="mx-auto w-full max-w-[1440px] px-4 py-4 sm:px-6 lg:px-10">
+        <div className="relative isolate h-[min(620px,calc(100svh-7rem))] min-h-[440px] overflow-hidden rounded-2xl bg-text-main">
           {slides.map((slide, index) => (
             <img
               key={slide.image}
               src={slide.image}
               alt={index === activeSlide ? slide.imageAlt : ''}
               aria-hidden={index !== activeSlide}
-              className={`absolute inset-0 -z-20 h-full w-full object-cover transition-opacity duration-1000 ease-in-out motion-reduce:transition-none ${index === activeSlide ? 'opacity-100' : 'opacity-0'}`}
+              className={`absolute inset-0 -z-20 h-full w-full object-cover transition-opacity duration-[1200ms] ease-in-out motion-reduce:transition-none ${index === activeSlide ? 'opacity-100' : 'opacity-0'}`}
             />
           ))}
           <div className="absolute inset-0 -z-10 bg-gradient-to-r from-black/80 via-black/55 to-black/10" />
 
-          <div className="flex min-h-[540px] flex-col justify-between p-6 text-white sm:min-h-[590px] sm:p-10 lg:min-h-[620px] lg:p-16">
+          <div className="flex h-full flex-col justify-between p-5 text-white sm:p-8 lg:p-10 xl:p-12">
             <div className="flex items-center justify-between gap-4">
               <span className="inline-flex w-fit items-center gap-2 rounded-full border border-white/35 bg-black/20 px-4 py-2 text-[11px] font-semibold tracking-[0.2em] text-white backdrop-blur-sm">
                 <span className="size-2 rounded-full bg-brand-yellow" />
@@ -75,17 +75,17 @@ export default function HomePage() {
               </span>
             </div>
 
-            <div className="max-w-2xl py-12">
-              <p className="mb-5 text-sm font-medium tracking-wide text-brand-yellow sm:text-base">
+            <div className="max-w-2xl py-5 sm:py-7">
+              <p className="mb-3 text-sm font-medium tracking-wide text-brand-yellow sm:mb-4 sm:text-base">
                 {currentSlide.accent}
               </p>
-              <h1 className="whitespace-pre-line text-5xl font-bold leading-[1.05] tracking-tight sm:text-6xl lg:text-7xl">
+              <h1 className="whitespace-pre-line text-4xl font-bold leading-[1.05] tracking-tight sm:text-5xl lg:text-6xl">
                 {currentSlide.title}
               </h1>
-              <p className="mt-6 max-w-lg text-base leading-7 text-white/85 sm:text-lg sm:leading-8">
+              <p className="mt-4 max-w-lg text-sm leading-6 text-white/85 sm:mt-5 sm:text-base sm:leading-7">
                 {currentSlide.description}
               </p>
-              <div className="mt-8 flex flex-wrap items-center gap-3">
+              <div className="mt-5 flex flex-wrap items-center gap-3 sm:mt-6">
                 <Button
                   size="lg"
                   onClick={() => document.getElementById('categories')?.scrollIntoView({ behavior: 'smooth' })}
