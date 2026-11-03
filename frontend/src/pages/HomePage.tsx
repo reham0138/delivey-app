@@ -53,12 +53,15 @@ export default function HomePage() {
     <main className="bg-surface-cream text-text-main">
       <section aria-label="Featured food" className="mx-auto w-full max-w-[1440px] px-4 pb-12 pt-6 sm:px-6 lg:px-10 lg:pb-16 lg:pt-10">
         <div className="relative isolate min-h-[540px] overflow-hidden rounded-2xl bg-text-main sm:min-h-[590px] lg:min-h-[620px]">
-          <img
-            key={currentSlide.image}
-            src={currentSlide.image}
-            alt={currentSlide.imageAlt}
-            className="absolute inset-0 -z-20 h-full w-full object-cover"
-          />
+          {slides.map((slide, index) => (
+            <img
+              key={slide.image}
+              src={slide.image}
+              alt={index === activeSlide ? slide.imageAlt : ''}
+              aria-hidden={index !== activeSlide}
+              className={`absolute inset-0 -z-20 h-full w-full object-cover transition-opacity duration-1000 ease-in-out motion-reduce:transition-none ${index === activeSlide ? 'opacity-100' : 'opacity-0'}`}
+            />
+          ))}
           <div className="absolute inset-0 -z-10 bg-gradient-to-r from-black/80 via-black/55 to-black/10" />
 
           <div className="flex min-h-[540px] flex-col justify-between p-6 text-white sm:min-h-[590px] sm:p-10 lg:min-h-[620px] lg:p-16">
