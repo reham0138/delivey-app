@@ -1,11 +1,11 @@
-import { Moon, Sun } from 'lucide-react'
-import { Link } from 'react-router-dom'
-import { useTheme } from '../contexts/ThemeContext'
+import { Moon, Sun } from "lucide-react";
+import { Link } from "react-router-dom";
+import { useTheme } from "../contexts/ThemeContext";
 
 export default function NavBar() {
-  const { theme, toggleTheme } = useTheme()
+  const { theme, toggleTheme } = useTheme();
 
-  const nextThemeLabel = theme === 'dark' ? 'light' : 'dark'
+  const nextThemeLabel = theme === "dark" ? "light" : "dark";
 
   return (
     <header className="border-b border-border-subtle bg-surface-white">
@@ -16,7 +16,11 @@ export default function NavBar() {
           aria-label="The Crown & Anchor home"
         >
           <img
-            src={theme === 'dark' ? '/brand/logo/crown-anchor-delivery-logo-white.png' : '/brand/logo/crown-anchor-delivery-logo-black.png'}
+            src={
+              theme === "dark"
+                ? "/brand/logo/crown-anchor-delivery-logo-white.png"
+                : "/brand/logo/crown-anchor-delivery-logo-black.png"
+            }
             alt=""
             className="size-12 shrink-0 object-contain"
           />
@@ -31,6 +35,12 @@ export default function NavBar() {
         </Link>
 
         <nav aria-label="Main navigation" className="flex items-center gap-2">
+          <Link
+            to="/meals"
+            className="rounded-lg px-3 py-2 text-sm font-medium text-text-main transition-colors hover:bg-brand-yellow/20"
+          >
+            Meals
+          </Link>
           <button
             type="button"
             onClick={toggleTheme}
@@ -38,7 +48,7 @@ export default function NavBar() {
             title={`Switch to ${nextThemeLabel} mode`}
             className="inline-flex size-10 items-center justify-center rounded-full border border-border-subtle bg-surface-cream text-text-main transition-colors hover:border-brand-yellow hover:bg-brand-yellow/20"
           >
-            {theme === 'dark' ? (
+            {theme === "dark" ? (
               <Sun aria-hidden="true" size={18} />
             ) : (
               <Moon aria-hidden="true" size={18} />
@@ -47,5 +57,5 @@ export default function NavBar() {
         </nav>
       </div>
     </header>
-  )
+  );
 }
