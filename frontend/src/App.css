@@ -25,7 +25,7 @@
 
 :root[data-theme='dark'] {
   color-scheme: dark;
-    --color-brand-red: #C96A75;
+  --color-brand-red: #C96A75;
   --color-brand-red-hover: #B75A66;
   --color-brand-yellow: #D7B16B;
   --color-surface-cream: #21191B;
