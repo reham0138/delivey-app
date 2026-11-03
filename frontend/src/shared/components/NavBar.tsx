@@ -16,7 +16,7 @@ export default function NavBar() {
           aria-label="The Crown & Anchor home"
         >
           <img
-            src="/brand/logo/crown-anchor-delivery-logo-black.png"
+            src={theme === 'dark' ? '/brand/logo/crown-anchor-delivery-logo-white.png' : '/brand/logo/crown-anchor-delivery-logo-black.png'}
             alt=""
             className="size-12 shrink-0 object-contain"
           />
