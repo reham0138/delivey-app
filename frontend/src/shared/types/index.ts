@@ -181,3 +181,10 @@ export type MenuItemsData = MenuItem[];
 export type CategoriesData = Category[];
 export type OrdersData = Order[];
 export type ReviewsData = Review[];
+export type {
+  AuthResponse,
+  LoginPayload,
+  RegisterPayload,
+  Role,
+  User as AuthUser,
+} from "./user";
