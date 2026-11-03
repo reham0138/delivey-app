@@ -13,14 +13,16 @@ Maintain one recognizable visual identity across both projects while allowing ea
 ## Color palette
 | Token | Hex | Use |
 |---|---|---|
-| Brand Navy | `#0B2D4A` | Primary buttons, navigation, headings |
-| Brand Gold | `#D4AF37` | Restrained accents and selected states |
-| Brand Cream | `#F8F7F4` | Main page background |
-| Brand Slate | `#64748B` | Secondary text and metadata |
-| Main Text | `#1F2937` | Body text |
-| White | `#FFFFFF` | Cards and elevated surfaces |
+| Brand Red | `#E63946` | Primary brand color, navigation accents, and primary actions |
+| Brand Red Hover | `#C92F3B` | Hover state for primary red actions |
+| Brand Yellow | `#FFC857` | Restrained accents, highlights, and selected states |
+| Surface Cream | `#FFF8EF` | Main page background |
+| Text Slate | `#78716C` | Secondary text and metadata |
+| Main Text | `#292524` | Body text and primary content |
+| Surface White | `#FFFFFF` | Cards and elevated surfaces |
+| Subtle Border | `#E7E5E4` | Dividers, outlines, and component borders |
 
-Use gold as an accent, not default body text. Check contrast. Avoid excessive gradients and heavy shadows.
+Use yellow as an accent, not default body text. Check contrast. Avoid excessive gradients and heavy shadows.
 
 ## Typography
 Use Inter for English and Cairo for Arabic. Suggested sizes: page title 32–40px desktop / 28–32px mobile; section title 24–28px; card title 18–20px; body 16px; helper text 13–14px.
@@ -29,9 +31,9 @@ Use Inter for English and Cairo for Arabic. Suggested sizes: page title 32–40p
 Use a 4px base scale: 4, 8, 12, 16, 24, 32, 48, 64px. Recommended radius: 8px for small controls, 8–12px for cards/inputs, up to 16px for large feature surfaces. Prefer subtle borders, restrained shadows, and whitespace.
 
 ## Buttons and forms
-- Primary: navy background, white text.
-- Secondary: white/cream background, navy text, subtle border.
-- Outline: transparent/white background, navy border and text.
+- Primary: brand red background, white text.
+- Secondary: white/cream background, main text, subtle border.
+- Outline: transparent/white background, brand red border and text.
 - Define hover, focus-visible, disabled, and loading states.
 - Inputs need labels, visible focus, and clear validation messages.
 

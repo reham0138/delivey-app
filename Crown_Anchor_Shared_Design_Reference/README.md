@@ -16,12 +16,14 @@ This folder is a documentation and asset pack for the delivery frontend and rela
 
 | Token | Value |
 |---|---|
-| Navy | `#0B2D4A` |
-| Gold | `#D4AF37` |
-| Cream | `#F8F7F4` |
-| Slate | `#64748B` |
-| Main text | `#1F2937` |
-| White | `#FFFFFF` |
+| Brand red | `#E63946` |
+| Brand red hover | `#C92F3B` |
+| Brand yellow | `#FFC857` |
+| Surface cream | `#FFF8EF` |
+| Text slate | `#78716C` |
+| Main text | `#292524` |
+| Surface white | `#FFFFFF` |
+| Subtle border | `#E7E5E4` |
 
 Typography: Inter for English and Cairo for Arabic. The reference-pack tagline is **MORE THAN JUST A STORE**; individual products may use product-specific wording.
 

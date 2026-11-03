@@ -2,6 +2,7 @@
 
 @theme {
   --color-brand-red: #E63946;
+  --color-brand-red-hover: #C92F3B;
   --color-brand-yellow: #FFC857;
   --color-surface-cream: #FFF8EF;
   --color-text-slate: #78716C;
@@ -133,7 +134,7 @@ a {
 }
 
 .site-nav__links .site-nav__action:hover {
-  background: #C92F3B;
+  background: var(--color-brand-red-hover);
 }
 
 .site-footer {
