@@ -9,6 +9,8 @@
   --color-text-main: #292524;
   --color-surface-white: #FFFFFF;
   --color-border-subtle: #E7E5E4;
+  --color-danger: #B91C1C;
+  --color-danger-hover: #991B1B;
 
   --font-sans: "Inter", "Cairo", system-ui, sans-serif;
   --font-arabic: "Cairo", system-ui, sans-serif;
