@@ -15,7 +15,7 @@ const slides = [
     eyebrow: 'GATHER AROUND THE TABLE',
     title: 'Something\nfor everyone.',
     description: 'A comforting classic, a new discovery, or a treat worth sharing — it starts here.',
-    image: 'https://images.unsplash.com/photo- pizza?auto=format&fit=crop&w=1800&q=85',
+    image: 'https://images.unsplash.com/photo-1513104890138-7c749659a591?auto=format&fit=crop&w=1800&q=85',
     imageAlt: 'Freshly baked pizza topped with herbs',
     accent: 'Make every meal a moment.',
   },
