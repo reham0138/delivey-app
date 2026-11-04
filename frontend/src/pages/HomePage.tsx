@@ -50,7 +50,7 @@ export default function HomePage() {
   const showNext = () => setActiveSlide((current) => (current + 1) % slides.length)
 
   return (
-    <main className="bg-surface-cream text-text-main">
+    <div className="bg-surface-cream text-text-main">
       <section aria-label="Featured food" className="mx-auto w-full max-w-[1440px] px-4 py-4 sm:px-6 lg:px-10">
         <div className="relative isolate h-[min(620px,calc(100svh-7rem))] min-h-[440px] overflow-hidden rounded-2xl bg-text-main">
           {slides.map((slide, index) => (
