@@ -129,7 +129,7 @@ export default function NavBar() {
           <aside
             id="main-navigation-sidebar"
             aria-label="Main navigation"
-            className="fixed inset-y-0 right-0 z-50 flex w-[min( min(88vw, 360px), 360px)] flex-col border-l border-border-subtle bg-surface-white shadow-2xl"
+            className="fixed inset-y-0 right-0 z-50 flex w-[min(88vw,360px)] flex-col border-l border-border-subtle bg-surface-white shadow-2xl"
           >
             <div className="flex items-center justify-between border-b border-border-subtle px-5 py-5">
               <div>
@@ -169,7 +169,7 @@ export default function NavBar() {
                   <Button
                     variant="outline"
                     size="md"
-                    block
+                    className="w-full"
                     loading={isLoggingOut}
                     onClick={handleLogout}
                   >
