@@ -1,6 +1,7 @@
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom'
 
 import Preview from './pages/Preview'
+import HomePage from './pages/HomePage'
 import Meals from './pages/Meals'
 import MainLayout from './shared/layouts/MainLayout'
 import AuthLayout from '@/shared/layouts/AuthLayout'
@@ -12,6 +13,7 @@ function App() {
     <Router>
       <Routes>
         <Route path="/" element={<MainLayout />}>
+          <Route index element={<HomePage />} />
           <Route path="meals" element={<Meals />} />
         </Route>
 
