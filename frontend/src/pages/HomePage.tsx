@@ -180,7 +180,7 @@ export default function HomePage() {
           </div>
           <button
             type="button"
-            onClick={() => document.getElementById('categories')?.scrollIntoView({ behavior: 'smooth' })}
+            onClick={() => navigate('/meals')}
             className="inline-flex min-h-11 items-center gap-2 rounded-lg bg-surface-white px-5 py-2.5 text-sm font-semibold text-brand-red transition-colors hover:bg-surface-cream"
           >
             Explore categories <ArrowDown size={17} aria-hidden="true" />
