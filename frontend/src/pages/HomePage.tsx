@@ -185,6 +185,6 @@ export default function HomePage() {
           </button>
         </div>
       </section>
-    </main>
+    </div>
   )
 }
