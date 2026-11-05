@@ -1,6 +1,6 @@
 import { useMemo, useState } from 'react'
 import { Link } from 'react-router-dom'
-import { CalendarDays, ChevronLeft, ChevronRight, PackageSearch, Search } from 'lucide-react'
+import { CalendarDays, ChevronLeft, ChevronRight, Search } from 'lucide-react'
 import { Badge } from '@/shared/components/Badge'
 import { Button } from '@/shared/components/Button'
 import { Card } from '@/shared/components/Card'
