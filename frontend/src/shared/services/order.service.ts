@@ -5,7 +5,7 @@ const STORAGE_KEY = 'crown-anchor-orders'
 const ADDRESS_KEY = 'crown-anchor-addresses'
 const TERMINAL: OrderStatus[] = ['delivered', 'cancelled']
 const FLOW: OrderStatus[] = ['pending', 'preparing', 'ready', 'on_the_way', 'delivered']
-const DURATIONS = [2, 8, 5, 12]
+
 
 export interface OrderAddress { id: string; label: string; address: string; phone: string }
 export interface CreateOrderInput {
@@ -29,11 +29,13 @@ function advanceOrder(order: Order): Order {
   if (!order.simulatedTracking || TERMINAL.includes(order.status) || order.statusHistory.length === 0) return order
   const start = new Date(order.createdAt).getTime()
   const elapsed = Math.max(0, (Date.now() - start) / 60000)
+  const totalMinutes = Math.max(10, (new Date(order.estimatedDeliveryAt ?? order.createdAt).getTime() - start) / 60000)
+  const durations = [0.1, 0.4, 0.2, 0.3].map(weight => totalMinutes * weight)
   let total = 0
   let next: OrderStatus = 'pending'
   const history = [{ status: 'pending' as OrderStatus, at: order.createdAt }]
-  for (let index = 0; index < DURATIONS.length; index += 1) {
-    total += DURATIONS[index]
+  for (let index = 0; index < durations.length; index += 1) {
+    total += durations[index]
     if (elapsed >= total) {
       next = FLOW[index + 1]
       history.push({ status: next, at: new Date(start + total * 60000).toISOString() })
