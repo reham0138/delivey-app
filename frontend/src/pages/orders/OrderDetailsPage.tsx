@@ -34,11 +34,22 @@ export default function OrderDetailsPage() {
   const canCancel = order.status === 'pending' || order.status === 'preparing'
   const eta = order.estimatedDeliveryAt ? new Date(order.estimatedDeliveryAt).getTime() : null
   const remaining = eta === null ? 0 : Math.max(0, Math.ceil((eta - now) / 60000))
-  const progress = order.status === 'delivered' ? 100 : order.status === 'cancelled' ? 0 : Math.min(95, Math.max(8, 100 - remaining / 60 * 100))
-  const reorder = () => {
+  const startedAt = new Date(order.createdAt).getTime()
+  const progress = order.status === 'delivered' ? 100 : order.status === 'cancelled' ? 0 : eta !== null && eta > startedAt ? Math.min(95, Math.max(5, ((now - startedAt) / (eta - startedAt)) * 100)) : 5
+  const reorder = async () => {
     if (cart.items.length && cart.restaurantId !== order.restaurantId) { setMessage('Your cart contains meals from another restaurant. Clear it before reordering.'); return }
-    order.items.forEach(item => cart.addToCart({ menuItemId:item.menuItemId, restaurantId:order.restaurantId, restaurantName:`Restaurant #${order.restaurantId}`, name:item.name, price:item.unitPrice, quantity:1 }))
-    navigate('/checkout')
+    try {
+      const response = await fetch('/mock/menu-items.json')
+      if (!response.ok) throw new Error('Could not verify current menu availability.')
+      const menuItems = await response.json() as Array<{ id: number; restaurantId: number; isAvailable: boolean }>
+      const available = order.items.filter(item => menuItems.some(meal => meal.id === item.menuItemId && meal.restaurantId === order.restaurantId && meal.isAvailable))
+      if (!available.length) { setMessage('None of the meals in this order are currently available.'); return }
+      available.forEach(item => cart.addToCart({ menuItemId:item.menuItemId, restaurantId:order.restaurantId, restaurantName:`Restaurant #${order.restaurantId}`, name:item.name, price:item.unitPrice, quantity:1 }))
+      if (available.length !== order.items.length) setMessage('Some meals are no longer available and were skipped.')
+      navigate('/checkout')
+    } catch (reason) {
+      setMessage(reason instanceof Error ? reason.message : 'Unable to reorder this meal list.')
+    }
   }
   const cancel = async () => {
     setBusy(true)
@@ -58,7 +69,7 @@ export default function OrderDetailsPage() {
       <Card><h2 className="mb-4 text-lg font-semibold">Delivery & payment</h2><dl className="grid gap-3 text-sm sm:grid-cols-2"><div><dt className="text-text-slate">Address</dt><dd className="font-medium">{order.deliveryAddress}</dd></div><div><dt className="text-text-slate">Payment</dt><dd className="font-medium capitalize">{order.paymentMethod}{order.paymentStatus === 'simulated' ? ' (demo)' : ''}</dd></div><div><dt className="text-text-slate">Phone</dt><dd className="font-medium">{order.phone}</dd></div><div><dt className="text-text-slate">Notes</dt><dd className="font-medium">{order.notes || '—'}</dd></div></dl></Card>
     </div><aside className="space-y-4 lg:sticky lg:top-6"><Card><h2 className="mb-4 font-semibold">Payment summary</h2><div className="space-y-2 text-sm"><div className="flex justify-between"><span className="text-text-slate">Subtotal</span><span>{money(order.subtotal)}</span></div><div className="flex justify-between"><span className="text-text-slate">Delivery</span><span>{money(order.deliveryFee)}</span></div>{order.serviceFee !== undefined && <div className="flex justify-between"><span className="text-text-slate">Service fee</span><span>{money(order.serviceFee)}</span></div>}{order.tax !== undefined && <div className="flex justify-between"><span className="text-text-slate">Tax</span><span>{money(order.tax)}</span></div>}{(order.discount ?? 0) > 0 && <div className="flex justify-between"><span>Discount</span><span>-{money(order.discount ?? 0)}</span></div>}{(order.tip ?? 0) > 0 && <div className="flex justify-between"><span>Tip</span><span>{money(order.tip ?? 0)}</span></div>}<div className="flex justify-between border-t border-border-subtle pt-3 text-lg font-bold"><span>Total</span><span>{money(order.total)}</span></div></div></Card>
       {order.status === 'delivered' && <Card><div className="flex items-center gap-2 font-semibold"><Star className="text-brand-yellow"/> Your meal has arrived!</div><p className="mt-2 text-sm text-text-slate">Review forms are not available in the current repository yet.</p></Card>}
-      <Button className="w-full" onClick={reorder}><RefreshCw size={16}/> Reorder these meals</Button>
+      <Button className="w-full" onClick={() => void reorder()}><RefreshCw size={16}/> Reorder these meals</Button>
       {canCancel && <Button variant="danger" className="w-full" onClick={() => setCancelOpen(true)}><XCircle size={16}/> Cancel order</Button>}
       <div className="grid grid-cols-3 gap-2"><Button size="sm" variant="outline" onClick={() => void copy(String(order.id))}><Copy size={14}/>Copy ID</Button><Button size="sm" variant="outline" onClick={() => void share()}><Share2 size={14}/>Share</Button><Button size="sm" variant="outline" onClick={() => window.print()}><Printer size={14}/>Print</Button></div>
     </aside></div>
