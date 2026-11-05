@@ -98,6 +98,9 @@ export const orderService = {
     const values = this.getAddresses().filter(item => item.id !== address.id)
     localStorage.setItem(ADDRESS_KEY, JSON.stringify([...values, address]))
   },
+  deleteAddress(id: string): void {
+    localStorage.setItem(ADDRESS_KEY, JSON.stringify(this.getAddresses().filter(item => item.id !== id)))
+  },
   getAddresses(): OrderAddress[] {
     try { return JSON.parse(localStorage.getItem(ADDRESS_KEY) ?? '[]') as OrderAddress[] } catch { return [] }
   },
