@@ -16,8 +16,16 @@ export const registerSchema = z.object({
 	path: ['confirmPassword'],
 })
 
+export const profileSchema = z.object({
+  name: z.string().trim().min(2, 'Name must be at least 2 characters.'),
+  phone: z.string().optional().refine((value) => value === undefined || value === '' || isValidPhone(value), {
+    message: 'Enter a valid phone number.',
+  }),
+})
+
 export type LoginFormValues = z.infer<typeof loginSchema>
 export type RegisterFormValues = z.infer<typeof registerSchema>
+export type ProfileFormValues = z.infer<typeof profileSchema>
 export function isValidPhone(value: string): boolean {
   return /^\+?[0-9\s()-]{8,18}$/.test(value.trim())
 }

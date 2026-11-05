@@ -1,6 +1,6 @@
 // Replace the bodies with Axios calls when the backend is ready. Keep the signatures.
 import { getRefreshToken, getStoredUser } from '@/shared/services/auth.service'
-import type { AuthResponse, LoginPayload, RegisterPayload, Role, User } from '@/shared/types/user'
+import type { AuthResponse, LoginPayload, RegisterPayload, Role, UpdateProfilePayload, User } from '@/shared/types/user'
 
 const USERS_STORAGE_KEY = 'crown-anchor-mock-auth-users'
 const MOCK_DELAY_MS = 500
@@ -121,6 +121,35 @@ export async function register(payload: RegisterPayload): Promise<AuthResponse> 
 	users.push(record)
 	saveUsers(users)
 	return createAuthResponse(record)
+}
+
+export async function updateProfile(userId: number, changes: UpdateProfilePayload): Promise<User> {
+	await waitForMockApi()
+	const users = readUsers()
+	const userIndex = users.findIndex((user) => user.id === userId)
+	const record = users[userIndex]
+	if (!record) throw new Error(`User with id ${userId} was not found.`)
+
+	const updatedRecord: StoredMockUser = {
+		...record,
+		name: changes.name.trim(),
+	}
+	const phone = changes.phone?.trim()
+	if (phone) {
+		updatedRecord.phone = phone
+	} else {
+		delete updatedRecord.phone
+	}
+	users[userIndex] = updatedRecord
+	saveUsers(users)
+
+	return {
+		id: updatedRecord.id,
+		name: updatedRecord.name,
+		email: updatedRecord.email,
+		...(updatedRecord.phone === undefined ? {} : { phone: updatedRecord.phone }),
+		role: updatedRecord.role,
+	}
 }
 
 export async function logout(): Promise<void> {

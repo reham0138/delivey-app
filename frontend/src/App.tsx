@@ -16,6 +16,7 @@ const CheckoutPage = lazy(() => import('@/pages/checkout/CheckoutPage'))
 const OrdersPage = lazy(() => import('@/pages/orders/OrdersPage'))
 const OrderDetailsPage = lazy(() => import('@/pages/orders/OrderDetailsPage'))
 const OrderConfirmationPage = lazy(() => import('@/pages/orders/OrderConfirmationPage'))
+const ProfilePage = lazy(() => import('@/pages/profile/ProfilePage'))
 
 function App() {
   return (
@@ -31,6 +32,7 @@ function App() {
             <Route path="orders" element={<Suspense fallback={<div className="flex justify-center py-24"><Spinner label="Loading orders..." /></div>}><OrdersPage /></Suspense>} />
             <Route path="orders/:id/confirmation" element={<Suspense fallback={<div className="flex justify-center py-24"><Spinner label="Loading confirmation..." /></div>}><OrderConfirmationPage /></Suspense>} />
             <Route path="orders/:id" element={<Suspense fallback={<div className="flex justify-center py-24"><Spinner label="Loading order..." /></div>}><OrderDetailsPage /></Suspense>} />
+            <Route path="profile" element={<Suspense fallback={<div className="flex justify-center py-24"><Spinner label="Loading profile..." /></div>}><ProfilePage /></Suspense>} />
           </Route>
         </Route>
         <Route element={<AuthLayout />}>

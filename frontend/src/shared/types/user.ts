@@ -8,6 +8,11 @@ export interface User {
   role: Role;
 }
 
+export interface UpdateProfilePayload {
+  name: string;
+  phone?: string;
+}
+
 export interface AuthResponse {
   access_token: string;
   refresh_token: string;

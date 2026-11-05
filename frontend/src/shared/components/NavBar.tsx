@@ -11,6 +11,7 @@ import {
   Store,
   ClipboardList,
   ShoppingCart,
+  UserRound,
   X,
 } from "lucide-react";
 import { Link, NavLink } from "react-router-dom";
@@ -174,6 +175,12 @@ export default function NavBar() {
                 <NavLink to="/orders" onClick={closeSidebar} className={linkClassName}>
                   <ClipboardList aria-hidden="true" size={19} />
                   My orders
+                </NavLink>
+              )}
+              {isAuthenticated && (
+                <NavLink to="/profile" onClick={closeSidebar} className={linkClassName}>
+                  <UserRound aria-hidden="true" size={19} />
+                  Profile
                 </NavLink>
               )}
 
