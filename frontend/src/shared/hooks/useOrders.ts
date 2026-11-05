@@ -26,8 +26,9 @@ export function useOrder(orderId: number, customerId: number) {
   }, [orderId, customerId])
   useEffect(() => {
     void load()
+    if (order && (order.status === 'delivered' || order.status === 'cancelled')) return
     const active = window.setInterval(() => { void load() }, 15000)
     return () => window.clearInterval(active)
-  }, [load])
+  }, [load, order?.status])
   return { order, loading, error, retry: load, refresh: load }
 }
