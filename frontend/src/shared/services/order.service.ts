@@ -26,7 +26,7 @@ function writeOrders(orders: Order[]) {
   localStorage.setItem(STORAGE_KEY, JSON.stringify(orders))
 }
 function advanceOrder(order: Order): Order {
-  if (TERMINAL.includes(order.status) || order.statusHistory.length === 0) return order
+  if (!order.simulatedTracking || TERMINAL.includes(order.status) || order.statusHistory.length === 0) return order
   const start = new Date(order.createdAt).getTime()
   const elapsed = Math.max(0, (Date.now() - start) / 60000)
   let total = 0
@@ -77,7 +77,7 @@ export const orderService = {
       createdAt, statusHistory: [{ status: 'pending', at: createdAt }], cancelledBy: null, cancellationReason: null,
       serviceFee: input.serviceFee, tax: input.tax, discount: input.discount, tip: input.tip,
       promoCode: input.promoCode, scheduledFor: input.scheduledFor, estimatedDeliveryAt: input.estimatedDeliveryAt,
-      paymentStatus: input.paymentMethod === 'card' ? 'simulated' : 'pending',
+      paymentStatus: input.paymentMethod === 'card' ? 'simulated' : 'pending', simulatedTracking: true,
     }
     writeOrders([order, ...orders])
     return order
