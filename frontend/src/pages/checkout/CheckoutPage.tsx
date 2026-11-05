@@ -88,7 +88,7 @@ export default function CheckoutPage() {
     if (!validate()) { document.querySelector('[aria-invalid="true"]')?.scrollIntoView({ behavior: 'smooth', block: 'center' }); return }
     setSubmitting(true); setError('')
     try {
-      const estimated = new Date(Date.now() + (restaurant.deliveryTimeMinutes + cart.items.reduce((max, item) => Math.max(max, 15), 0)) * 60000)
+      const estimated = new Date(Date.now() + (restaurant.deliveryTimeMinutes + 15) * 60000)
       const scheduledFor = form.delivery === 'scheduled' ? form.slot : null
       const order = await orderService.createOrder({
         customerId: user.id, customerName: form.name.trim(), phone: form.phone.trim(), restaurantId: restaurant.id,
