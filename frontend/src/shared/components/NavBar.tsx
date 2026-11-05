@@ -8,6 +8,7 @@ import {
   Sun,
   UserPlus,
   Utensils,
+  Store,
   X,
 } from "lucide-react";
 import { Link, NavLink } from "react-router-dom";
@@ -154,6 +155,10 @@ export default function NavBar() {
               <NavLink to="/meals" onClick={closeSidebar} className={linkClassName}>
                 <Utensils aria-hidden="true" size={19} />
                 Meals
+              </NavLink>
+              <NavLink to="/restaurants" onClick={closeSidebar} className={linkClassName}>
+                <Store aria-hidden="true" size={19} />
+                Restaurants
               </NavLink>
 
               <div className="my-4 border-t border-border-subtle" />
