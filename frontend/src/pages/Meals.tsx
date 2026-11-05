@@ -1,5 +1,6 @@
+
 import { useCallback, useEffect, useMemo, useState } from 'react'
-import { Utensils } from 'lucide-react'
+import { Utensils, ShoppingCart } from 'lucide-react'
 
 import MealCard from '../shared/components/MealCard'
 import { Input } from '../shared/components/Input'
@@ -7,6 +8,7 @@ import { Select } from '../shared/components/Select'
 import { EmptyState } from '../shared/components/EmptyState'
 import { Spinner } from '../shared/components/Spinner'
 import { Button } from '../shared/components/Button'
+import { useCart } from '../shared/hooks/useCart'
 
 interface MenuItem {
   id: number
@@ -37,6 +39,14 @@ export default function Meals() {
   const [selectedRestaurant, setSelectedRestaurant] = useState('all')
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
+  const [cartMessage, setCartMessage] = useState('')
+  const [cartError, setCartError] = useState(false)
+
+  const {
+    addToCart,
+    restaurantName: cartRestaurantName,
+    totalItems,
+  } = useCart()
 
   const fetchMeals = useCallback(async () => {
     try {
@@ -117,6 +127,32 @@ export default function Meals() {
     )
   }
 
+  const handleAddToCart = (meal: MenuItem) => {
+    setCartMessage('')
+
+    const restaurantName = getRestaurantName(meal.restaurantId)
+
+    const added = addToCart({
+      menuItemId: meal.id,
+      restaurantId: meal.restaurantId,
+      restaurantName,
+      name: meal.name,
+      price: meal.price,
+      image: meal.image,
+      quantity: 1,
+    })
+
+    if (added) {
+      setCartError(false)
+      setCartMessage(`${meal.name} added to your cart.`)
+    } else {
+      setCartError(true)
+      setCartMessage(
+        `Your cart already contains meals from ${cartRestaurantName}. Clear your cart before choosing another restaurant.`
+      )
+    }
+  }
+
   const clearFilters = () => {
     setSearchTerm('')
     setSelectedRestaurant('all')
@@ -152,7 +188,7 @@ export default function Meals() {
     <main className="min-h-screen bg-surface-cream px-4 py-8 sm:px-6 lg:px-8">
       <div className="mx-auto max-w-7xl space-y-8">
 
-        <section>
+        <section className="flex flex-wrap items-center justify-between gap-4">
           <div className="flex items-center gap-3">
             <span className="flex size-12 items-center justify-center rounded-xl bg-brand-red/10 text-brand-red">
               <Utensils size={25} />
@@ -168,7 +204,25 @@ export default function Meals() {
               </p>
             </div>
           </div>
+
+          <div className="flex items-center gap-2 text-sm font-medium text-text-main">
+            <ShoppingCart size={20} className="text-brand-red" />
+            <span>{totalItems} items in cart</span>
+          </div>
         </section>
+
+        {cartMessage && (
+          <div
+            role="status"
+            className={`rounded-lg border p-3 text-sm ${
+              cartError
+                ? 'border-brand-red/30 bg-brand-red/10 text-brand-red'
+                : 'border-green-600/30 bg-green-600/10 text-green-700'
+            }`}
+          >
+            {cartMessage}
+          </div>
+        )}
 
         <section className="grid gap-4 rounded-xl border border-border-subtle bg-surface-white p-4 sm:grid-cols-2">
           <Input
@@ -219,6 +273,7 @@ export default function Meals() {
                   preparationTimeMinutes={meal.preparationTimeMinutes}
                   restaurantName={getRestaurantName(meal.restaurantId)}
                   isPopular={meal.isPopular}
+                  onOrder={() => handleAddToCart(meal)}
                 />
               ))}
             </div>

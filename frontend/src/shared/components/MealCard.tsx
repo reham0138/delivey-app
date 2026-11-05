@@ -1,7 +1,9 @@
-import { Clock3, Utensils } from 'lucide-react'
+
+import { Clock3, ShoppingCart, Utensils } from 'lucide-react'
 
 import { Card } from './Card'
 import { Rating } from './Rating'
+import { Button } from './Button'
 
 interface MealCardProps {
   name: string
@@ -14,6 +16,7 @@ interface MealCardProps {
   preparationTimeMinutes: number
   restaurantName: string
   isPopular: boolean
+  onOrder: () => void
 }
 
 export default function MealCard({
@@ -27,6 +30,7 @@ export default function MealCard({
   preparationTimeMinutes,
   restaurantName,
   isPopular,
+  onOrder,
 }: MealCardProps) {
   return (
     <Card
@@ -57,6 +61,7 @@ export default function MealCard({
       <div className="flex flex-1 flex-col gap-3 p-4">
         <div className="flex items-start justify-between gap-2">
           <h3 className="font-semibold text-text-main">{name}</h3>
+
           <span className="shrink-0 font-bold text-brand-red">
             ${price.toFixed(2)}
           </span>
@@ -86,7 +91,9 @@ export default function MealCard({
             {rating > 0 ? (
               <Rating value={rating} />
             ) : (
-              <span className="text-xs text-text-slate">No ratings yet</span>
+              <span className="text-xs text-text-slate">
+                No ratings yet
+              </span>
             )}
 
             <span className="text-xs text-text-slate">
@@ -94,6 +101,15 @@ export default function MealCard({
             </span>
           </div>
         </div>
+
+        <Button
+          variant="primary"
+          className="mt-2 w-full"
+          onClick={onOrder}
+        >
+          <ShoppingCart size={18} />
+          Order
+        </Button>
       </div>
     </Card>
   )
