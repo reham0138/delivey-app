@@ -13,6 +13,7 @@ import { useCart } from '@/shared/hooks/useCart'
 import { orderService, type OrderAddress } from '@/shared/services/order.service'
 import { calculateOrderTotals } from '@/shared/services/orderTotals.service'
 import type { Restaurant } from '@/shared/types'
+import { formatCurrency } from '@/shared/utils/format'
 import { isValidAddress, isValidCardExpiry, isValidCardNumber, isValidCvc, isValidPhone } from '@/shared/utils/validation'
 
 type Payment = 'cash' | 'card'
@@ -22,7 +23,7 @@ const initialDraft: Draft = { name: '', phone: '', address: '', notes: '', payme
 function getDraft(): Draft {
   try { return { ...initialDraft, ...JSON.parse(localStorage.getItem(DRAFT_KEY) ?? '{}') as Partial<Draft> } } catch { return initialDraft }
 }
-function money(value: number) { return `$${value.toFixed(2)}` }
+function money(value: number) { return formatCurrency(value) }
 
 export default function CheckoutPage() {
   const { user } = useAuth()
