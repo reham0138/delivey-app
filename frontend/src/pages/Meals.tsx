@@ -1,6 +1,6 @@
 
 import { useCallback, useEffect, useMemo, useState } from 'react'
-import { Utensils, ShoppingCart } from 'lucide-react'
+import { Utensils, ShoppingCart, ChevronLeft, ChevronRight } from 'lucide-react'
 
 import MealCard from '../shared/components/MealCard'
 import { Input } from '../shared/components/Input'
@@ -32,11 +32,14 @@ interface Restaurant {
   isActive: boolean
 }
 
+const ITEMS_PER_PAGE = 8
+
 export default function Meals() {
   const [meals, setMeals] = useState<MenuItem[]>([])
   const [restaurants, setRestaurants] = useState<Restaurant[]>([])
   const [searchTerm, setSearchTerm] = useState('')
   const [selectedRestaurant, setSelectedRestaurant] = useState('all')
+  const [currentPage, setCurrentPage] = useState(1)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
   const [cartMessage, setCartMessage] = useState('')
@@ -120,6 +123,21 @@ export default function Meals() {
     })
   }, [availableMeals, searchTerm, selectedRestaurant])
 
+  // Reset to the first page whenever filters change
+  useEffect(() => {
+    setCurrentPage(1)
+  }, [searchTerm, selectedRestaurant])
+
+  // Calculate pagination values
+  const totalPages = Math.ceil(filteredMeals.length / ITEMS_PER_PAGE)
+
+  const paginatedMeals = useMemo(() => {
+    const startIndex = (currentPage - 1) * ITEMS_PER_PAGE
+    const endIndex = startIndex + ITEMS_PER_PAGE
+
+    return filteredMeals.slice(startIndex, endIndex)
+  }, [filteredMeals, currentPage])
+
   const getRestaurantName = (restaurantId: number) => {
     return (
       restaurants.find((restaurant) => restaurant.id === restaurantId)?.name ??
@@ -156,6 +174,7 @@ export default function Meals() {
   const clearFilters = () => {
     setSearchTerm('')
     setSelectedRestaurant('all')
+    setCurrentPage(1)
   }
 
   if (loading) {
@@ -259,24 +278,74 @@ export default function Meals() {
           </div>
 
           {filteredMeals.length > 0 ? (
-            <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-              {filteredMeals.map((meal) => (
-                <MealCard
-                  key={meal.id}
-                  name={meal.name}
-                  description={meal.description}
-                  price={meal.price}
-                  image={meal.image}
-                  category={meal.category}
-                  rating={meal.rating}
-                  reviewsCount={meal.reviewsCount}
-                  preparationTimeMinutes={meal.preparationTimeMinutes}
-                  restaurantName={getRestaurantName(meal.restaurantId)}
-                  isPopular={meal.isPopular}
-                  onOrder={() => handleAddToCart(meal)}
-                />
-              ))}
-            </div>
+            <>
+              <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+                {paginatedMeals.map((meal) => (
+                  <MealCard
+                    key={meal.id}
+                    name={meal.name}
+                    description={meal.description}
+                    price={meal.price}
+                    image={meal.image}
+                    category={meal.category}
+                    rating={meal.rating}
+                    reviewsCount={meal.reviewsCount}
+                    preparationTimeMinutes={meal.preparationTimeMinutes}
+                    restaurantName={getRestaurantName(meal.restaurantId)}
+                    isPopular={meal.isPopular}
+                    onOrder={() => handleAddToCart(meal)}
+                  />
+                ))}
+              </div>
+
+              {/* Pagination */}
+              <div className="flex flex-wrap items-center justify-center gap-2 pt-6">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  disabled={currentPage === 1}
+                  onClick={() => setCurrentPage((page) => page - 1)}
+                  aria-label="Previous page"
+                >
+                  <ChevronLeft size={16} />
+                  Previous
+                </Button>
+
+                {Array.from({ length: totalPages }, (_, index) => index + 1).map(
+                  (page) => (
+                    <Button
+                      key={page}
+                      size="sm"
+                      variant={currentPage === page ? 'primary' : 'outline'}
+                      aria-current={currentPage === page ? 'page' : undefined}
+                      onClick={() => setCurrentPage(page)}
+                    >
+                      {page}
+                    </Button>
+                  )
+                )}
+
+                <Button
+                  variant="outline"
+                  size="sm"
+                  disabled={currentPage === totalPages}
+                  onClick={() => setCurrentPage((page) => page + 1)}
+                  aria-label="Next page"
+                >
+                  Next
+                  <ChevronRight size={16} />
+                </Button>
+              </div>
+
+              <p className="text-center text-sm text-text-slate">
+                Showing{' '}
+                {(currentPage - 1) * ITEMS_PER_PAGE + 1}
+                {' - '}
+                {Math.min(currentPage * ITEMS_PER_PAGE, filteredMeals.length)}
+                {' of '}
+                {filteredMeals.length} meals
+              </p>
+            </>
           ) : (
             <EmptyState
               title="No meals found"
