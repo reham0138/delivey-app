@@ -8,8 +8,7 @@ export default function AuthLayout() {
 	return (
 		<main className="flex min-h-screen items-center justify-center bg-surface-cream px-4 py-10 sm:px-6">
 			<div className="w-full max-w-md">
-				{/* There is no home page yet, so both links go to meals. */}
-				<Link to="/meals" className="mb-6 flex items-center justify-center gap-3 text-center">
+				<Link to="/" className="mb-6 flex items-center justify-center gap-3 text-center">
 					<img
 						src={
 							theme === 'dark'
@@ -25,7 +24,7 @@ export default function AuthLayout() {
 					<Outlet />
 				</Card>
 				<p className="mt-5 text-center text-sm text-text-slate">
-					<Link to="/meals" className="underline underline-offset-4 hover:text-text-main">
+					<Link to="/" className="underline underline-offset-4 hover:text-text-main">
 						Back to home
 					</Link>
 				</p>

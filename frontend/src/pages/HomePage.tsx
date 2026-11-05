@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import { ArrowDown, ArrowLeft, ArrowRight, Clock3, MapPin, Utensils } from 'lucide-react'
 import { Button } from '../shared/components/Button'
+import { useNavigate } from 'react-router-dom'
 
 const slides = [
   {
@@ -33,6 +34,7 @@ const categories = ['Burgers', 'Pizza', 'Shawarma', 'Sushi', 'Grill', 'Desserts'
 
 export default function HomePage() {
   const [activeSlide, setActiveSlide] = useState(0)
+  const navigate = useNavigate()
   const currentSlide = slides[activeSlide]
 
   useEffect(() => {
@@ -88,7 +90,7 @@ export default function HomePage() {
               <div className="mt-5 flex flex-wrap items-center gap-3 sm:mt-6">
                 <Button
                   size="lg"
-                  onClick={() => document.getElementById('categories')?.scrollIntoView({ behavior: 'smooth' })}
+                  onClick={() => navigate('/meals')}
                   className="!bg-brand-red !text-white hover:!bg-brand-red-hover"
                 >
                   Explore food <ArrowRight aria-hidden="true" size={18} />
@@ -178,7 +180,7 @@ export default function HomePage() {
           </div>
           <button
             type="button"
-            onClick={() => document.getElementById('categories')?.scrollIntoView({ behavior: 'smooth' })}
+            onClick={() => navigate('/meals')}
             className="inline-flex min-h-11 items-center gap-2 rounded-lg bg-surface-white px-5 py-2.5 text-sm font-semibold text-brand-red transition-colors hover:bg-surface-cream"
           >
             Explore categories <ArrowDown size={17} aria-hidden="true" />
