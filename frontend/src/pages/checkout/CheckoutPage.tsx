@@ -64,18 +64,14 @@ export default function CheckoutPage() {
   const validate = () => {
     const next: Record<string, string> = {}
     if (form.name.trim().length < 2) next.name = 'Enter your full name.'
-    if (!/^\+?[0-9\s()-]{8,18}$/.test(form.phone.trim())) next.phone = 'Enter a valid phone number.'
+    if (!isValidPhone(form.phone)) next.phone = 'Enter a valid phone number.'
     if (!isValidAddress(form.address)) next.address = 'Enter a complete delivery address.'
     if (restaurant && cart.subtotal < restaurant.minOrder) next.cart = `Minimum order is ${money(restaurant.minOrder)}.`
     if (form.delivery === 'scheduled' && !form.slot) next.slot = 'Choose a delivery time.'
     if (form.payment === 'card') {
-      const digits = card.number.replace(/\D/g, '')
-      let sum = 0; let alternate = false
-      for (let index = digits.length - 1; index >= 0; index -= 1) { let value = Number(digits[index]); if (alternate) { value *= 2; if (value > 9) value -= 9 } sum += value; alternate = !alternate }
-      if (digits.length < 13 || digits.length > 19 || sum % 10 !== 0) next.cardNumber = 'Enter a valid card number.'
-      const match = /^(0[1-9]|1[0-2])\/(\d{2})$/.exec(card.expiry)
-      if (!match || Number(match[2]) < new Date().getFullYear() % 100 || (Number(match[2]) === new Date().getFullYear() % 100 && Number(match[1]) < new Date().getMonth() + 1)) next.expiry = 'Use a valid MM/YY expiry date.'
-      if (!/^\d{3,4}$/.test(card.cvc)) next.cvc = 'Enter a 3 or 4 digit CVC.'
+      if (!isValidCardNumber(card.number)) next.cardNumber = 'Enter a valid card number.'
+      if (!isValidCardExpiry(card.expiry)) next.expiry = 'Use a valid MM/YY expiry date.'
+      if (!isValidCvc(card.cvc)) next.cvc = 'Enter a 3 or 4 digit CVC.'
     }
     setErrors(next)
     return Object.keys(next).length === 0
