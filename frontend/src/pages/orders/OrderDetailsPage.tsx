@@ -25,11 +25,12 @@ export default function OrderDetailsPage() {
   const [busy,setBusy] = useState(false)
   const [message,setMessage] = useState('')
   const [now,setNow] = useState(Date.now())
+  const currentStatus = order?.status
   useEffect(() => {
-    if (!order || order.status === 'delivered' || order.status === 'cancelled') return
+    if (!currentStatus || currentStatus === 'delivered' || currentStatus === 'cancelled') return
     const timer = window.setInterval(() => setNow(Date.now()), 1000)
     return () => window.clearInterval(timer)
-  }, [order?.status])
+  }, [currentStatus])
   if (loading) return <div className="flex justify-center py-24"><Spinner label="Loading order..."/></div>
   if (error || !order) return <div className="mx-auto max-w-3xl px-4 py-16"><EmptyState title="Order not found" description={error ?? 'This order may not exist or may belong to another account.'} action={<Button onClick={() => void retry()}>Try again</Button>}/></div>
   const canCancel = order.status === 'pending' || order.status === 'preparing'
