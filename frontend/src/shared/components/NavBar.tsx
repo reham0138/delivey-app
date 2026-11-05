@@ -9,16 +9,20 @@ import {
   UserPlus,
   Utensils,
   Store,
+  ClipboardList,
+  ShoppingCart,
   X,
 } from "lucide-react";
 import { Link, NavLink } from "react-router-dom";
 import { Button } from "@/shared/components/Button";
 import { useTheme } from "../contexts/ThemeContext";
 import { useAuth } from "@/shared/hooks/useAuth";
+import { useCart } from "@/shared/hooks/useCart";
 
 export default function NavBar() {
   const { theme, toggleTheme } = useTheme();
   const { user, isAuthenticated, logout } = useAuth();
+  const cart = useCart();
   const [isLoggingOut, setIsLoggingOut] = useState(false);
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
@@ -160,6 +164,18 @@ export default function NavBar() {
                 <Store aria-hidden="true" size={19} />
                 Restaurants
               </NavLink>
+              {cart.totalItems > 0 && (
+                <NavLink to="/checkout" onClick={closeSidebar} className={linkClassName}>
+                  <ShoppingCart aria-hidden="true" size={19} />
+                  Checkout ({cart.totalItems})
+                </NavLink>
+              )}
+              {isAuthenticated && (
+                <NavLink to="/orders" onClick={closeSidebar} className={linkClassName}>
+                  <ClipboardList aria-hidden="true" size={19} />
+                  My orders
+                </NavLink>
+              )}
 
               <div className="my-4 border-t border-border-subtle" />
 

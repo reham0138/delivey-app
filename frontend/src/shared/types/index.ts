@@ -116,6 +116,16 @@ export interface Order {
   statusHistory: OrderStatusHistoryEntry[];
   cancelledBy: CancellationActor | null;
   cancellationReason: string | null;
+  /** Optional checkout breakdown; absent on historical fixture orders. */
+  serviceFee?: number;
+  tax?: number;
+  discount?: number;
+  tip?: number;
+  promoCode?: string | null;
+  scheduledFor?: string | null;
+  estimatedDeliveryAt?: string;
+  paymentStatus?: 'pending' | 'simulated';
+  simulatedTracking?: boolean;
 }
 
 export interface Review {
