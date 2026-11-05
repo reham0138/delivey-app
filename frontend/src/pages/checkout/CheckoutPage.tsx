@@ -120,7 +120,41 @@ export default function CheckoutPage() {
     <form onSubmit={submit} className="grid items-start gap-6 lg:grid-cols-[minmax(0,1fr)_360px]">
       <div className="space-y-5">
         <Card><div className="mb-4 flex items-center gap-3"><span className="rounded-lg bg-brand-red/10 p-2 text-brand-red"><MapPin size={19}/></span><div><h2 className="font-semibold">Delivery details</h2><p className="text-xs text-text-slate">Where should we bring your order?</p></div></div>
-          {addresses.length > 0 && <Select label="Choose a saved address" value={selectedAddressId} onChange={event => { setSelectedAddressId(event.target.value); const address = addresses.find(item => item.id === event.target.value); if (address) setForm(current => ({ ...current, address: address.address, phone: address.phone })) }}><option value="">Select saved address</option>{addresses.map(address => <option key={address.id} value={address.id}>{address.label} — {address.address}</option>)}</Select>{selectedAddressId && <button type="button" onClick={() => { orderService.deleteAddress(selectedAddressId); setAddresses(orderService.getAddresses()); setSelectedAddressId('') }} className="mt-2 text-xs font-semibold text-danger underline">Delete selected saved address</button>}}
+          {addresses.length > 0 && (
+            <>
+              <Select
+                label="Choose a saved address"
+                value={selectedAddressId}
+                onChange={event => {
+                  setSelectedAddressId(event.target.value)
+                  const address = addresses.find(item => item.id === event.target.value)
+                  if (address) {
+                    setForm(current => ({ ...current, address: address.address, phone: address.phone }))
+                  }
+                }}
+              >
+                <option value="">Select saved address</option>
+                {addresses.map(address => (
+                  <option key={address.id} value={address.id}>
+                    {address.label} — {address.address}
+                  </option>
+                ))}
+              </Select>
+              {selectedAddressId && (
+                <button
+                  type="button"
+                  onClick={() => {
+                    orderService.deleteAddress(selectedAddressId)
+                    setAddresses(orderService.getAddresses())
+                    setSelectedAddressId('')
+                  }}
+                  className="mt-2 text-xs font-semibold text-danger underline"
+                >
+                  Delete selected saved address
+                </button>
+              )}
+            </>
+          )}
           <div className="mt-4 grid gap-4 sm:grid-cols-2"><Input label="Full name" value={form.name} onChange={event => update('name', event.target.value)} error={errors.name} autoComplete="name" required/><Input label="Phone number" value={form.phone} onChange={event => update('phone', event.target.value)} error={errors.phone} autoComplete="tel" required/></div>
           <Input wrapperClassName="mt-4" label="Delivery address" value={form.address} onChange={event => update('address', event.target.value)} error={errors.address} autoComplete="street-address" placeholder="Street, building, floor, apartment" required/>
           <label className="mt-4 flex items-center gap-2 text-sm text-text-slate"><input type="checkbox" checked={saveAddress} onChange={event => setSaveAddress(event.target.checked)} className="accent-brand-red"/> Save this address for next time</label>
