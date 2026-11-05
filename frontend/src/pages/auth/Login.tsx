@@ -1,6 +1,6 @@
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { Link, Navigate } from 'react-router-dom'
+import { Link, Navigate, useLocation } from 'react-router-dom'
 import { Button } from '@/shared/components/Button'
 import { Input } from '@/shared/components/Input'
 import { useAuth } from '@/shared/hooks/useAuth'
@@ -9,6 +9,8 @@ import { loginSchema, type LoginFormValues } from '@/shared/utils/validation'
 
 export default function Login() {
 	const { isAuthenticated, role, login } = useAuth()
+	const location = useLocation()
+	const returnTo = (location.state as { from?: { pathname?: string } } | null)?.from?.pathname
 	const {
 		register,
 		handleSubmit,
@@ -20,7 +22,7 @@ export default function Login() {
 	})
 
 	if (isAuthenticated) {
-		return <Navigate to={getHomePathForRole(role ?? 'customer')} replace />
+		return <Navigate to={returnTo?.startsWith('/') ? returnTo : getHomePathForRole(role ?? 'customer')} replace />
 	}
 
 	const onSubmit = async (values: LoginFormValues) => {
