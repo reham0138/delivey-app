@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from 'react'
+import type { FormEvent } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { ArrowLeft, CheckCircle2, Clock3, CreditCard, MapPin, ShoppingBag, Tag, Wallet } from 'lucide-react'
 import { Button } from '@/shared/components/Button'
@@ -12,6 +13,7 @@ import { useCart } from '@/shared/hooks/useCart'
 import { orderService, type OrderAddress } from '@/shared/services/order.service'
 import { calculateOrderTotals } from '@/shared/services/orderTotals.service'
 import type { Restaurant } from '@/shared/types'
+import { isValidAddress, isValidCardExpiry, isValidCardNumber, isValidCvc, isValidPhone } from '@/shared/utils/validation'
 
 type Payment = 'cash' | 'card'
 const DRAFT_KEY = 'crown-anchor-checkout-draft'
@@ -63,7 +65,7 @@ export default function CheckoutPage() {
     const next: Record<string, string> = {}
     if (form.name.trim().length < 2) next.name = 'Enter your full name.'
     if (!/^\+?[0-9\s()-]{8,18}$/.test(form.phone.trim())) next.phone = 'Enter a valid phone number.'
-    if (form.address.trim().length < 8) next.address = 'Enter a complete delivery address.'
+    if (!isValidAddress(form.address)) next.address = 'Enter a complete delivery address.'
     if (restaurant && cart.subtotal < restaurant.minOrder) next.cart = `Minimum order is ${money(restaurant.minOrder)}.`
     if (form.delivery === 'scheduled' && !form.slot) next.slot = 'Choose a delivery time.'
     if (form.payment === 'card') {
@@ -84,7 +86,7 @@ export default function CheckoutPage() {
     setPromoMessage(result ? (result.code === 'FREESHIP' ? 'Free delivery applied.' : '10% discount applied.') : 'That promo code is not valid.')
     if (!result) update('promo', form.promo.toUpperCase())
   }
-  const submit = async (event: React.FormEvent<HTMLFormElement>) => {
+  const submit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault()
     if (submitting || !user || !cart.items.length || !restaurant) return
     if (!validate()) { document.querySelector('[aria-invalid="true"]')?.scrollIntoView({ behavior: 'smooth', block: 'center' }); return }
