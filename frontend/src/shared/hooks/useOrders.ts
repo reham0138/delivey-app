@@ -28,11 +28,12 @@ export function useOrder(orderId: number, customerId: number) {
     catch (reason) { setError(reason instanceof Error ? reason.message : 'Unable to load this order.') }
     finally { setLoading(false) }
   }, [orderId, customerId])
+  const status = order?.status
   useEffect(() => {
     void load()
-    if (order && (order.status === 'delivered' || order.status === 'cancelled')) return
+    if (status === 'delivered' || status === 'cancelled') return
     const active = window.setInterval(() => { void load() }, 15000)
     return () => window.clearInterval(active)
-  }, [load, order?.status])
+  }, [load, status])
   return { order, loading, error, retry: load, refresh: load }
 }
