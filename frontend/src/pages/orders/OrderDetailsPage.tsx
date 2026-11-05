@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import { Link, useNavigate, useParams } from 'react-router-dom'
-import { ArrowLeft, Copy, Printer, RefreshCw, Share2, Star, XCircle } from 'lucide-react'
+import { ArrowLeft, Copy, Printer, RefreshCw, Share2, XCircle } from 'lucide-react'
 import { Badge } from '@/shared/components/Badge'
 import { Button } from '@/shared/components/Button'
 import { Card } from '@/shared/components/Card'
@@ -12,6 +12,7 @@ import { useCart } from '@/shared/hooks/useCart'
 import { useOrder } from '@/shared/hooks/useOrders'
 import { orderService } from '@/shared/services/order.service'
 import OrderTimeline from './OrderTimeline'
+import MealReviewForm from './MealReviewForm'
 
 const money = (value: number) => `$${value.toFixed(2)}`
 export default function OrderDetailsPage() {
@@ -68,7 +69,7 @@ export default function OrderDetailsPage() {
       <Card><h2 className="mb-4 text-lg font-semibold">Items</h2><div className="space-y-4">{order.items.map(item => <div key={item.menuItemId} className="flex justify-between gap-3 text-sm"><div><p className="font-medium">{item.name}</p><p className="text-xs text-text-slate">Quantity: {item.quantity}</p></div><span>{money(item.unitPrice * item.quantity)}</span></div>)}</div></Card>
       <Card><h2 className="mb-4 text-lg font-semibold">Delivery & payment</h2><dl className="grid gap-3 text-sm sm:grid-cols-2"><div><dt className="text-text-slate">Address</dt><dd className="font-medium">{order.deliveryAddress}</dd></div><div><dt className="text-text-slate">Payment</dt><dd className="font-medium capitalize">{order.paymentMethod}{order.paymentStatus === 'simulated' ? ' (demo)' : ''}</dd></div><div><dt className="text-text-slate">Phone</dt><dd className="font-medium">{order.phone}</dd></div><div><dt className="text-text-slate">Notes</dt><dd className="font-medium">{order.notes || '—'}</dd></div></dl></Card>
     </div><aside className="space-y-4 lg:sticky lg:top-6"><Card><h2 className="mb-4 font-semibold">Payment summary</h2><div className="space-y-2 text-sm"><div className="flex justify-between"><span className="text-text-slate">Subtotal</span><span>{money(order.subtotal)}</span></div><div className="flex justify-between"><span className="text-text-slate">Delivery</span><span>{money(order.deliveryFee)}</span></div>{order.serviceFee !== undefined && <div className="flex justify-between"><span className="text-text-slate">Service fee</span><span>{money(order.serviceFee)}</span></div>}{order.tax !== undefined && <div className="flex justify-between"><span className="text-text-slate">Tax</span><span>{money(order.tax)}</span></div>}{(order.discount ?? 0) > 0 && <div className="flex justify-between"><span>Discount</span><span>-{money(order.discount ?? 0)}</span></div>}{(order.tip ?? 0) > 0 && <div className="flex justify-between"><span>Tip</span><span>{money(order.tip ?? 0)}</span></div>}<div className="flex justify-between border-t border-border-subtle pt-3 text-lg font-bold"><span>Total</span><span>{money(order.total)}</span></div></div></Card>
-      {order.status === 'delivered' && <Card><div className="flex items-center gap-2 font-semibold"><Star className="text-brand-yellow"/> Your meal has arrived!</div><p className="mt-2 text-sm text-text-slate">Review forms are not available in the current repository yet.</p></Card>}
+      {order.status === 'delivered' && <Card><h2 className="mb-4 text-lg font-semibold">How was your meal?</h2><div className="space-y-4">{order.items.map(item => <div key={item.menuItemId}><p className="mb-2 text-sm font-medium">{item.name}</p><MealReviewForm order={order} menuItemId={item.menuItemId} customerName={user?.name ?? order.customerName}/></div>)}</div></Card>}
       <Button className="w-full" onClick={() => void reorder()}><RefreshCw size={16}/> Reorder these meals</Button>
       {canCancel && <Button variant="danger" className="w-full" onClick={() => setCancelOpen(true)}><XCircle size={16}/> Cancel order</Button>}
       <div className="grid grid-cols-3 gap-2"><Button size="sm" variant="outline" onClick={() => void copy(String(order.id))}><Copy size={14}/>Copy ID</Button><Button size="sm" variant="outline" onClick={() => void share()}><Share2 size={14}/>Share</Button><Button size="sm" variant="outline" onClick={() => window.print()}><Printer size={14}/>Print</Button></div>
