@@ -77,7 +77,7 @@ export default function CheckoutPage() {
     return Object.keys(next).length === 0
   }
   const applyPromo = async () => {
-    const result = await orderService.validatePromo(form.promo, cart.subtotal, deliveryFee)
+    const result = await orderService.validatePromo(form.promo, cart.subtotal, restaurant?.deliveryFee ?? deliveryFee)
     setPromo(result)
     setPromoMessage(result ? (result.code === 'FREESHIP' ? 'Free delivery applied.' : '10% discount applied.') : 'That promo code is not valid.')
     if (!result) update('promo', form.promo.toUpperCase())
