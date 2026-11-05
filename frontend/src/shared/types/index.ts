@@ -51,6 +51,10 @@ export interface Restaurant {
   phone: string;
   isActive: boolean;
   createdAt: string;
+  /** Optional presentation fields; existing fixtures and API payloads remain valid. */
+  cover?: string;
+  reviewsCount?: number;
+  openingHours?: string;
 }
 
 export interface Nutrition {
