@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom'
 
 import { Card } from '../../shared/components/Card'
 import { Rating } from '../../shared/components/Rating'
+import { RestaurantImage } from '../../shared/components/RestaurantImage'
 import type { Restaurant } from '../../shared/types'
 
 interface RestaurantCardProps {
@@ -21,9 +22,8 @@ export default function RestaurantCard({ restaurant }: RestaurantCardProps) {
         className="flex h-full flex-col overflow-hidden transition-all duration-200 group-hover:-translate-y-1 group-hover:shadow-lg"
       >
         <div className="relative aspect-[16/10] overflow-hidden bg-surface-cream">
-          <img
-            src={restaurant.cover || restaurant.image}
-            alt={`${restaurant.name} restaurant`}
+          <RestaurantImage
+            restaurant={restaurant}
             loading="lazy"
             className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
           />
