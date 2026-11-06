@@ -1,18 +1,14 @@
-import { EmptyState } from '@/shared/components/EmptyState'
 import { useAuth } from '@/shared/hooks/useAuth'
 import CustomerProfile from '@/pages/profile/CustomerProfile'
+import RestaurantProfile from '@/pages/profile/RestaurantProfile'
+import { Navigate } from 'react-router-dom'
 
 export default function ProfilePage() {
 	const { user } = useAuth()
 
 	if (!user) return null
-	if (user.role === 'restaurant') {
-		return (
-			<section className="mx-auto w-full max-w-4xl px-4 py-8 sm:py-12">
-				<EmptyState title="Restaurant profile is coming soon" description="Restaurant profile details will be available here soon." />
-			</section>
-		)
-	}
+	if (user.role === 'restaurant') return <RestaurantProfile ownerId={user.id} />
+	if (user.role === 'admin') return <Navigate to="/" replace />
 
 	return <CustomerProfile user={user} />
 }
