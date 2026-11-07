@@ -291,7 +291,7 @@ export default function OrderDetailsPage() {
                   className="flex justify-between gap-3 text-sm"
                 >
                   <div>
-                    <p className="font-medium">{item.name}</p>
+                    <p className="font-medium">{t(item.name)}</p>
                     <p className="text-xs text-text-slate">
                       {t("Quantity: {quantity}", { quantity: item.quantity })}
                     </p>
