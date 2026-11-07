@@ -36,7 +36,7 @@ export default function Register() {
 			})
 		} catch (error) {
 			setError('root.serverError', {
-				message: error instanceof Error ? error.message : 'Something went wrong. Please try again.',
+				message: error instanceof Error ? error.message : t('Something went wrong. Please try again.'),
 			})
 		}
 	}
@@ -48,10 +48,10 @@ export default function Register() {
 				<p className="text-sm text-text-slate">{t('Join The Crown & Anchor.')}</p>
 			</header>
 			<form noValidate className="space-y-4" onSubmit={handleSubmit(onSubmit)}>
-				<Input label={t('Name')} autoComplete="name" {...register('name')} error={errors.name?.message} />
-				<Input label={t('Email address')} type="email" autoComplete="email" {...register('email')} error={errors.email?.message} />
-				<Input label={t('Password')} type="password" autoComplete="new-password" {...register('password')} error={errors.password?.message} />
-				<Input label={t('Confirm password')} type="password" autoComplete="new-password" {...register('confirmPassword')} error={errors.confirmPassword?.message} />
+				<Input label={t('Name')} autoComplete="name" {...register('name')} error={errors.name?.message ? t(errors.name.message) : undefined} />
+				<Input label={t('Email address')} type="email" autoComplete="email" {...register('email')} error={errors.email?.message ? t(errors.email.message) : undefined} />
+				<Input label={t('Password')} type="password" autoComplete="new-password" {...register('password')} error={errors.password?.message ? t(errors.password.message) : undefined} />
+				<Input label={t('Confirm password')} type="password" autoComplete="new-password" {...register('confirmPassword')} error={errors.confirmPassword?.message ? t(errors.confirmPassword.message) : undefined} />
 				<fieldset className="space-y-2">
 					<legend className="text-sm font-semibold text-text-main">{t('Sign up as')}</legend>
 					<div className="grid grid-cols-2 gap-3">
@@ -64,7 +64,7 @@ export default function Register() {
 							{t('Restaurant')}
 						</label>
 					</div>
-					{errors.role?.message && <p className="text-sm text-danger">{errors.role.message}</p>}
+					{errors.role?.message && <p className="text-sm text-danger">{t('Please choose an account type.')}</p>}
 				</fieldset>
 				{errors.root?.serverError?.message && (
 					<p role="alert" className="rounded-lg border border-danger/30 bg-danger/10 px-3 py-2 text-sm text-danger">
