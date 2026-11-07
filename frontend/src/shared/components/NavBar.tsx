@@ -138,7 +138,7 @@ export default function NavBar() {
         <>
           <button
             type="button"
-            aria-label="Close navigation menu"
+            aria-label={t("Close navigation menu")}
             onClick={closeSidebar}
             className="fixed inset-0 z-40 cursor-default bg-black/45"
           />
@@ -146,7 +146,7 @@ export default function NavBar() {
           <aside
             id="main-navigation-sidebar"
             dir="ltr"
-            aria-label="Main navigation"
+            aria-label={t("Main navigation")}
             className="fixed inset-y-0 right-0 z-50 flex w-[min(88vw,360px)] flex-col border-l border-border-subtle bg-surface-white shadow-2xl"
           >
             <div className="flex items-center justify-between border-b border-border-subtle px-5 py-5">
