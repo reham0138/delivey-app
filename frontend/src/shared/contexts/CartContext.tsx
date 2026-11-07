@@ -30,25 +30,28 @@ export function CartProvider({ children }: { children: ReactNode }) {
   }, [items])
 
   const addToCart = useCallback((newItem: CartItem) => {
-    const existingItem = items.find(
-      (item) =>
-        item.restaurantId === newItem.restaurantId &&
-        item.menuItemId === newItem.menuItemId
-    )
+    const quantityToAdd = Math.max(1, newItem.quantity || 1)
+    setItems((currentItems) => {
+      const existingItem = currentItems.find(
+        (item) =>
+          item.restaurantId === newItem.restaurantId &&
+          item.menuItemId === newItem.menuItemId
+      )
 
-    if (existingItem) {
-      setItems(items.map((item) =>
-        item.restaurantId === newItem.restaurantId &&
-        item.menuItemId === newItem.menuItemId
-          ? { ...item, quantity: item.quantity + 1 }
-          : item
-      ))
-    } else {
-      setItems([...items, { ...newItem, quantity: 1 }])
-    }
+      if (existingItem) {
+        return currentItems.map((item) =>
+          item.restaurantId === newItem.restaurantId &&
+          item.menuItemId === newItem.menuItemId
+            ? { ...item, quantity: item.quantity + quantityToAdd }
+            : item
+        )
+      }
+
+      return [...currentItems, { ...newItem, quantity: quantityToAdd }]
+    })
 
     return true
-  }, [items])
+  }, [])
 
   const removeFromCart = useCallback((restaurantId: number, menuItemId: number) => {
     setItems((current) =>
