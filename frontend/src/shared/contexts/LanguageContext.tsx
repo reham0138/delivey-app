@@ -1,3 +1,4 @@
+import { flushSync } from 'react-dom'
 import {
   useCallback,
   useEffect,
@@ -349,7 +350,22 @@ export function LanguageProvider({ children }: { children: ReactNode }) {
   }, [direction, language])
 
   const toggleLanguage = useCallback(() => {
-    setLanguage((current) => current === 'en' ? 'ar' : 'en')
+    const updateLanguage = () => {
+      flushSync(() => {
+        setLanguage((current) => current === 'en' ? 'ar' : 'en')
+      })
+    }
+
+    const transitionDocument = document as Document & {
+      startViewTransition?: (callback: () => void) => { finished: Promise<void> }
+    }
+
+    if (transitionDocument.startViewTransition) {
+      const transition = transitionDocument.startViewTransition(updateLanguage)
+      void transition.finished.catch(() => {})
+    } else {
+      updateLanguage()
+    }
   }, [])
 
   const t = useCallback((key: string, values: Record<string, string | number> = {}) => {
