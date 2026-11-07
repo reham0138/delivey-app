@@ -551,7 +551,7 @@ export default function CheckoutPage() {
             )}
           </Card>
           <Card>
-            <h2 className="mb-3 font-semibold">Order notes</h2>
+            <h2 className="mb-3 font-semibold">{t('Order notes')}</h2>
             <textarea
               value={form.notes}
               onChange={(event) => update("notes", event.target.value)}
@@ -574,7 +574,7 @@ export default function CheckoutPage() {
               aria-expanded={showSummary}
             >
               <span className="flex items-center gap-2 font-semibold">
-                <ShoppingBag size={18} /> Order summary ({cart.totalItems})
+                <ShoppingBag size={18} /> {t('Order summary')} ({cart.totalItems})
               </span>
               <span className="text-sm font-semibold lg:hidden">
                 {money(totals.total)}
@@ -638,7 +638,7 @@ export default function CheckoutPage() {
               <div className="border-t border-border-subtle pt-4">
                 <div className="flex gap-2">
                   <Input
-                    label="Promo code"
+                    label={t('Promo code')}
                     value={form.promo}
                     onChange={(event) => update("promo", event.target.value)}
                     placeholder="WELCOME10"
@@ -650,7 +650,7 @@ export default function CheckoutPage() {
                     onClick={() => void applyPromo()}
                   >
                     <Tag size={15} />
-                    Apply
+                    {t('Apply')}
                   </Button>
                 </div>
                 {promoMessage && (
@@ -663,7 +663,7 @@ export default function CheckoutPage() {
                 )}
               </div>
               <div className="border-t border-border-subtle pt-4">
-                <p className="mb-2 text-sm font-semibold">Driver tip</p>
+                <p className="mb-2 text-sm font-semibold">{t('Driver tip')}</p>
                 <div className="grid grid-cols-4 gap-2">
                   {[0, 5, 10, 15].map((percent) => (
                     <button
@@ -678,36 +678,36 @@ export default function CheckoutPage() {
                       }}
                       className={`rounded-lg border px-2 py-2 text-xs ${form.tip === Number(((cart.subtotal * percent) / 100).toFixed(2)) && !form.customTip ? "border-brand-red bg-brand-red/5 text-brand-red" : "border-border-subtle"}`}
                     >
-                      {percent === 0 ? "No tip" : `${percent}%`}
+                      {percent === 0 ? t('No tip') : `${percent}%`}
                     </button>
                   ))}
                 </div>
                 <Input
                   wrapperClassName="mt-3"
-                  label="Custom tip amount ($)"
+                  label={t('Custom tip amount ($)')}
                   type="number"
                   min="0"
                   step="0.5"
                   value={form.customTip}
                   onChange={(event) => update("customTip", event.target.value)}
-                  placeholder="Optional"
+                  placeholder={t('Optional')}
                 />
               </div>
               <div className="space-y-2 border-t border-border-subtle pt-4 text-sm">
                 <div className="flex justify-between">
-                  <span className="text-text-slate">Subtotal</span>
+                  <span className="text-text-slate">{t('Subtotal')}</span>
                   <span>{money(totals.subtotal)}</span>
                 </div>
                 <div className="flex justify-between">
-                  <span className="text-text-slate">Delivery fee</span>
+                  <span className="text-text-slate">{t('Delivery fee')}</span>
                   <span>{money(totals.deliveryFee)}</span>
                 </div>
                 <div className="flex justify-between">
-                  <span className="text-text-slate">Service fee</span>
+                  <span className="text-text-slate">{t('Service fee')}</span>
                   <span>{money(totals.serviceFee)}</span>
                 </div>
                 <div className="flex justify-between">
-                  <span className="text-text-slate">Tax</span>
+                  <span className="text-text-slate">{t('Tax')}</span>
                   <span>{money(totals.tax)}</span>
                 </div>
                 {totals.discount > 0 && (
@@ -723,7 +723,7 @@ export default function CheckoutPage() {
                   </div>
                 )}
                 <div className="flex justify-between border-t border-border-subtle pt-3 text-lg font-bold">
-                  <span>Total</span>
+                  <span>{t('Total')}</span>
                   <span>{money(totals.total)}</span>
                 </div>
               </div>
@@ -739,10 +739,10 @@ export default function CheckoutPage() {
                 disabled={!restaurant || submitting}
               >
                 <CheckCircle2 size={17} />
-                Place order · {money(totals.total)}
+                {t('Place order')} · {money(totals.total)}
               </Button>
               <p className="mt-3 text-center text-xs text-text-slate">
-                By placing your order, you agree to our demo checkout terms.
+                {t('By placing your order, you agree to our demo checkout terms.')}
               </p>
             </div>
           </Card>
