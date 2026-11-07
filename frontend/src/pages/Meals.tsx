@@ -164,11 +164,11 @@ export default function Meals() {
 
     if (added) {
       setCartError(false)
-      setCartMessage(`${meal.name} added to your cart.`)
+      setCartMessage(t('{name} added to your cart.', { name: t(meal.name) }))
     } else {
       setCartError(true)
       setCartMessage(
-        `Your cart already contains meals from ${cartRestaurantName}. Clear your cart before choosing another restaurant.`
+        t('Your cart already contains meals from {name}. Clear your cart before choosing another restaurant.', { name: t(cartRestaurantName) })
       )
     }
   }
@@ -182,7 +182,7 @@ export default function Meals() {
   if (loading) {
     return (
       <div className="flex min-h-[60vh] items-center justify-center bg-surface-cream">
-        <Spinner size="lg" label="Loading meals..." />
+        <Spinner size="lg" label={t('Loading meals...')} />
       </div>
     )
   }
@@ -192,11 +192,11 @@ export default function Meals() {
       <div className="min-h-[60vh] bg-surface-cream px-4 py-12">
         <div className="mx-auto max-w-7xl">
           <EmptyState
-            title="Unable to load meals"
+            title={t('Unable to load meals')}
             description={error}
             action={
               <Button onClick={fetchMeals}>
-                Try again
+                {t('Try again')}
               </Button>
             }
           />
@@ -228,7 +228,7 @@ export default function Meals() {
 
           <div className="flex items-center gap-2 text-sm font-medium text-text-main">
             <ShoppingCart size={20} className="text-brand-red" />
-            <span>{totalItems} items in cart</span>
+            <span>{totalItems} {t('items in cart')}</span>
           </div>
         </section>
 
@@ -262,7 +262,7 @@ export default function Meals() {
 
             {availableRestaurants.map((restaurant) => (
               <option key={restaurant.id} value={restaurant.id}>
-                {restaurant.name}
+                {t(restaurant.name)}
               </option>
             ))}
           </Select>
@@ -271,11 +271,11 @@ export default function Meals() {
         <section className="space-y-5">
           <div className="flex flex-wrap items-center justify-between gap-2">
             <h2 className="text-xl font-semibold text-text-main">
-              Available Meals
+              {t('Available Meals')}
             </h2>
 
             <span className="text-sm text-text-slate">
-              {filteredMeals.length} meals found
+              {filteredMeals.length} {t('meals found')}
             </span>
           </div>
 
@@ -310,7 +310,7 @@ export default function Meals() {
                   aria-label="Previous page"
                 >
                   <ChevronLeft size={16} />
-                  Previous
+                  {t('Previous')}
                 </Button>
 
                 {Array.from({ length: totalPages }, (_, index) => index + 1).map(
@@ -334,24 +334,24 @@ export default function Meals() {
                   onClick={() => setCurrentPage((page) => page + 1)}
                   aria-label="Next page"
                 >
-                  Next
+                  {t('Next')}
                   <ChevronRight size={16} />
                 </Button>
               </div>
 
               <p className="text-center text-sm text-text-slate">
-                Showing{' '}
+                {t('Showing')}{' '}
                 {(currentPage - 1) * ITEMS_PER_PAGE + 1}
                 {' - '}
                 {Math.min(currentPage * ITEMS_PER_PAGE, filteredMeals.length)}
-                {' of '}
-                {filteredMeals.length} meals
+                {' '}{t('of')}{' '}
+                {filteredMeals.length} {t('meals found')}
               </p>
             </>
           ) : (
             <EmptyState
-              title="No meals found"
-              description="Try changing your search or selecting another restaurant."
+              title={t('No meals found')}
+              description={t('Try changing your search or selecting another restaurant.')}
               action={
                 <Button variant="outline" onClick={clearFilters}>
                   Clear filters
