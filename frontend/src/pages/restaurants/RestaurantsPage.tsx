@@ -143,11 +143,11 @@ export default function RestaurantsPage() {
             onChange={(event) => setMinimumRating(event.target.value)}
           >
             <option value="all">{t('Any rating')}</option>
-            <option value="4">4.0 and above</option>
-            <option value="4.5">4.5 and above</option>
+            <option value="4">{t('4.0 and above')}</option>
+            <option value="4.5">{t('4.5 and above')}</option>
           </Select>
           <Select
-            label="Sort by"
+            label={t('Sort by')}
             value={sortBy}
             onChange={(event) => setSortBy(event.target.value as RestaurantSort)}
           >
@@ -185,7 +185,7 @@ export default function RestaurantsPage() {
                 disabled={currentPage === 1}
                 onClick={() => setCurrentPage((page) => page - 1)}
               >
-                Previous
+                {t('Previous')}
               </Button>
               {Array.from({ length: totalPages }, (_, index) => index + 1).map((page) => (
                 <Button
@@ -204,18 +204,18 @@ export default function RestaurantsPage() {
                 disabled={currentPage === totalPages}
                 onClick={() => setCurrentPage((page) => page + 1)}
               >
-                Next
+                {t('Next')}
               </Button>
             </div>
             <p className="text-center text-sm text-text-slate">
-              Showing {(currentPage - 1) * ITEMS_PER_PAGE + 1}–{Math.min(currentPage * ITEMS_PER_PAGE, filteredRestaurants.length)} of {filteredRestaurants.length} restaurants
+              {t('Showing')} {(currentPage - 1) * ITEMS_PER_PAGE + 1}–{Math.min(currentPage * ITEMS_PER_PAGE, filteredRestaurants.length)} {t('of')} {filteredRestaurants.length} {t('restaurants found')}
             </p>
           </>
         ) : (
           <EmptyState
-            title="No restaurants found"
-            description="Try a different name or adjust your filters to see more restaurants."
-            action={<Button variant="outline" onClick={clearFilters}>Clear filters</Button>}
+            title={t('No restaurants found')}
+            description={t('Try a different name or adjust your filters to see more restaurants.')}
+            action={<Button variant="outline" onClick={clearFilters}>{t('Clear filters')}</Button>}
           />
         )}
       </div>
