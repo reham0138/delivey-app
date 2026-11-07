@@ -589,7 +589,7 @@ export default function CheckoutPage() {
               <div className="space-y-3">
                 {cart.items.map((item) => (
                   <div
-                    key={item.menuItemId}
+                    key={`${item.restaurantId}-${item.menuItemId}`}
                     className="rounded-xl border border-border-subtle bg-surface-white p-3 shadow-sm"
                   >
                     <div className="flex items-center gap-3">
@@ -616,7 +616,7 @@ export default function CheckoutPage() {
                         <button
                           type="button"
                           aria-label={t("Decrease quantity of {name}", { name: t(item.name) })}
-                          onClick={() => item.quantity <= 1 ? cart.removeFromCart(item.menuItemId) : cart.updateQuantity(item.menuItemId, item.quantity - 1)}
+                          onClick={() => item.quantity <= 1 ? cart.removeFromCart(item.restaurantId, item.menuItemId) : cart.updateQuantity(item.restaurantId, item.menuItemId, item.quantity - 1)}
                           className="inline-flex size-8 items-center justify-center rounded-lg border border-border-subtle text-text-main transition-colors hover:border-brand-red hover:text-brand-red"
                         >
                           <Minus size={15} />
@@ -625,7 +625,7 @@ export default function CheckoutPage() {
                         <button
                           type="button"
                           aria-label={t("Increase quantity of {name}", { name: t(item.name) })}
-                          onClick={() => cart.updateQuantity(item.menuItemId, item.quantity + 1)}
+                          onClick={() => cart.updateQuantity(item.restaurantId, item.menuItemId, item.quantity + 1)}
                           className="inline-flex size-8 items-center justify-center rounded-lg border border-border-subtle text-text-main transition-colors hover:border-brand-red hover:text-brand-red"
                         >
                           <Plus size={15} />
