@@ -42,7 +42,7 @@ export function Pagination({ currentPage, totalPages, onPageChange }: Pagination
             onClick={() => onPageChange(page)}
             className="min-w-9 tabular-nums"
           >
-            {page}
+            {direction === 'rtl' ? new Intl.NumberFormat('ar').format(page) : page}
           </Button>
         ))}
       </div>
