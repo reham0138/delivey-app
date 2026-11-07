@@ -269,11 +269,11 @@ a {
 
 /* Smooth cross-fade when the interface language changes. */
 ::view-transition-old(root) {
-  animation: language-view-out 160ms ease-in both;
+  animation: language-view-out 420ms ease-in-out both;
 }
 
 ::view-transition-new(root) {
-  animation: language-view-in 300ms cubic-bezier(0.2, 0.75, 0.25, 1) both;
+  animation: language-view-in 850ms cubic-bezier(0.22, 0.7, 0.25, 1) both;
 }
 
 @keyframes language-view-out {
