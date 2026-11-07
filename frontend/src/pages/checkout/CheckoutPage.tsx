@@ -718,7 +718,7 @@ export default function CheckoutPage() {
                 )}
                 {totals.tip > 0 && (
                   <div className="flex justify-between">
-                    <span className="text-text-slate">Driver tip</span>
+                    <span className="text-text-slate">{t('Driver tip')}</span>
                     <span>{money(totals.tip)}</span>
                   </div>
                 )}
