@@ -88,8 +88,8 @@ export default function CustomerProfile({ user }: { user: User }) {
 						<p className="mt-1 text-sm text-text-slate">{t('Keep your contact information up to date.')}</p>
 					</header>
 					<form noValidate className="mt-5 space-y-5" onSubmit={handleSubmit(onSubmit)}>
-						<Input label={t("Full name")} autoComplete="name" {...register('name')} error={errors.name?.message} />
-						<Input label={t("Phone number")} type="tel" autoComplete="tel" hint={t("Optional")} {...register('phone')} error={errors.phone?.message} />
+						<Input label={t("Full name")} autoComplete="name" {...register('name')} error={errors.name?.message ? t(errors.name.message) : undefined} />
+						<Input label={t("Phone number")} type="tel" autoComplete="tel" hint={t("Optional")} {...register('phone')} error={errors.phone?.message ? t(errors.phone.message) : undefined} />
 						<div className="space-y-1">
 							<Input label={t("Email address")} type="email" autoComplete="email" value={user.email} disabled className="w-full min-w-0 truncate" />
 							<p className="flex items-center gap-1.5 text-sm text-text-slate">
