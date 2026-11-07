@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState } from 'react'
 import { SlidersHorizontal, Store } from 'lucide-react'
 
 import { Button } from '../../shared/components/Button'
+import { Pagination } from '../../shared/components/Pagination'
 import { EmptyState } from '../../shared/components/EmptyState'
 import { Input } from '../../shared/components/Input'
 import { Select } from '../../shared/components/Select'
@@ -178,35 +179,7 @@ export default function RestaurantsPage() {
               ))}
             </section>
 
-            <div className="flex flex-wrap items-center justify-center gap-2">
-              <Button
-                variant="outline"
-                size="sm"
-                disabled={currentPage === 1}
-                onClick={() => setCurrentPage((page) => page - 1)}
-              >
-                {t('Previous')}
-              </Button>
-              {Array.from({ length: totalPages }, (_, index) => index + 1).map((page) => (
-                <Button
-                  key={page}
-                  size="sm"
-                  variant={currentPage === page ? 'primary' : 'outline'}
-                  aria-current={currentPage === page ? 'page' : undefined}
-                  onClick={() => setCurrentPage(page)}
-                >
-                  {page}
-                </Button>
-              ))}
-              <Button
-                variant="outline"
-                size="sm"
-                disabled={currentPage === totalPages}
-                onClick={() => setCurrentPage((page) => page + 1)}
-              >
-                {t('Next')}
-              </Button>
-            </div>
+            <Pagination currentPage={currentPage} totalPages={totalPages} onPageChange={setCurrentPage} />
             <p className="text-center text-sm text-text-slate">
               {t('Showing')} {(currentPage - 1) * ITEMS_PER_PAGE + 1}–{Math.min(currentPage * ITEMS_PER_PAGE, filteredRestaurants.length)} {t('of')} {filteredRestaurants.length} {t('restaurants found')}
             </p>
