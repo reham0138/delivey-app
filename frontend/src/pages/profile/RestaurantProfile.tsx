@@ -331,7 +331,7 @@ function RestaurantProfileContent({
 						<p className="mt-3 text-2xl font-semibold text-text-main">{restaurant.rating > 0 ? restaurant.rating.toFixed(1) : t('New')}</p>
 						<p className="mt-1 text-sm text-text-slate">
 							{restaurant.rating > 0
-								? `${restaurant.reviewsCount ?? t('Review count unavailable')} {t("reviews from menu items")}`
+								? `${restaurant.reviewsCount ?? t('Review count unavailable')} ${t('reviews from menu items')}`
 								: t('No rating yet')}
 						</p>
 						<div className="mt-5 border-t border-border-subtle pt-4">
