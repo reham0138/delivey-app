@@ -37,8 +37,8 @@ function FloatingCartPrompt() {
       const dy = event.clientY - dragRef.current.pointerY
       if (Math.abs(dx) + Math.abs(dy) > 4) movedRef.current = true
       setPosition({
-        x: Math.max(-window.innerWidth + 280, Math.min(0, dragRef.current.x + dx)),
-        y: Math.max(-window.innerHeight + 180, Math.min(0, dragRef.current.y + dy)),
+        x: Math.max(-window.innerWidth + 260, Math.min(0, dragRef.current.x + dx)),
+        y: Math.max(-window.innerHeight + 210, Math.min(0, dragRef.current.y + dy)),
       })
     }
     const stop = () => { dragRef.current = null }
@@ -65,7 +65,7 @@ function FloatingCartPrompt() {
         if (event.key === 'Enter' || event.key === ' ') navigate('/checkout')
       }}
       style={{ transform: `translate(${position.x}px, ${position.y}px)` }}
-      className="fixed bottom-5 right-5 z-[70] w-[min(310px,calc(100vw-2rem))] cursor-pointer overflow-hidden rounded-2xl border border-border-subtle bg-surface-white shadow-2xl transition-[box-shadow] hover:shadow-2xl"
+      className="fixed bottom-5 right-5 z-[70] w-[min(280px,calc(100vw-2rem))] cursor-pointer overflow-hidden rounded-2xl border border-border-subtle bg-surface-white shadow-2xl transition-[box-shadow] hover:shadow-2xl"
     >
       <div
         onPointerDown={(event) => {
@@ -88,15 +88,15 @@ function FloatingCartPrompt() {
           <X size={16} />
         </button>
       </div>
-      <div className="flex items-center gap-3 p-4">
-        <span className="flex size-11 shrink-0 items-center justify-center rounded-xl bg-brand-red/10 text-brand-red">
-          <ShoppingCart size={21} />
+      <div className="flex flex-col items-center gap-3 px-5 py-5 text-center">
+        <span className="flex size-12 items-center justify-center rounded-2xl bg-brand-red/10 text-brand-red">
+          <ShoppingCart size={23} />
         </span>
-        <div className="min-w-0 flex-1">
+        <div>
           <p className="font-semibold text-text-main">{t('Your cart ({count})', { count: cart.totalItems })}</p>
-          <p className="text-xs text-text-slate">{cart.subtotal.toFixed(2)} · {t('Tap to continue to checkout')}</p>
+          <p className="mt-1 text-sm text-text-slate">{cart.subtotal.toFixed(2)} · {t('Tap to continue to checkout')}</p>
         </div>
-        <span className="rounded-lg bg-brand-red px-3 py-2 text-xs font-semibold !text-white">{t('Checkout')}</span>
+        <span className="w-full rounded-xl bg-brand-red px-4 py-2.5 text-sm font-semibold !text-white">{t('Checkout')}</span>
       </div>
     </div>
   )
