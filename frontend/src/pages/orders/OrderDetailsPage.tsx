@@ -15,10 +15,12 @@ import { orderService } from '@/shared/services/order.service'
 import OrderTimeline from './OrderTimeline'
 import { formatCurrency, formatDateTime, formatTime } from '@/shared/utils/format'
 import MealReviewForm from './MealReviewForm'
+import { useLanguage } from '@/shared/hooks/useLanguage'
 
 const money = (value: number) => formatCurrency(value)
 
 export default function OrderDetailsPage() {
+  const { t } = useLanguage()
   const { id = '' } = useParams()
   const { user } = useAuth()
   const cart = useCart()
@@ -51,7 +53,7 @@ export default function OrderDetailsPage() {
   if (loading) {
     return (
       <div className="flex justify-center py-24">
-        <Spinner label="Loading order..." />
+        <Spinner label={t("Loading order...")} />
       </div>
     )
   }
@@ -60,12 +62,12 @@ export default function OrderDetailsPage() {
     return (
       <div className="mx-auto max-w-3xl px-4 py-16">
         <EmptyState
-          title="Order not found"
+          title={t("Order not found")}
           description={
             error ??
-            'This order may not exist or may belong to another account.'
+            t('This order may not exist or may belong to another account.')
           }
-          action={<Button onClick={() => void retry()}>Try again</Button>}
+          action={<Button onClick={() => void retry()}>{t("Try again")}</Button>}
         />
       </div>
     )
@@ -110,7 +112,7 @@ export default function OrderDetailsPage() {
       const response = await fetch('/mock/menu-items.json')
 
       if (!response.ok) {
-        throw new Error('Could not verify current menu availability.')
+        throw new Error(t('Could not verify current menu availability.'))
       }
 
       const menuItems = await response.json() as Array<{
@@ -130,7 +132,7 @@ export default function OrderDetailsPage() {
 
       if (!available.length) {
         setMessage(
-          'None of the meals in this order are currently available.'
+          t('None of the meals in this order are currently available.')
         )
         return
       }
@@ -148,7 +150,7 @@ export default function OrderDetailsPage() {
 
       if (available.length !== order.items.length) {
         setMessage(
-          'Some meals are no longer available and were skipped.'
+          t('Some meals are no longer available and were skipped.')
         )
       }
 
@@ -157,7 +159,7 @@ export default function OrderDetailsPage() {
       setMessage(
         reason instanceof Error
           ? reason.message
-          : 'Unable to reorder this meal list.'
+          : t('Unable to reorder this meal list.')
       )
     }
   }
@@ -168,13 +170,13 @@ export default function OrderDetailsPage() {
     try {
       await orderService.cancelOrder(order.id, user?.id ?? 0)
       setCancelOpen(false)
-      setMessage('Order cancelled.')
+      setMessage(t('Order cancelled.'))
       await retry()
     } catch (reason) {
       setMessage(
         reason instanceof Error
           ? reason.message
-          : 'Unable to cancel this order.'
+          : t('Unable to cancel this order.')
       )
     } finally {
       setBusy(false)
@@ -184,7 +186,7 @@ export default function OrderDetailsPage() {
   const copy = async (value: string) => {
     try {
       await navigator.clipboard.writeText(value)
-      setMessage('Copied to clipboard.')
+      setMessage(t('Copied to clipboard.'))
     } catch {
       setMessage(value)
     }
@@ -217,13 +219,13 @@ export default function OrderDetailsPage() {
       <header className="mb-7 flex flex-wrap items-start justify-between gap-4">
         <div>
           <p className="text-sm font-semibold uppercase tracking-widest text-brand-red">
-            Order tracking
+            {t("Order tracking")}
           </p>
           <h1 className="mt-1 text-3xl font-bold">
             Order #{order.id}
           </h1>
           <p className="mt-2 text-sm text-text-slate">
-            Placed {formatDateTime(order.createdAt)}
+            {t("Placed")} {formatDateTime(order.createdAt)}
           </p>
         </div>
         <Badge status={order.status} />
@@ -242,7 +244,7 @@ export default function OrderDetailsPage() {
         <div className="space-y-5">
           <Card>
             <h2 className="mb-5 text-lg font-semibold">
-              Delivery progress
+              {t("Delivery progress")}
             </h2>
 
             <div aria-live="polite">
@@ -257,7 +259,7 @@ export default function OrderDetailsPage() {
               order.status !== 'cancelled' && (
                 <div className="mt-5 rounded-lg bg-brand-yellow/15 p-3">
                   <div className="flex justify-between gap-2 text-sm">
-                    <span>Estimated arrival</span>
+                    <span>{t("Estimated arrival")}</span>
                     <b>{formatTime(new Date(eta))}</b>
                   </div>
 
@@ -267,7 +269,7 @@ export default function OrderDetailsPage() {
                   >
                     {remaining > 0
                       ? `About ${remaining} min remaining`
-                      : 'Your order should arrive soon.'}
+                      : t('Your order should arrive soon.')}
                   </p>
 
                   <div className="mt-3 h-2 overflow-hidden rounded-full bg-border-subtle">
@@ -281,7 +283,7 @@ export default function OrderDetailsPage() {
           </Card>
 
           <Card>
-            <h2 className="mb-4 text-lg font-semibold">Items</h2>
+            <h2 className="mb-4 text-lg font-semibold">{t("Items")}</h2>
             <div className="space-y-4">
               {order.items.map(item => (
                 <div
@@ -291,7 +293,7 @@ export default function OrderDetailsPage() {
                   <div>
                     <p className="font-medium">{item.name}</p>
                     <p className="text-xs text-text-slate">
-                      Quantity: {item.quantity}
+                      {t("Quantity: {quantity}", { quantity: item.quantity })}
                     </p>
                   </div>
                   <span>
@@ -304,28 +306,28 @@ export default function OrderDetailsPage() {
 
           <Card>
             <h2 className="mb-4 text-lg font-semibold">
-              Delivery & payment
+              {t("Delivery & payment")}
             </h2>
             <dl className="grid gap-3 text-sm sm:grid-cols-2">
               <div>
-                <dt className="text-text-slate">Address</dt>
+                <dt className="text-text-slate">{t("Address")}</dt>
                 <dd className="font-medium">
                   {order.deliveryAddress}
                 </dd>
               </div>
               <div>
-                <dt className="text-text-slate">Payment</dt>
+                <dt className="text-text-slate">{t("Payment")}</dt>
                 <dd className="font-medium capitalize">
                   {order.paymentMethod}
                   {order.paymentStatus === 'simulated' ? ' (demo)' : ''}
                 </dd>
               </div>
               <div>
-                <dt className="text-text-slate">Phone</dt>
+                <dt className="text-text-slate">{t("Phone")}</dt>
                 <dd className="font-medium">{order.phone}</dd>
               </div>
               <div>
-                <dt className="text-text-slate">Notes</dt>
+                <dt className="text-text-slate">{t("Notes")}</dt>
                 <dd className="font-medium">
                   {order.notes || '—'}
                 </dd>
@@ -336,49 +338,49 @@ export default function OrderDetailsPage() {
 
         <aside className="space-y-4 lg:sticky lg:top-6">
           <Card>
-            <h2 className="mb-4 font-semibold">Payment summary</h2>
+            <h2 className="mb-4 font-semibold">{t("Payment summary")}</h2>
 
             <div className="space-y-2 text-sm">
               <div className="flex justify-between">
-                <span className="text-text-slate">Subtotal</span>
+                <span className="text-text-slate">{t("Subtotal")}</span>
                 <span>{money(order.subtotal)}</span>
               </div>
 
               <div className="flex justify-between">
-                <span className="text-text-slate">Delivery</span>
+                <span className="text-text-slate">{t("Delivery")}</span>
                 <span>{money(order.deliveryFee)}</span>
               </div>
 
               {order.serviceFee !== undefined && (
                 <div className="flex justify-between">
-                  <span className="text-text-slate">Service fee</span>
+                  <span className="text-text-slate">{t("Service fee")}</span>
                   <span>{money(order.serviceFee)}</span>
                 </div>
               )}
 
               {order.tax !== undefined && (
                 <div className="flex justify-between">
-                  <span className="text-text-slate">Tax</span>
+                  <span className="text-text-slate">{t("Tax")}</span>
                   <span>{money(order.tax)}</span>
                 </div>
               )}
 
               {(order.discount ?? 0) > 0 && (
                 <div className="flex justify-between">
-                  <span>Discount</span>
+                  <span>{t("Discount")}</span>
                   <span>-{money(order.discount ?? 0)}</span>
                 </div>
               )}
 
               {(order.tip ?? 0) > 0 && (
                 <div className="flex justify-between">
-                  <span>Tip</span>
+                  <span>{t("Tip")}</span>
                   <span>{money(order.tip ?? 0)}</span>
                 </div>
               )}
 
               <div className="flex justify-between border-t border-border-subtle pt-3 text-lg font-bold">
-                <span>Total</span>
+                <span>{t("Total")}</span>
                 <span>{money(order.total)}</span>
               </div>
             </div>
@@ -387,7 +389,7 @@ export default function OrderDetailsPage() {
           {order.status === 'delivered' && (
             <Card>
               <h2 className="mb-4 text-lg font-semibold">
-                How was your meal?
+                {t("How was your meal?")}
               </h2>
 
               <div className="space-y-4">
@@ -409,7 +411,7 @@ export default function OrderDetailsPage() {
 
           <Button className="w-full" onClick={() => void reorder()}>
             <RefreshCw size={16} />
-            Reorder these meals
+            {t("Reorder these meals")}
           </Button>
 
           {canCancel && (
@@ -419,7 +421,7 @@ export default function OrderDetailsPage() {
               onClick={() => setCancelOpen(true)}
             >
               <XCircle size={16} />
-              Cancel order
+              {t("Cancel order")}
             </Button>
           )}
 
@@ -430,7 +432,7 @@ export default function OrderDetailsPage() {
               onClick={() => void copy(String(order.id))}
             >
               <Copy size={14} />
-              Copy ID
+              {t("Copy ID")}
             </Button>
 
             <Button
@@ -439,7 +441,7 @@ export default function OrderDetailsPage() {
               onClick={() => void share()}
             >
               <Share2 size={14} />
-              Share
+              {t("Share")}
             </Button>
 
             <Button
@@ -448,7 +450,7 @@ export default function OrderDetailsPage() {
               onClick={() => window.print()}
             >
               <Printer size={14} />
-              Print
+              {t("Print")}
             </Button>
           </div>
         </aside>
@@ -457,11 +459,11 @@ export default function OrderDetailsPage() {
       <Modal
         open={cancelOpen}
         onClose={() => setCancelOpen(false)}
-        title="Cancel this order"
+        title={t("Cancel this order")}
       >
         <p className="text-sm text-text-slate">
-          Are you sure you want to cancel order #{order.id}?
-          This action cannot be undone.
+          {t("Are you sure you want to cancel order #{id}?", { id: order.id })}
+          {t("This action cannot be undone.")}
         </p>
 
         <div className="mt-5 flex justify-end gap-2">
@@ -469,7 +471,7 @@ export default function OrderDetailsPage() {
             variant="outline"
             onClick={() => setCancelOpen(false)}
           >
-            Keep order
+            {t("Keep order")}
           </Button>
 
           <Button
@@ -477,7 +479,7 @@ export default function OrderDetailsPage() {
             loading={busy}
             onClick={() => void cancel()}
           >
-            Confirm cancellation
+            {t("Confirm cancellation")}
           </Button>
         </div>
       </Modal>
