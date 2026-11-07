@@ -147,7 +147,6 @@ export default function CheckoutPage() {
     });
     return Array.from(groups.entries()).map(([restaurantId, group]) => ({ restaurantId, ...group }));
   }, [cart.items, restaurants]);
-  const restaurant = cartGroups[0]?.restaurant ?? null;
   const deliveryFee = promo?.deliveryFee ?? cartGroups.reduce(
     (total, group) => total + (group.restaurant?.deliveryFee ?? 0), 0
   );
@@ -179,10 +178,10 @@ export default function CheckoutPage() {
     setForm((current) => ({ ...current, [key]: value }));
   const validate = () => {
     const next: Record<string, string> = {};
-    if (form.name.trim().length < 2) next.name = "Enter your full name.";
-    if (!isValidPhone(form.phone)) next.phone = "Enter a valid phone number.";
+    if (form.name.trim().length < 2) next.name = t("Enter your full name.");
+    if (!isValidPhone(form.phone)) next.phone = t("Enter a valid phone number.");
     if (!isValidAddress(form.address))
-      next.address = "Enter a complete delivery address.";
+      next.address = t("Enter a complete delivery address.");
     const belowMinimum = cartGroups.find(
       (group) => group.restaurant && group.subtotal < group.restaurant.minOrder
     );
@@ -196,13 +195,13 @@ export default function CheckoutPage() {
       next.cart = t('Some restaurant details could not be loaded. Please refresh and try again.');
     }
     if (form.delivery === "scheduled" && !form.slot)
-      next.slot = "Choose a delivery time.";
+      next.slot = t("Choose a delivery time.");
     if (form.payment === "card") {
       if (!isValidCardNumber(card.number))
-        next.cardNumber = "Enter a valid card number.";
+        next.cardNumber = t("Enter a valid card number.");
       if (!isValidCardExpiry(card.expiry))
-        next.expiry = "Use a valid MM/YY expiry date.";
-      if (!isValidCvc(card.cvc)) next.cvc = "Enter a 3 or 4 digit CVC.";
+        next.expiry = t("Use a valid MM/YY expiry date.");
+      if (!isValidCvc(card.cvc)) next.cvc = t("Enter a 3 or 4 digit CVC.");
     }
     setErrors(next);
     return Object.keys(next).length === 0;
@@ -217,9 +216,9 @@ export default function CheckoutPage() {
     setPromoMessage(
       result
         ? result.code === "FREESHIP"
-          ? "Free delivery applied."
-          : "10% discount applied."
-        : "That promo code is not valid.",
+          ? t("Free delivery applied.")
+          : t("10% discount applied.")
+        : t("That promo code is not valid."),
     );
     if (!result) update("promo", form.promo.toUpperCase());
   };
@@ -317,10 +316,10 @@ export default function CheckoutPage() {
     return (
       <div className="mx-auto max-w-3xl px-4 py-16">
         <EmptyState
-          title="Your cart is empty"
-          description="Add a few meals before checking out."
+          title={t("Your cart is empty")}
+          description={t("Add a few meals before checking out.")}
           action={
-            <Button onClick={() => navigate("/meals")}>Browse meals</Button>
+            <Button onClick={() => navigate("/meals")}>{t("Browse meals")}</Button>
           }
         />
       </div>
@@ -328,7 +327,7 @@ export default function CheckoutPage() {
   if (loadingRestaurant)
     return (
       <div className="flex justify-center py-24">
-        <Spinner label="Preparing checkout..." />
+        <Spinner label={t("Preparing checkout...")} />
       </div>
     );
 
@@ -516,9 +515,9 @@ export default function CheckoutPage() {
                 <Wallet size={19} />
               </span>
               <div>
-                <h2 className="font-semibold">Payment method</h2>
+                <h2 className="font-semibold">{t("Payment method")}</h2>
                 <p className="text-xs text-text-slate">
-                  Choose how you would like to pay.
+                  {t("Choose how you would like to pay.")}
                 </p>
               </div>
             </div>
@@ -530,8 +529,8 @@ export default function CheckoutPage() {
               >
                 <Wallet />
                 <span>
-                  <b className="block">Cash on delivery</b>
-                  <small className="text-text-slate">Pay when it arrives</small>
+                  <b className="block">{t("Cash on delivery")}</b>
+                  <small className="text-text-slate">{t("Pay when it arrives")}</small>
                 </span>
               </button>
               <button
@@ -541,9 +540,9 @@ export default function CheckoutPage() {
               >
                 <CreditCard />
                 <span>
-                  <b className="block">Card</b>
+                  <b className="block">{t("Card")}</b>
                   <small className="text-text-slate">
-                    Simulated demo payment
+                    {t("Simulated demo payment")}
                   </small>
                 </span>
               </button>
@@ -558,7 +557,7 @@ export default function CheckoutPage() {
               <div className="mt-4 grid gap-4 sm:grid-cols-2">
                 <Input
                   wrapperClassName="sm:col-span-2"
-                  label="Card number"
+                  label={t("Card number")}
                   inputMode="numeric"
                   autoComplete="cc-number"
                   value={card.number}
@@ -572,7 +571,7 @@ export default function CheckoutPage() {
                   placeholder="1234 5678 9012 3456"
                 />
                 <Input
-                  label="Expiry (MM/YY)"
+                  label={t("Expiry (MM/YY)")}
                   autoComplete="cc-exp"
                   value={card.expiry}
                   onChange={(event) =>
@@ -585,7 +584,7 @@ export default function CheckoutPage() {
                   placeholder="MM/YY"
                 />
                 <Input
-                  label="CVC"
+                  label={t("CVC")}
                   type="password"
                   inputMode="numeric"
                   autoComplete="cc-csc"
@@ -609,7 +608,7 @@ export default function CheckoutPage() {
               onChange={(event) => update("notes", event.target.value)}
               rows={3}
               maxLength={300}
-              placeholder="Allergies, gate code, delivery instructions..."
+              placeholder={t("Allergies, gate code, delivery instructions...")}
               className="w-full rounded-lg border border-border-subtle bg-surface-white p-3 text-sm text-text-main"
             />
             <p className="mt-1 text-end text-xs text-text-slate">
@@ -697,7 +696,7 @@ export default function CheckoutPage() {
                     label={t('Promo code')}
                     value={form.promo}
                     onChange={(event) => update("promo", event.target.value)}
-                    placeholder="WELCOME10"
+                    placeholder={t("WELCOME10")}
                   />
                   <Button
                     type="button"
@@ -768,7 +767,7 @@ export default function CheckoutPage() {
                 </div>
                 {totals.discount > 0 && (
                   <div className="flex justify-between text-green-700">
-                    <span>Discount</span>
+                    <span>{t("Discount")}</span>
                     <span>-{money(totals.discount)}</span>
                   </div>
                 )}
