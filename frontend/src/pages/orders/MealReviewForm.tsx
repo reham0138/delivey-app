@@ -18,7 +18,7 @@ export default function MealReviewForm({ order, menuItemId, customerName }: { or
     let active = true
     reviewService.getCustomerMealReview(order.customerId, menuItemId)
       .then(value => { if (active) setReview(value) })
-      .catch(reason => { if (active) setError(reason instanceof Error ? reason.message : t('Could not load your review.')) })
+      .catch(reason => { if (active) setError(reason instanceof Error ? t(reason.message) : t('Could not load your review.')) })
       .finally(() => { if (active) setLoading(false) })
     return () => { active = false }
   }, [order.customerId, menuItemId, t])
@@ -29,7 +29,7 @@ export default function MealReviewForm({ order, menuItemId, customerName }: { or
     try {
       setReview(await reviewService.createReview(order, customerName, menuItemId, rating, comment))
     } catch (reason) {
-      setError(reason instanceof Error ? reason.message : t('Could not save your review.'))
+      setError(reason instanceof Error ? t(reason.message) : t('Could not save your review.'))
     } finally {
       setSubmitting(false)
     }
