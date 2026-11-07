@@ -238,7 +238,9 @@ export default function CheckoutPage() {
       const scheduledFor = form.delivery === "scheduled" ? form.slot : null;
       let allocatedDiscount = 0;
       let allocatedTip = 0;
-      const orders = await Promise.all(cartGroups.map(async (group, index) => {
+      const orders = [];
+      for (let index = 0; index < cartGroups.length; index += 1) {
+        const group = cartGroups[index];
         const currentRestaurant = group.restaurant;
         if (!currentRestaurant) throw new Error(t('Some restaurant details could not be loaded. Please refresh and try again.'));
         const isLast = index === cartGroups.length - 1;
@@ -259,7 +261,7 @@ export default function CheckoutPage() {
         const estimated = new Date(
           Date.now() + (currentRestaurant.deliveryTimeMinutes + 15) * 60000,
         );
-        return orderService.createOrder({
+        const createdOrder = await orderService.createOrder({
           customerId: user.id,
           customerName: form.name.trim(),
           phone: form.phone.trim(),
@@ -283,7 +285,8 @@ export default function CheckoutPage() {
             ),
           ).toISOString(),
         });
-      }));
+        orders.push(createdOrder);
+      }
       if (saveAddress) {
         await orderService.saveAddress({
           id: selectedAddressId || crypto.randomUUID(),
