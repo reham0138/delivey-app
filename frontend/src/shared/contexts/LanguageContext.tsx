@@ -350,6 +350,7 @@ Object.assign(translations, {
   'Loading restaurants...': 'جارٍ تحميل المطاعم...',
   'Loading restaurant...': 'جارٍ تحميل المطعم...',
   'About {minutes} minutes': ({ minutes }: Record<string, string | number>) => `حوالي ${minutes} دقيقة`,
+  '{minutes} min': ({ minutes }: Record<string, string | number>) => `${minutes} دقيقة`,
   'Minimum order for {name} is {amount}.': ({ name, amount }: Record<string, string | number>) => `الحد الأدنى للطلب من ${name} هو ${amount}.`,
   'Some restaurant details could not be loaded. Please refresh and try again.': 'تعذر تحميل بيانات بعض المطاعم. حدّث الصفحة وحاول مجدداً.',
   'Your cart is empty': 'سلتك فارغة',
