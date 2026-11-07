@@ -1,6 +1,6 @@
 
 import { useCallback, useEffect, useMemo, useState } from 'react'
-import { Utensils, ShoppingCart, ChevronLeft, ChevronRight } from 'lucide-react'
+import { Utensils, ShoppingCart } from 'lucide-react'
 
 import MealCard from '../shared/components/MealCard'
 import { Input } from '../shared/components/Input'
@@ -8,6 +8,7 @@ import { Select } from '../shared/components/Select'
 import { EmptyState } from '../shared/components/EmptyState'
 import { Spinner } from '../shared/components/Spinner'
 import { Button } from '../shared/components/Button'
+import { Pagination } from '../shared/components/Pagination'
 import { useCart } from '../shared/hooks/useCart'
 import { useLanguage } from '../shared/hooks/useLanguage'
 
@@ -298,44 +299,7 @@ export default function Meals() {
                 ))}
               </div>
 
-              {/* Pagination */}
-              <div className="flex flex-wrap items-center justify-center gap-2 pt-6">
-                <Button
-                  variant="outline"
-                  size="sm"
-                  disabled={currentPage === 1}
-                  onClick={() => setCurrentPage((page) => page - 1)}
-                  aria-label="Previous page"
-                >
-                  <ChevronLeft size={16} />
-                  {t('Previous')}
-                </Button>
-
-                {Array.from({ length: totalPages }, (_, index) => index + 1).map(
-                  (page) => (
-                    <Button
-                      key={page}
-                      size="sm"
-                      variant={currentPage === page ? 'primary' : 'outline'}
-                      aria-current={currentPage === page ? 'page' : undefined}
-                      onClick={() => setCurrentPage(page)}
-                    >
-                      {page}
-                    </Button>
-                  )
-                )}
-
-                <Button
-                  variant="outline"
-                  size="sm"
-                  disabled={currentPage === totalPages}
-                  onClick={() => setCurrentPage((page) => page + 1)}
-                  aria-label="Next page"
-                >
-                  {t('Next')}
-                  <ChevronRight size={16} />
-                </Button>
-              </div>
+              <Pagination currentPage={currentPage} totalPages={totalPages} onPageChange={setCurrentPage} />
 
               <p className="text-center text-sm text-text-slate">
                 {t('Showing')}{' '}
