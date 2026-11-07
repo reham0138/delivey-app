@@ -240,7 +240,7 @@ function RestaurantProfileContent({
 				</div>
 
 				<div className="grid gap-3 border-t border-border-subtle bg-surface-white p-4 sm:grid-cols-3 sm:p-5">
-					<ProfileMetric icon={<Clock3 aria-hidden="true" size={17} />} label={t("Delivery time")} value={`${restaurant.deliveryTimeMinutes} min`} />
+					<ProfileMetric icon={<Clock3 aria-hidden="true" size={17} />} label={t("Delivery time")} value={t('{minutes} min', { minutes: restaurant.deliveryTimeMinutes })} />
 					<ProfileMetric icon={<span aria-hidden="true" className="text-sm font-semibold">$</span>} label={t("Delivery fee")} value={formatCurrency(restaurant.deliveryFee)} />
 					<ProfileMetric icon={<span aria-hidden="true" className="text-sm font-semibold">$</span>} label={t("Minimum order")} value={formatCurrency(restaurant.minOrder)} />
 				</div>
