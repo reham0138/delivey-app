@@ -488,6 +488,12 @@ Object.assign(translations, {
   'Share a few words (optional)': 'اكتب تعليقاً قصيراً (اختياري)',
   'Submit review': 'إرسال التقييم',
   'Order tracking': 'تتبع الطلب',
+  'Choose a JPG, JPEG, PNG, or WEBP image.': 'اختر صورة بصيغة JPG أو JPEG أو PNG أو WEBP.',
+  'The image must be 3 MB or smaller.': 'يجب ألا يتجاوز حجم الصورة 3 ميغابايت.',
+  'This image could not be prepared for local storage. Try another image.': 'تعذر تجهيز هذه الصورة للحفظ المحلي. جرّب صورة أخرى.',
+  'Something went wrong. Please try again.': 'حدث خطأ ما. يرجى المحاولة مجدداً.',
+  'Image processing is unavailable.': 'معالجة الصور غير متاحة.',
+  'The image is too large to store locally.': 'حجم الصورة كبير جداً للحفظ محلياً.',
 })
 
 function getInitialLanguage(): Language {
