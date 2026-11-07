@@ -53,19 +53,10 @@ function FloatingCartPrompt() {
   if (!cart.isCartPromptOpen || cart.totalItems === 0) return null
 
   return (
-    <div
-      role="button"
-      tabIndex={0}
+    <section
       aria-label={t('Open checkout')}
-      onClick={() => {
-        if (movedRef.current) { movedRef.current = false; return }
-        navigate('/checkout')
-      }}
-      onKeyDown={(event) => {
-        if (event.key === 'Enter' || event.key === ' ') navigate('/checkout')
-      }}
       style={{ transform: `translate(${position.x}px, ${position.y}px)` }}
-      className="fixed bottom-5 right-5 z-[70] w-[min(280px,calc(100vw-2rem))] cursor-pointer overflow-hidden rounded-2xl border border-border-subtle bg-surface-white shadow-2xl transition-[box-shadow] hover:shadow-2xl"
+      className="fixed bottom-5 right-5 z-[70] w-[min(280px,calc(100vw-2rem))] overflow-hidden rounded-2xl border border-border-subtle bg-surface-white shadow-2xl transition-[box-shadow] hover:shadow-2xl"
     >
       <div
         onPointerDown={(event) => {
@@ -82,23 +73,27 @@ function FloatingCartPrompt() {
           type="button"
           aria-label={t('Close cart')}
           onPointerDown={(event) => event.stopPropagation()}
-          onClick={(event) => { event.stopPropagation(); cart.closeCartPrompt() }}
+          onClick={cart.closeCartPrompt}
           className="inline-flex size-7 items-center justify-center rounded-full text-text-slate hover:bg-brand-red/10 hover:text-brand-red"
         >
           <X size={16} />
         </button>
       </div>
-      <div className="flex flex-col items-center gap-3 px-5 py-5 text-center">
+      <button
+        type="button"
+        onClick={() => navigate('/checkout')}
+        className="flex w-full flex-col items-center gap-3 px-5 py-5 text-center transition-colors hover:bg-brand-red/5"
+      >
         <span className="flex size-12 items-center justify-center rounded-2xl bg-brand-red/10 text-brand-red">
           <ShoppingCart size={23} />
         </span>
-        <div>
-          <p className="font-semibold text-text-main">{t('Your cart ({count})', { count: cart.totalItems })}</p>
-          <p className="mt-1 text-sm text-text-slate">{cart.subtotal.toFixed(2)} · {t('Tap to continue to checkout')}</p>
-        </div>
+        <span>
+          <span className="block font-semibold text-text-main">{t('Your cart ({count})', { count: cart.totalItems })}</span>
+          <span className="mt-1 block text-sm text-text-slate">{cart.subtotal.toFixed(2)} · {t('Tap to continue to checkout')}</span>
+        </span>
         <span className="w-full rounded-xl bg-brand-red px-4 py-2.5 text-sm font-semibold !text-white">{t('Checkout')}</span>
-      </div>
-    </div>
+      </button>
+    </section>
   )
 }
 
