@@ -16,6 +16,9 @@ export interface CartContextValue {
   removeFromCart: (menuItemId: number) => void
   updateQuantity: (menuItemId: number, quantity: number) => void
   clearCart: () => void
+  isCartPromptOpen: boolean
+  showCartPrompt: () => void
+  closeCartPrompt: () => void
   totalItems: number
   subtotal: number
 }
