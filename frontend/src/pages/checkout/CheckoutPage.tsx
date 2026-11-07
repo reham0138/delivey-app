@@ -26,7 +26,7 @@ import {
   type OrderAddress,
 } from "@/shared/services/order.service";
 import { calculateOrderTotals } from "@/shared/services/orderTotals.service";
-import type { Restaurant } from "@/shared/types";
+import type { Order, Restaurant } from "@/shared/types";
 import { formatCurrency } from "@/shared/utils/format";
 import {
   isValidAddress,
@@ -237,7 +237,7 @@ export default function CheckoutPage() {
       const scheduledFor = form.delivery === "scheduled" ? form.slot : null;
       let allocatedDiscount = 0;
       let allocatedTip = 0;
-      const orders = [];
+      const orders: Order[] = [];
       for (let index = 0; index < cartGroups.length; index += 1) {
         const group = cartGroups[index];
         const currentRestaurant = group.restaurant;
@@ -299,8 +299,10 @@ export default function CheckoutPage() {
       }
       localStorage.removeItem(DRAFT_KEY);
       cart.clearCart();
+      const firstOrder = orders[0];
+      if (!firstOrder) throw new Error(t('We could not create your orders. Please try again.'));
       const relatedIds = orders.slice(1).map((order) => order.id).join(',');
-      navigate(`/orders/${orders[0].id}/confirmation${relatedIds ? `?related=${relatedIds}` : ''}`, { replace: true });
+      navigate(`/orders/${firstOrder.id}/confirmation${relatedIds ? `?related=${relatedIds}` : ''}`, { replace: true });
     } catch (reason) {
       setError(
         reason instanceof Error
@@ -549,8 +551,7 @@ export default function CheckoutPage() {
             </div>
             {form.payment === "card" && (
               <div className="mt-4 rounded-xl border border-brand-yellow/50 bg-brand-yellow/10 p-3 text-sm text-text-main">
-                Demo only: card details are validated in your browser and are
-                never sent or saved.
+                {t("Demo only: card details are validated in your browser and are never sent or saved.")}
               </div>
             )}
             {form.payment === "card" && (
