@@ -79,7 +79,7 @@ function FloatingCartPrompt() {
         onPointerDown={(event) => {
           event.preventDefault()
           movedRef.current = false
-          dragRef.current = { pointerX: event.clientX, pointerY: event.clientY, x: position.x, y: position.y }
+          dragRef.current = { pointerX: event.clientX, pointerY: event.clientY, x: position?.x ?? Math.max(8, window.innerWidth - 300), y: position?.y ?? Math.max(8, window.innerHeight - 270) }
         }}
         className="flex touch-none select-none cursor-grab items-center justify-between gap-3 border-b border-border-subtle bg-surface-cream px-4 py-2 active:cursor-grabbing"
       >
