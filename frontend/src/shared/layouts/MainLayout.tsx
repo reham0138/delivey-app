@@ -14,7 +14,6 @@ function FloatingCartPrompt() {
   const navigate = useNavigate()
   const [position, setPosition] = useState<{ x: number; y: number } | null>(null)
   const dragRef = useRef<{ pointerX: number; pointerY: number; x: number; y: number } | null>(null)
-  const movedRef = useRef(false)
 
   useEffect(() => {
     if (!cart.isCartPromptOpen) return
@@ -41,7 +40,6 @@ function FloatingCartPrompt() {
       if (!dragRef.current) return
       const dx = event.clientX - dragRef.current.pointerX
       const dy = event.clientY - dragRef.current.pointerY
-      if (Math.abs(dx) + Math.abs(dy) > 4) movedRef.current = true
       setPosition({
         x: Math.max(8, Math.min(window.innerWidth - 288, dragRef.current.x + dx)),
         y: Math.max(8, Math.min(window.innerHeight - 270, dragRef.current.y + dy)),
@@ -63,13 +61,6 @@ function FloatingCartPrompt() {
   return (
     <section
       aria-label={t('Open checkout')}
-      onClick={() => {
-        if (movedRef.current) {
-          movedRef.current = false
-          return
-        }
-        navigate('/checkout')
-      }}
       style={position
         ? { left: position.x, top: position.y, right: 'auto', bottom: 'auto' }
         : { right: 20, bottom: 20 }}
@@ -77,8 +68,6 @@ function FloatingCartPrompt() {
     >
       <div
         onPointerDown={(event) => {
-          event.preventDefault()
-          movedRef.current = false
           dragRef.current = { pointerX: event.clientX, pointerY: event.clientY, x: position?.x ?? Math.max(8, window.innerWidth - 300), y: position?.y ?? Math.max(8, window.innerHeight - 270) }
         }}
         className="flex touch-none select-none cursor-grab items-center justify-between gap-3 border-b border-border-subtle bg-surface-cream px-4 py-2 active:cursor-grabbing"
@@ -96,7 +85,10 @@ function FloatingCartPrompt() {
           <X size={16} />
         </button>
       </div>
-      <div className="px-3 py-3">
+      <div
+        onClick={() => navigate('/checkout')}
+        className="cursor-pointer px-3 py-3"
+      >
         <div className="mb-2 flex items-center justify-between gap-2">
           <span className="flex items-center gap-2 text-sm font-bold text-text-main">
             <ShoppingCart size={17} className="text-brand-red" />
@@ -118,7 +110,7 @@ function FloatingCartPrompt() {
         </div>
         <button
           type="button"
-          onClick={() => navigate('/checkout')}
+          onClick={(event) => { event.stopPropagation(); navigate('/checkout') }}
           className="mt-3 flex w-full items-center justify-center gap-2 rounded-xl bg-brand-red px-4 py-2.5 text-sm font-semibold !text-white transition-colors hover:bg-brand-red/90"
         >
           {t('Checkout')} <span aria-hidden="true">→</span>
