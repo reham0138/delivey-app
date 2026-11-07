@@ -65,7 +65,7 @@ export default function Meals() {
       ])
 
       if (!mealsResponse.ok || !restaurantsResponse.ok) {
-        throw new Error('Failed to load meals data.')
+        throw new Error(t('Failed to load meals data.'))
       }
 
       const [mealsData, restaurantsData] = await Promise.all([
@@ -77,7 +77,7 @@ export default function Meals() {
       setRestaurants(restaurantsData)
     } catch (err) {
       setError(
-        err instanceof Error ? err.message : 'Something went wrong.'
+        err instanceof Error ? err.message : t('Something went wrong.')
       )
     } finally {
       setLoading(false)
@@ -144,7 +144,7 @@ export default function Meals() {
   const getRestaurantName = (restaurantId: number) => {
     return (
       restaurants.find((restaurant) => restaurant.id === restaurantId)?.name ??
-      'Unknown restaurant'
+      t('Unknown restaurant')
     )
   }
 
@@ -315,7 +315,7 @@ export default function Meals() {
               description={t('Try changing your search or selecting another restaurant.')}
               action={
                 <Button variant="outline" onClick={clearFilters}>
-                  Clear filters
+                  {t('Clear filters')}
                 </Button>
               }
             />
