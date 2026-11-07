@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from 'react'
-import { ArrowLeft, Clock3, MapPin, Store } from 'lucide-react'
+import { ArrowLeft, ChevronLeft, ChevronRight, Clock3, MapPin, Store } from 'lucide-react'
 import { Link, useParams } from 'react-router-dom'
 
 import { Button } from '../../shared/components/Button'
@@ -20,7 +20,7 @@ const ITEMS_PER_PAGE = 8
 type MealSort = 'popular' | 'rating' | 'price' | 'name'
 
 export default function RestaurantDetailsPage() {
-  const { t } = useLanguage()
+  const { t, direction } = useLanguage()
   const { id } = useParams()
   const restaurantId = id && /^\d+$/.test(id) ? Number(id) : null
   const { data, loading, error, refetch } = useRestaurant(restaurantId)
@@ -264,13 +264,47 @@ export default function RestaurantDetailsPage() {
                 ))}
               </div>
               {totalPages > 1 && (
-                <div className="flex flex-wrap items-center justify-center gap-2 pt-4">
-                  <Button variant="outline" size="sm" disabled={currentPage === 1} onClick={() => setCurrentPage((page) => page - 1)}>Previous</Button>
-                  {Array.from({ length: totalPages }, (_, index) => index + 1).map((page) => (
-                    <Button key={page} size="sm" variant={currentPage === page ? 'primary' : 'outline'} aria-current={currentPage === page ? 'page' : undefined} onClick={() => setCurrentPage(page)}>{page}</Button>
-                  ))}
-                  <Button variant="outline" size="sm" disabled={currentPage === totalPages} onClick={() => setCurrentPage((page) => page + 1)}>Next</Button>
-                </div>
+                <nav
+                  aria-label={t('Pagination')}
+                  dir={direction}
+                  className="flex flex-wrap items-center justify-center gap-2 pt-5"
+                >
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    disabled={currentPage === 1}
+                    onClick={() => setCurrentPage((page) => Math.max(1, page - 1))}
+                    className="inline-flex min-w-24 items-center justify-center gap-2"
+                  >
+                    {direction === 'rtl' ? <ChevronRight size={16} /> : <ChevronLeft size={16} />}
+                    {t('Previous')}
+                  </Button>
+                  <div className="flex items-center gap-1.5" dir="ltr">
+                    {Array.from({ length: totalPages }, (_, index) => index + 1).map((page) => (
+                      <Button
+                        key={page}
+                        size="sm"
+                        variant={currentPage === page ? 'primary' : 'outline'}
+                        aria-current={currentPage === page ? 'page' : undefined}
+                        aria-label={t('Go to page {page}', { page })}
+                        onClick={() => setCurrentPage(page)}
+                        className="min-w-9 tabular-nums"
+                      >
+                        {page}
+                      </Button>
+                    ))}
+                  </div>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    disabled={currentPage === totalPages}
+                    onClick={() => setCurrentPage((page) => Math.min(totalPages, page + 1))}
+                    className="inline-flex min-w-24 items-center justify-center gap-2"
+                  >
+                    {t('Next')}
+                    {direction === 'rtl' ? <ChevronLeft size={16} /> : <ChevronRight size={16} />}
+                  </Button>
+                </nav>
               )}
             </>
           ) : (
