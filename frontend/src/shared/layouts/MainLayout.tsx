@@ -21,7 +21,7 @@ function FloatingCartPrompt() {
     if (!position) {
       setPosition({
         x: Math.max(8, window.innerWidth - 300),
-        y: Math.max(8, window.innerHeight - 250),
+        y: Math.max(8, window.innerHeight - 270),
       })
     }
     const closeOnEscape = (event: KeyboardEvent) => {
@@ -44,15 +44,17 @@ function FloatingCartPrompt() {
       if (Math.abs(dx) + Math.abs(dy) > 4) movedRef.current = true
       setPosition({
         x: Math.max(8, Math.min(window.innerWidth - 288, dragRef.current.x + dx)),
-        y: Math.max(8, Math.min(window.innerHeight - 220, dragRef.current.y + dy)),
+        y: Math.max(8, Math.min(window.innerHeight - 270, dragRef.current.y + dy)),
       })
     }
     const stop = () => { dragRef.current = null }
     window.addEventListener('pointermove', move)
     window.addEventListener('pointerup', stop)
+    window.addEventListener('pointercancel', stop)
     return () => {
       window.removeEventListener('pointermove', move)
       window.removeEventListener('pointerup', stop)
+      window.removeEventListener('pointercancel', stop)
     }
   }, [])
 
@@ -95,7 +97,7 @@ function FloatingCartPrompt() {
           </span>
           <span className="text-sm font-bold text-brand-red">{cart.subtotal.toFixed(2)}</span>
         </div>
-        <div className="max-h-36 space-y-2 overflow-y-auto">
+        <div className="max-h-24 space-y-2 overflow-y-auto">
           {cart.items.map((item) => (
             <div key={`${item.restaurantId}-${item.menuItemId}`} className="flex min-w-0 items-center justify-between gap-2 rounded-lg bg-surface-cream px-2.5 py-2">
               <div className="min-w-0 flex-1">
