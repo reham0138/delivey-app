@@ -23,6 +23,7 @@ function getInitialCart(): CartItem[] {
 
 export function CartProvider({ children }: { children: ReactNode }) {
   const [items, setItems] = useState<CartItem[]>(getInitialCart)
+  const [isCartPromptOpen, setIsCartPromptOpen] = useState(false)
 
   useEffect(() => {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(items))
@@ -82,6 +83,15 @@ export function CartProvider({ children }: { children: ReactNode }) {
 
   const clearCart = useCallback(() => {
     setItems([])
+    setIsCartPromptOpen(false)
+  }, [])
+
+  const showCartPrompt = useCallback(() => {
+    setIsCartPromptOpen(true)
+  }, [])
+
+  const closeCartPrompt = useCallback(() => {
+    setIsCartPromptOpen(false)
   }, [])
 
   const value = useMemo<CartContextValue>(() => ({
@@ -92,12 +102,15 @@ export function CartProvider({ children }: { children: ReactNode }) {
     removeFromCart,
     updateQuantity,
     clearCart,
+    isCartPromptOpen,
+    showCartPrompt,
+    closeCartPrompt,
     totalItems: items.reduce((total, item) => total + item.quantity, 0),
     subtotal: items.reduce(
       (total, item) => total + item.price * item.quantity,
       0
     ),
-  }), [items, addToCart, removeFromCart, updateQuantity, clearCart])
+  }), [items, addToCart, removeFromCart, updateQuantity, clearCart, isCartPromptOpen, showCartPrompt, closeCartPrompt])
 
   return (
     <CartContext.Provider value={value}>
