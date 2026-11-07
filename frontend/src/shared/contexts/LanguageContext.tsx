@@ -499,7 +499,6 @@ Object.assign(translations, {
   'Main navigation': 'التنقل الرئيسي',
   'Loading checkout...': 'جارٍ تحميل صفحة الدفع...',
   'Loading orders...': 'جارٍ تحميل الطلبات...',
-  'Loading confirmation...': 'جارٍ تحميل تأكيد الطلب...',
   'Loading profile...': 'جارٍ تحميل الملف الشخصي...',
   'Unknown restaurant': 'مطعم غير معروف',
   'Failed to load meals data.': 'تعذر تحميل بيانات الوجبات.',
