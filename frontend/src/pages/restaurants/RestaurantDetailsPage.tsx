@@ -236,7 +236,7 @@ export default function RestaurantDetailsPage() {
               onChange={(event) => setSelectedCategory(event.target.value)}
             >
               <option value="all">{t('All categories')}</option>
-              {categories.map((category) => <option key={category} value={category}{t(category)}</option>)}
+              {categories.map((category) => <option key={category} value={category}>{t(category)}</option>)}
             </Select>
             <Select
               label={t('Sort meals')}
