@@ -275,7 +275,7 @@ function RestaurantProfileContent({
 									<RestaurantImage
 										restaurant={restaurant}
 										srcOverride={previewUrl ?? selectedImage ?? undefined}
-										alt={`${restaurant.name} cover preview`}
+										alt={t("{name} cover preview", { name: t(restaurant.name) })}
 										className="size-full object-cover"
 									/>
 								</div>
