@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react'
-import { Link, Outlet, useLocation } from 'react-router-dom'
+import { Outlet, useLocation, useNavigate } from 'react-router-dom'
 import { ShoppingCart, X, GripVertical } from 'lucide-react'
 import { useCart } from '../hooks/useCart'
 import { useLanguage } from '../hooks/useLanguage'
@@ -11,6 +11,7 @@ function FloatingCartPrompt() {
   const { t } = useLanguage()
   const cart = useCart()
   const location = useLocation()
+  const navigate = useNavigate()
   const [position, setPosition] = useState({ x: 0, y: 0 })
   const dragRef = useRef<{ pointerX: number; pointerY: number; x: number; y: number } | null>(null)
   const movedRef = useRef(false)
@@ -27,7 +28,7 @@ function FloatingCartPrompt() {
   useEffect(() => {
     cart.closeCartPrompt()
     setPosition({ x: 0, y: 0 })
-  }, [location.pathname])
+  }, [location.pathname, cart.closeCartPrompt])
 
   useEffect(() => {
     const move = (event: PointerEvent) => {
@@ -58,10 +59,10 @@ function FloatingCartPrompt() {
       aria-label={t('Open checkout')}
       onClick={() => {
         if (movedRef.current) { movedRef.current = false; return }
-        window.location.assign('/checkout')
+        navigate('/checkout')
       }}
       onKeyDown={(event) => {
-        if (event.key === 'Enter' || event.key === ' ') window.location.assign('/checkout')
+        if (event.key === 'Enter' || event.key === ' ') navigate('/checkout')
       }}
       style={{ transform: `translate(${position.x}px, ${position.y}px)` }}
       className="fixed bottom-5 right-5 z-[70] w-[min(310px,calc(100vw-2rem))] cursor-pointer overflow-hidden rounded-2xl border border-border-subtle bg-surface-white shadow-2xl transition-[box-shadow] hover:shadow-2xl"
