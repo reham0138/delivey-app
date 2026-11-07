@@ -177,12 +177,7 @@ export default function NavBar() {
                 <Store aria-hidden="true" size={19} />
                 {t('Restaurants')}
               </NavLink>
-              {cart.totalItems > 0 && (
-                <NavLink to="/checkout" onClick={closeSidebar} className={linkClassName}>
-                  <ShoppingCart aria-hidden="true" size={19} />
-                  {t('Checkout ({count})', { count: cart.totalItems })}
-                </NavLink>
-              )}
+
               {isAuthenticated && (
                 <NavLink to="/orders" onClick={closeSidebar} className={linkClassName}>
                   <ClipboardList aria-hidden="true" size={19} />
