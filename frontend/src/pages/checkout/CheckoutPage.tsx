@@ -92,7 +92,7 @@ export default function CheckoutPage() {
       phone: draft.phone || user?.phone || "",
     };
   });
-  const [restaurant, setRestaurant] = useState<Restaurant | null>(null);
+  const [restaurants, setRestaurants] = useState<Restaurant[]>([]);
   const [loadingRestaurant, setLoadingRestaurant] = useState(true);
   const [addresses, setAddresses] = useState<OrderAddress[]>(() =>
     orderService.getAddresses(),
@@ -115,10 +115,7 @@ export default function CheckoutPage() {
     fetch("/mock/restaurants.json")
       .then(async (response) => {
         if (!response.ok) throw new Error("Could not load restaurant details.");
-        const values = (await response.json()) as Restaurant[];
-        setRestaurant(
-          values.find((item) => item.id === cart.restaurantId) ?? null,
-        );
+        setRestaurants((await response.json()) as Restaurant[]);
       })
       .catch((reason) =>
         setError(
@@ -128,12 +125,32 @@ export default function CheckoutPage() {
         ),
       )
       .finally(() => setLoadingRestaurant(false));
-  }, [cart.restaurantId]);
+  }, []);
   useEffect(() => {
     localStorage.setItem(DRAFT_KEY, JSON.stringify(form));
   }, [form]);
 
-  const deliveryFee = promo?.deliveryFee ?? restaurant?.deliveryFee ?? 0;
+  const cartGroups = useMemo(() => {
+    const groups = new Map<number, { restaurant: Restaurant | null; items: typeof cart.items; subtotal: number }>();
+    cart.items.forEach((item) => {
+      const existing = groups.get(item.restaurantId);
+      if (existing) {
+        existing.items.push(item);
+        existing.subtotal += item.price * item.quantity;
+      } else {
+        groups.set(item.restaurantId, {
+          restaurant: restaurants.find((value) => value.id === item.restaurantId) ?? null,
+          items: [item],
+          subtotal: item.price * item.quantity,
+        });
+      }
+    });
+    return Array.from(groups.entries()).map(([restaurantId, group]) => ({ restaurantId, ...group }));
+  }, [cart.items, restaurants]);
+  const restaurant = cartGroups[0]?.restaurant ?? null;
+  const deliveryFee = promo?.deliveryFee ?? cartGroups.reduce(
+    (total, group) => total + (group.restaurant?.deliveryFee ?? 0), 0
+  );
   const tip = form.customTip.trim()
     ? Math.max(0, Number(form.customTip) || 0)
     : form.tip;
@@ -166,8 +183,18 @@ export default function CheckoutPage() {
     if (!isValidPhone(form.phone)) next.phone = "Enter a valid phone number.";
     if (!isValidAddress(form.address))
       next.address = "Enter a complete delivery address.";
-    if (restaurant && cart.subtotal < restaurant.minOrder)
-      next.cart = `Minimum order is ${money(restaurant.minOrder)}.`;
+    const belowMinimum = cartGroups.find(
+      (group) => group.restaurant && group.subtotal < group.restaurant.minOrder
+    );
+    if (belowMinimum?.restaurant) {
+      next.cart = t('Minimum order for {name} is {amount}.', {
+        name: t(belowMinimum.restaurant.name),
+        amount: money(belowMinimum.restaurant.minOrder),
+      });
+    }
+    if (cartGroups.some((group) => !group.restaurant)) {
+      next.cart = t('Some restaurant details could not be loaded. Please refresh and try again.');
+    }
     if (form.delivery === "scheduled" && !form.slot)
       next.slot = "Choose a delivery time.";
     if (form.payment === "card") {
@@ -184,7 +211,7 @@ export default function CheckoutPage() {
     const result = await orderService.validatePromo(
       form.promo,
       cart.subtotal,
-      restaurant?.deliveryFee ?? deliveryFee,
+      deliveryFee,
     );
     setPromo(result);
     setPromoMessage(
@@ -198,7 +225,7 @@ export default function CheckoutPage() {
   };
   const submit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    if (submitting || !user || !cart.items.length || !restaurant) return;
+    if (submitting || !user || !cart.items.length || cartGroups.some((group) => !group.restaurant)) return;
     if (!validate()) {
       document
         .querySelector('[aria-invalid="true"]')
@@ -208,34 +235,55 @@ export default function CheckoutPage() {
     setSubmitting(true);
     setError("");
     try {
-      const estimated = new Date(
-        Date.now() + (restaurant.deliveryTimeMinutes + 15) * 60000,
-      );
       const scheduledFor = form.delivery === "scheduled" ? form.slot : null;
-      const order = await orderService.createOrder({
-        customerId: user.id,
-        customerName: form.name.trim(),
-        phone: form.phone.trim(),
-        restaurantId: restaurant.id,
-        items: cart.items,
-        deliveryAddress: form.address.trim(),
-        paymentMethod: form.payment,
-        notes: form.notes.trim(),
-        subtotal: totals.subtotal,
-        deliveryFee: totals.deliveryFee,
-        serviceFee: totals.serviceFee,
-        tax: totals.tax,
-        discount: totals.discount,
-        tip: totals.tip,
-        promoCode: promo?.code ?? null,
-        scheduledFor,
-        estimatedDeliveryAt: new Date(
-          Math.max(
-            estimated.getTime(),
-            scheduledFor ? new Date(scheduledFor).getTime() : 0,
-          ),
-        ).toISOString(),
-      });
+      let allocatedDiscount = 0;
+      let allocatedTip = 0;
+      const orders = await Promise.all(cartGroups.map(async (group, index) => {
+        const currentRestaurant = group.restaurant;
+        if (!currentRestaurant) throw new Error(t('Some restaurant details could not be loaded. Please refresh and try again.'));
+        const isLast = index === cartGroups.length - 1;
+        const discountShare = isLast
+          ? Number(((promo?.discount ?? 0) - allocatedDiscount).toFixed(2))
+          : Number(((promo?.discount ?? 0) * group.subtotal / cart.subtotal).toFixed(2));
+        const tipShare = isLast
+          ? Number((tip - allocatedTip).toFixed(2))
+          : Number((tip * group.subtotal / cart.subtotal).toFixed(2));
+        allocatedDiscount += discountShare;
+        allocatedTip += tipShare;
+        const groupTotals = calculateOrderTotals({
+          subtotal: group.subtotal,
+          deliveryFee: promo?.deliveryFee === 0 ? 0 : currentRestaurant.deliveryFee,
+          discount: discountShare,
+          tip: tipShare,
+        });
+        const estimated = new Date(
+          Date.now() + (currentRestaurant.deliveryTimeMinutes + 15) * 60000,
+        );
+        return orderService.createOrder({
+          customerId: user.id,
+          customerName: form.name.trim(),
+          phone: form.phone.trim(),
+          restaurantId: currentRestaurant.id,
+          items: group.items,
+          deliveryAddress: form.address.trim(),
+          paymentMethod: form.payment,
+          notes: form.notes.trim(),
+          subtotal: groupTotals.subtotal,
+          deliveryFee: groupTotals.deliveryFee,
+          serviceFee: groupTotals.serviceFee,
+          tax: groupTotals.tax,
+          discount: groupTotals.discount,
+          tip: groupTotals.tip,
+          promoCode: promo?.code ?? null,
+          scheduledFor,
+          estimatedDeliveryAt: new Date(
+            Math.max(
+              estimated.getTime(),
+              scheduledFor ? new Date(scheduledFor).getTime() : 0,
+            ),
+          ).toISOString(),
+        });
+      }));
       if (saveAddress) {
         await orderService.saveAddress({
           id: selectedAddressId || crypto.randomUUID(),
@@ -249,7 +297,8 @@ export default function CheckoutPage() {
       }
       localStorage.removeItem(DRAFT_KEY);
       cart.clearCart();
-      navigate(`/orders/${order.id}/confirmation`, { replace: true });
+      const relatedIds = orders.slice(1).map((order) => order.id).join(',');
+      navigate(`/orders/${orders[0].id}/confirmation${relatedIds ? `?related=${relatedIds}` : ''}`, { replace: true });
     } catch (reason) {
       setError(
         reason instanceof Error
@@ -423,7 +472,7 @@ export default function CheckoutPage() {
                   {t("As soon as possible")}
                 </span>
                 <span className="mt-1 block text-xs text-text-slate">
-                  About {restaurant?.deliveryTimeMinutes ?? 30} minutes
+                  {t('About {minutes} minutes', { minutes: Math.max(30, ...cartGroups.map((group) => group.restaurant?.deliveryTimeMinutes ?? 30)) })}
                 </span>
               </button>
               <button
@@ -583,11 +632,13 @@ export default function CheckoutPage() {
             <div
               className={`${showSummary ? "block" : "hidden"} mt-4 space-y-4 lg:block`}
             >
-              <p className="text-sm font-semibold text-text-slate">
-                {restaurant?.name ?? cart.restaurantName}
-              </p>
-              <div className="space-y-3">
-                {cart.items.map((item) => (
+              <div className="space-y-4">
+                {cartGroups.map((group) => (
+                  <section key={group.restaurantId} className="space-y-2">
+                    <h3 className="text-sm font-bold text-text-main">
+                      {t(group.restaurant?.name ?? group.items[0].restaurantName)}
+                    </h3>
+                    {group.items.map((item) => (
                   <div
                     key={`${item.restaurantId}-${item.menuItemId}`}
                     className="rounded-xl border border-border-subtle bg-surface-white p-3 shadow-sm"
@@ -632,7 +683,9 @@ export default function CheckoutPage() {
                         </button>
                       </div>
                     </div>
-                  </div>
+                    </div>
+                    ))}
+                  </section>
                 ))}
               </div>
               <div className="border-t border-border-subtle pt-4">
@@ -736,7 +789,7 @@ export default function CheckoutPage() {
                 type="submit"
                 loading={submitting}
                 className="mt-5 w-full !text-white"
-                disabled={!restaurant || submitting}
+                disabled={cartGroups.some((group) => !group.restaurant) || submitting}
               >
                 <CheckCircle2 size={17} />
                 {t('Place order')} · {money(totals.total)}
