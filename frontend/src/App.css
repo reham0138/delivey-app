@@ -266,3 +266,40 @@ a {
 .profile-fade-up-delayed {
   animation: profile-fade-up 500ms ease-out 100ms both;
 }
+
+/* Smooth cross-fade when the interface language changes. */
+::view-transition-old(root) {
+  animation: language-view-out 160ms ease-in both;
+}
+
+::view-transition-new(root) {
+  animation: language-view-in 300ms cubic-bezier(0.2, 0.75, 0.25, 1) both;
+}
+
+@keyframes language-view-out {
+  to {
+    opacity: 0;
+    filter: blur(2px);
+    transform: translateY(-3px) scale(0.995);
+  }
+}
+
+@keyframes language-view-in {
+  from {
+    opacity: 0;
+    filter: blur(2px);
+    transform: translateY(5px) scale(0.995);
+  }
+  to {
+    opacity: 1;
+    filter: blur(0);
+    transform: translateY(0) scale(1);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  ::view-transition-old(root),
+  ::view-transition-new(root) {
+    animation: none;
+  }
+}
