@@ -113,7 +113,8 @@ export default function MainLayout() {
         <Outlet />
       </main>
 
-      <FloatingCartPrompt />\n      <Footer />
+      <FloatingCartPrompt />
+      <Footer />
     </div>
   )
 }
