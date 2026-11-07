@@ -32,7 +32,7 @@ export default function Login() {
 			await login(values)
 		} catch (error) {
 			setError('root.serverError', {
-				message: error instanceof Error ? error.message : 'Something went wrong. Please try again.',
+				message: error instanceof Error ? error.message : t('Something went wrong. Please try again.'),
 			})
 		}
 	}
@@ -49,14 +49,14 @@ export default function Login() {
 					type="email"
 					autoComplete="email"
 					{...register('email')}
-					error={errors.email?.message}
+					error={errors.email?.message ? t(errors.email.message) : undefined}
 				/>
 				<Input
 					label={t('Password')}
 					type="password"
 					autoComplete="current-password"
 					{...register('password')}
-					error={errors.password?.message}
+					error={errors.password?.message ? t(errors.password.message) : undefined}
 				/>
 				{errors.root?.serverError?.message && (
 					<p role="alert" className="rounded-lg border border-danger/30 bg-danger/10 px-3 py-2 text-sm text-danger">
