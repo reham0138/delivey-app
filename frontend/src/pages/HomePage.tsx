@@ -61,7 +61,7 @@ export default function HomePage() {
             <img
               key={slide.image}
               src={slide.image}
-              alt={index === activeSlide ? slide.imageAlt : ''}
+              alt={index === activeSlide ? t(slide.imageAlt) : ''}
               aria-hidden={index !== activeSlide}
               className={`absolute inset-0 -z-20 h-full w-full object-cover transition-opacity duration-[1200ms] ease-in-out motion-reduce:transition-none ${index === activeSlide ? 'opacity-100' : 'opacity-0'}`}
             />
@@ -72,7 +72,7 @@ export default function HomePage() {
             <div className="flex items-center justify-between gap-4">
               <span className="inline-flex w-fit items-center gap-2 rounded-full border border-white/35 bg-black/20 px-4 py-2 text-[11px] font-semibold tracking-[0.2em] text-white backdrop-blur-sm">
                 <span className="size-2 rounded-full bg-brand-yellow" />
-                {currentSlide.eyebrow}
+                {t(currentSlide.eyebrow)}
               </span>
               <span className="text-sm font-medium tabular-nums text-white/80">
                 0{activeSlide + 1} <span className="mx-1 text-white/50">/</span> 0{slides.length}
@@ -81,13 +81,13 @@ export default function HomePage() {
 
             <div className="max-w-2xl py-5 sm:py-7">
               <p className="mb-3 text-sm font-medium tracking-wide text-brand-yellow sm:mb-4 sm:text-base">
-                {currentSlide.accent}
+                {t(currentSlide.accent)}
               </p>
               <h1 className="whitespace-pre-line text-4xl font-bold leading-[1.05] tracking-tight sm:text-5xl lg:text-6xl">
-                {currentSlide.title}
+                {t(currentSlide.title)}
               </h1>
               <p className="mt-4 max-w-lg text-sm leading-6 text-white/85 sm:mt-5 sm:text-base sm:leading-7">
-                {currentSlide.description}
+                {t(currentSlide.description)}
               </p>
               <div className="mt-5 flex flex-wrap items-center gap-3 sm:mt-6">
                 <Button
@@ -113,7 +113,7 @@ export default function HomePage() {
                   <button
                     key={slide.eyebrow}
                     type="button"
-                    aria-label={`Show slide ${index + 1}`}
+                    aria-label={t('Show slide {number}', { number: index + 1 })}
                     aria-current={activeSlide === index ? 'true' : undefined}
                     onClick={() => setActiveSlide(index)}
                     className={`h-1.5 rounded-full transition-all ${activeSlide === index ? 'w-10 bg-brand-yellow' : 'w-5 bg-white/55 hover:bg-white'}`}
@@ -142,7 +142,7 @@ export default function HomePage() {
           <div className="flex max-w-3xl flex-wrap gap-2">
             {categories.map((category) => (
               <span key={category} className="rounded-full border border-border-subtle bg-surface-cream px-4 py-2 text-sm font-medium text-text-main">
-                {category}
+                {t(category)}
               </span>
             ))}
           </div>
