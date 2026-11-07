@@ -142,7 +142,7 @@ export default function RestaurantDetailsPage() {
           className="inline-flex items-center gap-2 text-sm font-semibold text-text-slate transition-colors hover:text-brand-red"
         >
           <ArrowLeft aria-hidden="true" size={17} />
-          Back to restaurants
+          {t('Back to restaurants')}
         </Link>
 
         <section className="overflow-hidden rounded-2xl border border-border-subtle bg-surface-white">
