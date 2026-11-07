@@ -24,7 +24,7 @@ export default function RestaurantDetailsPage() {
   const { id } = useParams()
   const restaurantId = id && /^\d+$/.test(id) ? Number(id) : null
   const { data, loading, error, refetch } = useRestaurant(restaurantId)
-  const { addToCart, restaurantName: cartRestaurantName } = useCart()
+  const { addToCart, restaurantName: cartRestaurantName, showCartPrompt } = useCart()
   const [searchTerm, setSearchTerm] = useState('')
   const [selectedCategory, setSelectedCategory] = useState('all')
   const [sortBy, setSortBy] = useState<MealSort>('popular')
@@ -86,11 +86,8 @@ export default function RestaurantDetailsPage() {
     })
 
     setCartError(!added)
-    setCartMessage(
-      added
-        ? t('{name} added to your cart.', { name: t(meal.name) })
-        : t('Your cart already contains meals from {name}. Clear your cart before choosing another restaurant.', { name: cartRestaurantName ? t(cartRestaurantName) : t('another restaurant') }),
-    )
+    setCartMessage(added ? '' : t('Your cart already contains meals from {name}. Clear your cart before choosing another restaurant.', { name: cartRestaurantName ? t(cartRestaurantName) : t('another restaurant') }))
+    if (added) showCartPrompt()
   }
 
   const clearFilters = () => {
@@ -211,12 +208,8 @@ export default function RestaurantDetailsPage() {
 
           {cartMessage && (
             <div
-              role="status"
-              className={`rounded-lg border p-3 text-sm ${
-                cartError
-                  ? 'border-brand-red/30 bg-brand-red/10 text-brand-red'
-                  : 'border-green-600/30 bg-green-600/10 text-green-700'
-              }`}
+              role="alert"
+              className="fixed bottom-5 left-5 z-[60] max-w-[min(380px,calc(100vw-2rem))] rounded-xl border border-brand-red/30 bg-surface-white p-4 text-sm text-brand-red shadow-xl"
             >
               {cartMessage}
             </div>
