@@ -4,6 +4,7 @@ import { Clock3, ShoppingCart, Utensils } from 'lucide-react'
 import { Card } from './Card'
 import { Rating } from './Rating'
 import { Button } from './Button'
+import { useLanguage } from '../hooks/useLanguage'
 
 interface MealCardProps {
   name: string
@@ -32,6 +33,8 @@ export default function MealCard({
   isPopular,
   onOrder,
 }: MealCardProps) {
+  const { t } = useLanguage()
+
   return (
     <Card
       padding="none"
@@ -53,14 +56,14 @@ export default function MealCard({
 
         {isPopular && (
           <span className="absolute start-3 top-3 rounded-full bg-brand-yellow px-3 py-1 text-xs font-semibold text-text-main">
-            Popular
+            {t('Popular')}
           </span>
         )}
       </div>
 
       <div className="flex flex-1 flex-col gap-3 p-4">
         <div className="flex items-start justify-between gap-2">
-          <h3 className="font-semibold text-text-main">{name}</h3>
+          <h3 className="font-semibold text-text-main">{t(name)}</h3>
 
           <span className="shrink-0 font-bold text-brand-red">
             ${price.toFixed(2)}
@@ -68,23 +71,23 @@ export default function MealCard({
         </div>
 
         <p className="line-clamp-2 text-sm text-text-slate">
-          {description}
+          {t(description)}
         </p>
 
         <div className="flex items-center justify-between gap-2">
           <span className="rounded-md bg-brand-yellow/20 px-2 py-1 text-xs text-text-main">
-            {category}
+            {t(category)}
           </span>
 
           <div className="flex items-center gap-1 text-xs text-text-slate">
             <Clock3 size={14} />
-            {preparationTimeMinutes} min
+            {preparationTimeMinutes} {t('min')}
           </div>
         </div>
 
         <div className="mt-auto border-t border-border-subtle pt-3">
           <p className="mb-2 text-sm font-medium text-text-main">
-            {restaurantName}
+            {t(restaurantName)}
           </p>
 
           <div className="flex flex-wrap items-center justify-between gap-2">
@@ -92,12 +95,12 @@ export default function MealCard({
               <Rating value={rating} />
             ) : (
               <span className="text-xs text-text-slate">
-                No ratings yet
+                {t('No ratings yet')}
               </span>
             )}
 
             <span className="text-xs text-text-slate">
-              {reviewsCount} reviews
+              {reviewsCount} {t('reviews')}
             </span>
           </div>
         </div>
@@ -108,7 +111,7 @@ export default function MealCard({
           onClick={onOrder}
         >
           <ShoppingCart size={18} />
-          Order
+          {t('Order')}
         </Button>
       </div>
     </Card>
