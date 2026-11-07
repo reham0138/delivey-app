@@ -63,6 +63,14 @@ function FloatingCartPrompt() {
   return (
     <section
       aria-label={t('Open checkout')}
+      onClick={() => {
+        if (movedRef.current) {
+          movedRef.current = false
+          return
+        }
+        navigate('/checkout')
+      }}
+      className="cursor-pointer"
       style={position
         ? { left: position.x, top: position.y, right: 'auto', bottom: 'auto' }
         : { right: 20, bottom: 20 }}
@@ -83,7 +91,7 @@ function FloatingCartPrompt() {
           type="button"
           aria-label={t('Close cart')}
           onPointerDown={(event) => event.stopPropagation()}
-          onClick={cart.closeCartPrompt}
+          onClick={(event) => { event.stopPropagation(); cart.closeCartPrompt() }}
           className="inline-flex size-7 items-center justify-center rounded-full text-text-slate hover:bg-brand-red/10 hover:text-brand-red"
         >
           <X size={16} />
