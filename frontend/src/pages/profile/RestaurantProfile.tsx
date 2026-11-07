@@ -109,11 +109,11 @@ function RestaurantProfileContent({
 		const validExtensions = ['jpg', 'jpeg', 'png', 'webp']
 		const validMimeTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/webp']
 		if (!extension || !validExtensions.includes(extension) || (file.type && !validMimeTypes.includes(file.type.toLowerCase()))) {
-			setImageError('Choose a JPG, JPEG, PNG, or WEBP image.')
+			setImageError(t('Choose a JPG, JPEG, PNG, or WEBP image.'))
 			return
 		}
 		if (file.size > 3 * 1024 * 1024) {
-			setImageError('The image must be 3 MB or smaller.')
+			setImageError(t('The image must be 3 MB or smaller.'))
 			return
 		}
 
@@ -138,7 +138,7 @@ function RestaurantProfileContent({
 			URL.revokeObjectURL(nextPreviewUrl)
 			previewUrlRef.current = null
 			setPreviewUrl(null)
-			setImageError('This image could not be prepared for local storage. Try another image.')
+			setImageError(t('This image could not be prepared for local storage. Try another image.'))
 		} finally {
 			if (imageRequestRef.current === requestId) setIsProcessingImage(false)
 		}
@@ -170,7 +170,7 @@ function RestaurantProfileContent({
 			setError('root.serverError', {
 				message: submitError instanceof Error
 					? submitError.message
-					: 'Something went wrong. Please try again.',
+					: t('Something went wrong. Please try again.'),
 			})
 		}
 	}
@@ -323,7 +323,7 @@ function RestaurantProfileContent({
 						<dl className="mt-5 space-y-5">
 							<ProfileDetail icon={<MapPin aria-hidden="true" size={18} />} label={t("Address")} value={restaurant.address} />
 							<ProfileDetail icon={<Phone aria-hidden="true" size={18} />} label={t("Phone")} value={restaurant.phone} />
-							<ProfileDetail icon={<Clock3 aria-hidden="true" size={18} />} label="Opening hours" value={restaurant.openingHours?.trim() || t('Hours not provided')} muted={!restaurant.openingHours?.trim()} />
+							<ProfileDetail icon={<Clock3 aria-hidden="true" size={18} />} label="Opening hours" value={restaurant.openingHours?.trim() || t(t('Hours not provided'))} muted={!restaurant.openingHours?.trim()} />
 						</dl>
 					</Card>
 					<Card className="rounded-2xl bg-surface-cream" padding="lg">
@@ -368,7 +368,7 @@ async function encodeImageForStorage(file: File): Promise<string> {
 			canvas.width = Math.max(1, Math.round(bitmap.width * scale))
 			canvas.height = Math.max(1, Math.round(bitmap.height * scale))
 			const context = canvas.getContext('2d')
-			if (!context) throw new Error('Image processing is unavailable.')
+			if (!context) throw new Error(t('Image processing is unavailable.'))
 			context.drawImage(bitmap, 0, 0, canvas.width, canvas.height)
 
 			for (const quality of [0.86, 0.74, 0.62, 0.5]) {
@@ -377,7 +377,7 @@ async function encodeImageForStorage(file: File): Promise<string> {
 			}
 			maxDimension = Math.round(maxDimension * 0.75)
 		}
-		throw new Error('The image is too large to store locally.')
+		throw new Error(t('The image is too large to store locally.'))
 	} finally {
 		bitmap.close()
 	}
