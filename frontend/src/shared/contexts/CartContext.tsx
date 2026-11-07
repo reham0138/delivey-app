@@ -23,55 +23,49 @@ function getInitialCart(): CartItem[] {
 
 export function CartProvider({ children }: { children: ReactNode }) {
   const [items, setItems] = useState<CartItem[]>(getInitialCart)
+  const [isCartPromptOpen, setIsCartPromptOpen] = useState(false)
 
   useEffect(() => {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(items))
   }, [items])
 
   const addToCart = useCallback((newItem: CartItem) => {
-    let added = false
-
+    const quantityToAdd = Math.max(1, newItem.quantity || 1)
     setItems((currentItems) => {
-      if (
-        currentItems.length > 0 &&
-        currentItems[0].restaurantId !== newItem.restaurantId
-      ) {
-        return currentItems
-      }
-
-      added = true
-
       const existingItem = currentItems.find(
-        (item) => item.menuItemId === newItem.menuItemId
+        (item) =>
+          item.restaurantId === newItem.restaurantId &&
+          item.menuItemId === newItem.menuItemId
       )
 
       if (existingItem) {
         return currentItems.map((item) =>
+          item.restaurantId === newItem.restaurantId &&
           item.menuItemId === newItem.menuItemId
-            ? { ...item, quantity: item.quantity + 1 }
+            ? { ...item, quantity: item.quantity + quantityToAdd }
             : item
         )
       }
 
-      return [...currentItems, { ...newItem, quantity: 1 }]
+      return [...currentItems, { ...newItem, quantity: quantityToAdd }]
     })
 
-    return added
+    return true
   }, [])
 
-  const removeFromCart = useCallback((menuItemId: number) => {
+  const removeFromCart = useCallback((restaurantId: number, menuItemId: number) => {
     setItems((current) =>
-      current.filter((item) => item.menuItemId !== menuItemId)
+      current.filter((item) => !(item.restaurantId === restaurantId && item.menuItemId === menuItemId))
     )
   }, [])
 
   const updateQuantity = useCallback(
-    (menuItemId: number, quantity: number) => {
+    (restaurantId: number, menuItemId: number, quantity: number) => {
       if (quantity < 1) return
 
       setItems((current) =>
         current.map((item) =>
-          item.menuItemId === menuItemId
+          item.restaurantId === restaurantId && item.menuItemId === menuItemId
             ? { ...item, quantity }
             : item
         )
@@ -82,6 +76,15 @@ export function CartProvider({ children }: { children: ReactNode }) {
 
   const clearCart = useCallback(() => {
     setItems([])
+    setIsCartPromptOpen(false)
+  }, [])
+
+  const showCartPrompt = useCallback(() => {
+    setIsCartPromptOpen(true)
+  }, [])
+
+  const closeCartPrompt = useCallback(() => {
+    setIsCartPromptOpen(false)
   }, [])
 
   const value = useMemo<CartContextValue>(() => ({
@@ -92,12 +95,15 @@ export function CartProvider({ children }: { children: ReactNode }) {
     removeFromCart,
     updateQuantity,
     clearCart,
+    isCartPromptOpen,
+    showCartPrompt,
+    closeCartPrompt,
     totalItems: items.reduce((total, item) => total + item.quantity, 0),
     subtotal: items.reduce(
       (total, item) => total + item.price * item.quantity,
       0
     ),
-  }), [items, addToCart, removeFromCart, updateQuantity, clearCart])
+  }), [items, addToCart, removeFromCart, updateQuantity, clearCart, isCartPromptOpen, showCartPrompt, closeCartPrompt])
 
   return (
     <CartContext.Provider value={value}>

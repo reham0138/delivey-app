@@ -21,17 +21,19 @@ import type { Restaurant, RestaurantProfileChanges } from '@/shared/types'
 import { formatCurrency } from '@/shared/utils/format'
 import { restaurantProfileSchema, type RestaurantProfileFormValues } from '@/shared/utils/validation'
 import { restaurantService } from '@/shared/services/restaurant.service'
+import { useLanguage } from '@/shared/hooks/useLanguage'
 
 interface RestaurantProfileProps {
 	ownerId: number
 }
 
 export default function RestaurantProfile({ ownerId }: RestaurantProfileProps) {
+	const { t } = useLanguage()
 	const { data, loading, error, refetch } = useRestaurants(ownerId)
 	const restaurant = data.find((item) => item.ownerId === ownerId) ?? null
 
 	if (loading) {
-		return <div className="flex justify-center py-24"><Spinner label="Loading restaurant profile..." /></div>
+		return <div className="flex justify-center py-24"><Spinner label={t("Loading restaurant profile...")} /></div>
 	}
 
 	if (error) {
@@ -39,9 +41,9 @@ export default function RestaurantProfile({ ownerId }: RestaurantProfileProps) {
 			<section className="mx-auto w-full max-w-4xl px-4 py-12">
 				<Card className="rounded-2xl">
 					<EmptyState
-						title="We couldn't load your restaurant profile"
+						title={t("We couldn't load your restaurant profile")}
 						description={error}
-						action={<Button onClick={() => void refetch()}>Try again</Button>}
+						action={<Button onClick={() => void refetch()}>{t("Try again")}</Button>}
 					/>
 				</Card>
 			</section>
@@ -53,8 +55,8 @@ export default function RestaurantProfile({ ownerId }: RestaurantProfileProps) {
 			<section className="mx-auto w-full max-w-4xl px-4 py-12">
 				<Card className="rounded-2xl">
 					<EmptyState
-						title="No restaurant is linked to this account"
-						description="There isn't a restaurant profile associated with your signed-in account yet."
+						title={t("No restaurant is linked to this account")}
+						description={t("There isn’t a restaurant profile associated with your signed-in account yet.")}
 					/>
 				</Card>
 			</section>
@@ -71,6 +73,7 @@ function RestaurantProfileContent({
 	initialRestaurant: Restaurant
 	ownerId: number
 }) {
+	const { t } = useLanguage()
 	const [restaurant, setRestaurant] = useState(initialRestaurant)
 	const [isEditing, setIsEditing] = useState(false)
 	const [saved, setSaved] = useState(false)
@@ -106,11 +109,11 @@ function RestaurantProfileContent({
 		const validExtensions = ['jpg', 'jpeg', 'png', 'webp']
 		const validMimeTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/webp']
 		if (!extension || !validExtensions.includes(extension) || (file.type && !validMimeTypes.includes(file.type.toLowerCase()))) {
-			setImageError('Choose a JPG, JPEG, PNG, or WEBP image.')
+			setImageError(t('Choose a JPG, JPEG, PNG, or WEBP image.'))
 			return
 		}
 		if (file.size > 3 * 1024 * 1024) {
-			setImageError('The image must be 3 MB or smaller.')
+			setImageError(t('The image must be 3 MB or smaller.'))
 			return
 		}
 
@@ -135,7 +138,7 @@ function RestaurantProfileContent({
 			URL.revokeObjectURL(nextPreviewUrl)
 			previewUrlRef.current = null
 			setPreviewUrl(null)
-			setImageError('This image could not be prepared for local storage. Try another image.')
+			setImageError(t('This image could not be prepared for local storage. Try another image.'))
 		} finally {
 			if (imageRequestRef.current === requestId) setIsProcessingImage(false)
 		}
@@ -167,7 +170,7 @@ function RestaurantProfileContent({
 			setError('root.serverError', {
 				message: submitError instanceof Error
 					? submitError.message
-					: 'Something went wrong. Please try again.',
+					: t('Something went wrong. Please try again.'),
 			})
 		}
 	}
@@ -189,9 +192,9 @@ function RestaurantProfileContent({
 		<section className="mx-auto w-full max-w-6xl px-4 py-8 sm:px-6 sm:py-10 lg:py-12">
 			<header className="mb-6 flex flex-wrap items-end justify-between gap-4">
 				<div>
-					<p className="text-xs font-semibold tracking-[0.16em] text-brand-red">RESTAURANT PROFILE</p>
-					<h1 className="mt-1 text-3xl font-semibold text-text-main">Your restaurant</h1>
-					<p className="mt-1 text-sm text-text-slate">Keep the details guests see accurate and welcoming.</p>
+					<p className="text-xs font-semibold tracking-[0.16em] text-brand-red">{t('RESTAURANT PROFILE')}</p>
+					<h1 className="mt-1 text-3xl font-semibold text-text-main">{t('Your restaurant')}</h1>
+					<p className="mt-1 text-sm text-text-slate">{t('Keep the details guests see accurate and welcoming.')}</p>
 				</div>
 				{!isEditing && (
 					<Button variant="outline" onClick={() => setIsEditing(true)}>
@@ -203,7 +206,7 @@ function RestaurantProfileContent({
 
 			{saved && !isEditing && (
 				<p role="status" className="mb-4 rounded-lg bg-brand-yellow/20 px-4 py-3 text-sm text-text-main">
-					Your restaurant profile was saved.
+					{t('Your restaurant profile was saved.')}
 				</p>
 			)}
 
@@ -217,19 +220,19 @@ function RestaurantProfileContent({
 					<div className="relative z-10 max-w-2xl text-white">
 						<p className="inline-flex items-center gap-2 rounded-full border border-surface-white/30 bg-surface-white/15 px-3 py-1 text-xs font-medium backdrop-blur-sm">
 							<span className={`size-2 rounded-full ${restaurant.isOpen ? 'bg-brand-yellow' : 'bg-surface-white/70'}`} />
-							{restaurant.isOpen ? 'Open now' : 'Closed now'}
+							{restaurant.isOpen ? t('Open now') : t('Closed')}
 						</p>
 						<h2 className="mt-4 break-words text-3xl font-semibold sm:text-5xl">{restaurant.name}</h2>
 						<p className="mt-2 flex items-center gap-2 text-sm text-surface-white/90 sm:text-base">
 							<Utensils aria-hidden="true" size={17} />
-							{restaurant.cuisine}
+							{t(restaurant.cuisine)}
 						</p>
 						{restaurant.rating > 0 && (
 							<p className="mt-4 flex flex-wrap items-center gap-2 text-sm">
 								<Star aria-hidden="true" className="size-4 fill-brand-yellow text-brand-yellow" />
 								<span className="font-semibold">{restaurant.rating.toFixed(1)}</span>
 								{restaurant.reviewsCount !== undefined && (
-									<span className="text-surface-white/80">{restaurant.reviewsCount} reviews</span>
+									<span className="text-surface-white/80">{restaurant.reviewsCount} {t("reviews")}</span>
 								)}
 							</p>
 						)}
@@ -237,9 +240,9 @@ function RestaurantProfileContent({
 				</div>
 
 				<div className="grid gap-3 border-t border-border-subtle bg-surface-white p-4 sm:grid-cols-3 sm:p-5">
-					<ProfileMetric icon={<Clock3 aria-hidden="true" size={17} />} label="Delivery time" value={`${restaurant.deliveryTimeMinutes} min`} />
-					<ProfileMetric icon={<span aria-hidden="true" className="text-sm font-semibold">$</span>} label="Delivery fee" value={formatCurrency(restaurant.deliveryFee)} />
-					<ProfileMetric icon={<span aria-hidden="true" className="text-sm font-semibold">$</span>} label="Minimum order" value={formatCurrency(restaurant.minOrder)} />
+					<ProfileMetric icon={<Clock3 aria-hidden="true" size={17} />} label={t("Delivery time")} value={t('{minutes} min', { minutes: restaurant.deliveryTimeMinutes })} />
+					<ProfileMetric icon={<span aria-hidden="true" className="text-sm font-semibold">$</span>} label={t("Delivery fee")} value={formatCurrency(restaurant.deliveryFee)} />
+					<ProfileMetric icon={<span aria-hidden="true" className="text-sm font-semibold">$</span>} label={t("Minimum order")} value={formatCurrency(restaurant.minOrder)} />
 				</div>
 			</div>
 
@@ -247,44 +250,44 @@ function RestaurantProfileContent({
 				<Card className="mt-6 rounded-2xl" padding="lg">
 					<div className="mb-5 flex flex-wrap items-start justify-between gap-3">
 						<div>
-							<h2 className="text-xl font-semibold text-text-main">Edit restaurant details</h2>
-							<p className="mt-1 text-sm text-text-slate">Changes update your restaurant profile and public listing.</p>
+							<h2 className="text-xl font-semibold text-text-main">{t('Edit restaurant details')}</h2>
+							<p className="mt-1 text-sm text-text-slate">{t('Changes update your restaurant profile and public listing.')}</p>
 						</div>
 					</div>
 					<form noValidate className="space-y-5" onSubmit={handleSubmit(onSubmit)}>
 						<div className="grid gap-4 sm:grid-cols-2">
-							<Input label="Restaurant name" autoComplete="organization" {...register('name')} error={errors.name?.message} />
-							<Input label="Cuisine" autoComplete="off" {...register('cuisine')} error={errors.cuisine?.message} />
-							<Input label="Address" autoComplete="street-address" wrapperClassName="sm:col-span-2" {...register('address')} error={errors.address?.message} />
-							<Input label="Phone number" type="tel" autoComplete="tel" {...register('phone')} error={errors.phone?.message} />
-							<Input label="Delivery time (minutes)" type="number" min="1" step="1" {...register('deliveryTimeMinutes', { valueAsNumber: true })} error={errors.deliveryTimeMinutes?.message} />
-							<Input label="Delivery fee" type="number" min="0" step="0.01" {...register('deliveryFee', { valueAsNumber: true })} error={errors.deliveryFee?.message} />
-							<Input label="Minimum order" type="number" min="0" step="0.01" {...register('minOrder', { valueAsNumber: true })} error={errors.minOrder?.message} />
-							<Input label="Opening hours" autoComplete="off" hint="Optional; enter the hours as shown to guests." wrapperClassName="sm:col-span-2" {...register('openingHours')} error={errors.openingHours?.message} />
+							<Input label={t("Restaurant name")} autoComplete="organization" {...register('name')} error={errors.name?.message ? t(errors.name.message) : undefined} />
+							<Input label={t("Cuisine")} autoComplete="off" {...register('cuisine')} error={errors.cuisine?.message ? t(errors.cuisine.message) : undefined} />
+							<Input label={t("Address")} autoComplete="street-address" wrapperClassName="sm:col-span-2" {...register('address')} error={errors.address?.message ? t(errors.address.message) : undefined} />
+							<Input label={t("Phone number")} type="tel" autoComplete="tel" {...register('phone')} error={errors.phone?.message ? t(errors.phone.message) : undefined} />
+							<Input label={t("Delivery time (minutes)")} type="number" min="1" step="1" {...register('deliveryTimeMinutes', { valueAsNumber: true })} error={errors.deliveryTimeMinutes?.message ? t(errors.deliveryTimeMinutes.message) : undefined} />
+							<Input label={t("Delivery fee")} type="number" min="0" step="0.01" {...register('deliveryFee', { valueAsNumber: true })} error={errors.deliveryFee?.message ? t(errors.deliveryFee.message) : undefined} />
+							<Input label={t("Minimum order")} type="number" min="0" step="0.01" {...register('minOrder', { valueAsNumber: true })} error={errors.minOrder?.message ? t(errors.minOrder.message) : undefined} />
+							<Input label={t("Opening hours")} autoComplete="off" hint={t("Optional; enter the hours as shown to guests.")} wrapperClassName="sm:col-span-2" {...register('openingHours')} error={errors.openingHours?.message ? t(errors.openingHours.message) : undefined} />
 						</div>
 						<div className="space-y-3">
 							<div>
-								<h3 className="text-sm font-semibold text-text-main">Restaurant cover image</h3>
-								<p id="restaurant-image-help" className="mt-1 text-sm text-text-slate">JPG, JPEG, PNG, or WEBP. Maximum file size: 3 MB.</p>
+								<h3 className="text-sm font-semibold text-text-main">{t('Restaurant cover image')}</h3>
+								<p id="restaurant-image-help" className="mt-1 text-sm text-text-slate">{t('JPG, JPEG, PNG, or WEBP. Maximum file size: 3 MB.')}</p>
 							</div>
 							<div className="grid gap-4 rounded-xl border border-border-subtle bg-surface-cream p-3 sm:grid-cols-[minmax(0,1.15fr)_minmax(14rem,0.85fr)] sm:items-center sm:p-4">
 								<div className="aspect-[16/9] overflow-hidden rounded-lg border border-border-subtle bg-surface-white">
 									<RestaurantImage
 										restaurant={restaurant}
 										srcOverride={previewUrl ?? selectedImage ?? undefined}
-										alt={`${restaurant.name} cover preview`}
+										alt={t("{name} cover preview", { name: t(restaurant.name) })}
 										className="size-full object-cover"
 									/>
 								</div>
 								<div className="space-y-3">
-									<p className="text-sm text-text-slate">{selectedImage || previewUrl ? 'Your new image is ready to save.' : 'Choose a cover image that represents your restaurant.'}</p>
+									<p className="text-sm text-text-slate">{selectedImage || previewUrl ? t('Your new image is ready to save.') : t('Choose a cover image that represents your restaurant.')}</p>
 									<input
 										ref={imageInputRef}
 										id="restaurant-cover-upload"
 										type="file"
 										accept=".jpg,.jpeg,.png,.webp,image/jpeg,image/png,image/webp"
 										className="sr-only"
-										aria-label="Choose restaurant cover image"
+										aria-label={t("Choose restaurant cover image")}
 										aria-describedby="restaurant-image-help"
 										onChange={(event) => void handleImageSelection(event)}
 									/>
@@ -295,45 +298,45 @@ function RestaurantProfileContent({
 										onClick={() => imageInputRef.current?.click()}
 									>
 										<ImagePlus aria-hidden="true" size={17} />
-										{selectedImage || previewUrl || restaurant.cover ? 'Replace image' : 'Choose image'}
+										{selectedImage || previewUrl || restaurant.cover ? t('Replace image') : t('Choose image')}
 									</Button>
-									{isProcessingImage && <p role="status" className="text-sm text-text-slate">Preparing image preview…</p>}
+									{isProcessingImage && <p role="status" className="text-sm text-text-slate">{t("Preparing image preview…")}</p>}
 									{imageError && <p role="alert" className="text-sm text-danger">{imageError}</p>}
 								</div>
 							</div>
 						</div>
 						{errors.root?.serverError?.message && (
 							<p role="alert" className="rounded-lg border border-danger/30 bg-danger/10 px-3 py-2 text-sm text-danger">
-								{errors.root.serverError.message}
+								{t(errors.root.serverError.message)}
 							</p>
 						)}
 						<div className="flex flex-col-reverse gap-3 sm:flex-row sm:justify-end">
-							<Button type="button" variant="ghost" disabled={isSubmitting} onClick={cancelEditing}>Cancel</Button>
-							<Button type="submit" loading={isSubmitting} disabled={(!isDirty && !selectedImage) || isProcessingImage}>Save changes</Button>
+							<Button type="button" variant="ghost" disabled={isSubmitting} onClick={cancelEditing}>{t("Cancel")}</Button>
+							<Button type="submit" loading={isSubmitting} disabled={(!isDirty && !selectedImage) || isProcessingImage}>{t('Save changes')}</Button>
 						</div>
 					</form>
 				</Card>
 			) : (
 				<div className="mt-6 grid gap-6 lg:grid-cols-[1.15fr_0.85fr]">
 					<Card className="rounded-2xl" padding="lg">
-						<h2 className="text-lg font-semibold text-text-main">About</h2>
+						<h2 className="text-lg font-semibold text-text-main">{t('About')}</h2>
 						<dl className="mt-5 space-y-5">
-							<ProfileDetail icon={<MapPin aria-hidden="true" size={18} />} label="Address" value={restaurant.address} />
-							<ProfileDetail icon={<Phone aria-hidden="true" size={18} />} label="Phone" value={restaurant.phone} />
-							<ProfileDetail icon={<Clock3 aria-hidden="true" size={18} />} label="Opening hours" value={restaurant.openingHours?.trim() || 'Hours not provided'} muted={!restaurant.openingHours?.trim()} />
+							<ProfileDetail icon={<MapPin aria-hidden="true" size={18} />} label={t("Address")} value={restaurant.address} />
+							<ProfileDetail icon={<Phone aria-hidden="true" size={18} />} label={t("Phone")} value={restaurant.phone} />
+							<ProfileDetail icon={<Clock3 aria-hidden="true" size={18} />} label={t("Opening hours")} value={restaurant.openingHours?.trim() || t('Hours not provided')} muted={!restaurant.openingHours?.trim()} />
 						</dl>
 					</Card>
 					<Card className="rounded-2xl bg-surface-cream" padding="lg">
-						<p className="text-xs font-semibold tracking-[0.14em] text-text-slate">GUEST SNAPSHOT</p>
-						<p className="mt-3 text-2xl font-semibold text-text-main">{restaurant.rating > 0 ? restaurant.rating.toFixed(1) : 'New'}</p>
+						<p className="text-xs font-semibold tracking-[0.14em] text-text-slate">{t('GUEST SNAPSHOT')}</p>
+						<p className="mt-3 text-2xl font-semibold text-text-main">{restaurant.rating > 0 ? restaurant.rating.toFixed(1) : t('New')}</p>
 						<p className="mt-1 text-sm text-text-slate">
 							{restaurant.rating > 0
-								? `${restaurant.reviewsCount ?? 'Review count unavailable'} reviews from menu items`
-								: 'No rating yet'}
+								? `${restaurant.reviewsCount ?? t('Review count unavailable')} ${t('reviews from menu items')}`
+								: t('No rating yet')}
 						</p>
 						<div className="mt-5 border-t border-border-subtle pt-4">
-							<p className="text-sm font-medium text-text-main">Profile photo</p>
-							<p className="mt-1 text-sm text-text-slate">{restaurant.cover ? 'Custom cover image saved' : 'Using the restaurant image'}</p>
+							<p className="text-sm font-medium text-text-main">{t('Profile photo')}</p>
+							<p className="mt-1 text-sm text-text-slate">{restaurant.cover ? t('Custom cover image saved') : t('Using the restaurant image')}</p>
 						</div>
 					</Card>
 				</div>

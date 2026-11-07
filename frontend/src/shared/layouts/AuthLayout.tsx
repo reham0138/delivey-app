@@ -1,9 +1,11 @@
 import { Link, Outlet } from 'react-router-dom'
 import { Card } from '@/shared/components/Card'
 import { useTheme } from '@/shared/contexts/ThemeContext'
+import { useLanguage } from '@/shared/hooks/useLanguage'
 
 export default function AuthLayout() {
 	const { theme } = useTheme()
+	const { t } = useLanguage()
 
 	return (
 		<main className="flex min-h-screen items-center justify-center bg-surface-cream px-4 py-10 sm:px-6">
@@ -25,7 +27,7 @@ export default function AuthLayout() {
 				</Card>
 				<p className="mt-5 text-center text-sm text-text-slate">
 					<Link to="/" className="underline underline-offset-4 hover:text-text-main">
-						Back to home
+						{t('Back to home')}
 					</Link>
 				</p>
 			</div>
