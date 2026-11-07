@@ -12,7 +12,7 @@ export default function Footer() {
           <div className="flex items-center gap-4">
             <img
               src="/brand/logo/crown-anchor-delivery-logo-white.png"
-              alt="The Crown & Anchor logo"
+              alt={t("The Crown & Anchor logo")}
               className="size-14 shrink-0 object-contain"
             />
             <div>
