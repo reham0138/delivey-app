@@ -659,7 +659,7 @@ export default function CheckoutPage() {
                       {item.image ? (
                         <img
                           src={item.image}
-                          alt={item.name}
+                          alt={t(item.name)}
                           className="size-16 shrink-0 rounded-lg object-cover"
                         />
                       ) : (
