@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
 import { Outlet, useLocation, useNavigate } from 'react-router-dom'
-import { ShoppingCart, X, GripVertical, Minus, Plus } from 'lucide-react'
+import { ShoppingCart, X, GripVertical } from 'lucide-react'
 import { useCart } from '../hooks/useCart'
 import { useLanguage } from '../hooks/useLanguage'
 
