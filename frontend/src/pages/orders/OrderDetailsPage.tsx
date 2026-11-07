@@ -144,7 +144,7 @@ export default function OrderDetailsPage() {
           restaurantName: `Restaurant #${order.restaurantId}`,
           name: item.name,
           price: item.unitPrice,
-          quantity: 1
+          quantity: item.quantity
         })
       )
 
@@ -318,7 +318,7 @@ export default function OrderDetailsPage() {
               <div>
                 <dt className="text-text-slate">{t("Payment")}</dt>
                 <dd className="font-medium capitalize">
-                  {order.paymentMethod}
+                  {t(order.paymentMethod === 'cash' ? 'Cash on delivery' : 'Card')}
                   {order.paymentStatus === 'simulated' ? ' (demo)' : ''}
                 </dd>
               </div>
