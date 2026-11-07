@@ -486,8 +486,6 @@ Object.assign(translations, {
   'Admin': 'مدير النظام',
   'customer': 'عميل',
   'restaurant': 'مطعم',
-  'Could not load your review.': 'تعذر تحميل تقييمك.',
-  'Could not save your review.': 'تعذر حفظ تقييمك.',
   'Checking your review...': 'جارٍ التحقق من تقييمك...',
   'Your review': 'تقييمك',
   'Rated {rating} out of 5': ({ rating }: Record<string, string | number>) => `التقييم ${rating} من 5`,
