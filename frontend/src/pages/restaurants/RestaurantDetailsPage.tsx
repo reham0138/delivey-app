@@ -7,6 +7,7 @@ import { EmptyState } from '../../shared/components/EmptyState'
 import { Input } from '../../shared/components/Input'
 import MealCard from '../../shared/components/MealCard'
 import { Rating } from '../../shared/components/Rating'
+import { RestaurantImage } from '../../shared/components/RestaurantImage'
 import { Select } from '../../shared/components/Select'
 import { Spinner } from '../../shared/components/Spinner'
 import { useCart } from '../../shared/hooks/useCart'
@@ -146,8 +147,8 @@ export default function RestaurantDetailsPage() {
 
         <section className="overflow-hidden rounded-2xl border border-border-subtle bg-surface-white">
           <div className="relative h-52 bg-surface-cream sm:h-72">
-            <img
-              src={restaurant.cover || restaurant.image}
+            <RestaurantImage
+              restaurant={restaurant}
               alt={`${restaurant.name} restaurant cover`}
               className="h-full w-full object-cover"
             />

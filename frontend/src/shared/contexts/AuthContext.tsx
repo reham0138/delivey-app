@@ -4,7 +4,7 @@ import * as authApi from '@/shared/api/auth'
 import { AuthContext } from '@/shared/contexts/AuthContextValue'
 import type { AuthContextValue } from '@/shared/contexts/AuthContextValue'
 import { clearTokens, getStoredUser, setStoredUser, setTokens } from '@/shared/services/auth.service'
-import type { LoginPayload, RegisterPayload, User } from '@/shared/types/user'
+import type { LoginPayload, RegisterPayload, UpdateProfilePayload, User } from '@/shared/types/user'
 
 export function AuthProvider({ children }: { children: ReactNode }) {
 	const [user, setUser] = useState<User | null>(() => getStoredUser())
@@ -23,6 +23,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 		setUser(response.user)
 	}
 
+	const updateProfile = async (changes: UpdateProfilePayload): Promise<void> => {
+		if (!user) throw new Error('No signed-in user is available.')
+		const updatedUser = await authApi.updateProfile(user.id, changes)
+		setStoredUser(updatedUser)
+		setUser(updatedUser)
+	}
+
 	const logout = async (): Promise<void> => {
 		try {
 			await authApi.logout()
@@ -39,6 +46,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 		isAuthenticated: user !== null,
 		login,
 		register,
+		updateProfile,
 		logout,
 	}
 

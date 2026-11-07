@@ -10,7 +10,7 @@ interface AsyncState<T> {
   refetch: () => Promise<void>
 }
 
-export function useRestaurants(): AsyncState<Restaurant[]> {
+export function useRestaurants(ownerId?: number): AsyncState<Restaurant[]> {
   const [restaurants, setRestaurants] = useState<Restaurant[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
@@ -20,13 +20,18 @@ export function useRestaurants(): AsyncState<Restaurant[]> {
     setError('')
 
     try {
-      setRestaurants(await restaurantService.getAll())
+      if (ownerId === undefined) {
+        setRestaurants(await restaurantService.getAll())
+      } else {
+        const ownedRestaurant = await restaurantService.getOwnedByOwnerId(ownerId)
+        setRestaurants(ownedRestaurant ? [ownedRestaurant] : [])
+      }
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Something went wrong.')
     } finally {
       setLoading(false)
     }
-  }, [])
+  }, [ownerId])
 
   useEffect(() => {
     void refetch()

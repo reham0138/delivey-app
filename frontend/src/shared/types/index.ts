@@ -57,6 +57,20 @@ export interface Restaurant {
   openingHours?: string;
 }
 
+export type RestaurantProfileChanges = Pick<
+  Restaurant,
+  | "name"
+  | "cuisine"
+  | "address"
+  | "phone"
+  | "deliveryTimeMinutes"
+  | "deliveryFee"
+  | "minOrder"
+  | "image"
+  | "cover"
+  | "openingHours"
+>;
+
 export interface Nutrition {
   calories: number;
   protein: number;

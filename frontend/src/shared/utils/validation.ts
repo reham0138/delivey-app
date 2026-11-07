@@ -16,8 +16,28 @@ export const registerSchema = z.object({
 	path: ['confirmPassword'],
 })
 
+export const profileSchema = z.object({
+  name: z.string().trim().min(2, 'Name must be at least 2 characters.'),
+  phone: z.string().optional().refine((value) => value === undefined || value === '' || isValidPhone(value), {
+    message: 'Enter a valid phone number.',
+  }),
+})
+
+export const restaurantProfileSchema = z.object({
+  name: z.string().trim().min(2, 'Restaurant name must be at least 2 characters.'),
+  cuisine: z.string().trim().min(2, 'Cuisine must be at least 2 characters.'),
+  address: z.string().trim().refine(isValidAddress, 'Enter a valid address.'),
+  phone: z.string().trim().refine(isValidPhone, 'Enter a valid phone number.'),
+  deliveryTimeMinutes: z.number().int().min(1, 'Delivery time must be at least 1 minute.'),
+  deliveryFee: z.number().finite().min(0, 'Delivery fee cannot be negative.'),
+  minOrder: z.number().finite().min(0, 'Minimum order cannot be negative.'),
+  openingHours: z.string().trim().optional(),
+})
+
 export type LoginFormValues = z.infer<typeof loginSchema>
 export type RegisterFormValues = z.infer<typeof registerSchema>
+export type ProfileFormValues = z.infer<typeof profileSchema>
+export type RestaurantProfileFormValues = z.infer<typeof restaurantProfileSchema>
 export function isValidPhone(value: string): boolean {
   return /^\+?[0-9\s()-]{8,18}$/.test(value.trim())
 }

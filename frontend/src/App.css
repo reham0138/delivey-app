@@ -247,3 +247,22 @@ a {
     animation-iteration-count: 1 !important;
   }
 }
+
+@keyframes profile-fade-up {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.profile-fade-up {
+  animation: profile-fade-up 500ms ease-out both;
+}
+
+.profile-fade-up-delayed {
+  animation: profile-fade-up 500ms ease-out 100ms both;
+}
