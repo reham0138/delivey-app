@@ -79,7 +79,7 @@ export default function RestaurantsPage() {
   if (loading) {
     return (
       <div className="flex min-h-[60vh] items-center justify-center bg-surface-cream">
-        <Spinner size="lg" label="Loading restaurants..." />
+        <Spinner size="lg" label={t("Loading restaurants...")} />
       </div>
     )
   }
@@ -116,7 +116,7 @@ export default function RestaurantsPage() {
             </div>
           </div>
           <span className="text-sm font-medium text-text-slate">
-            {filteredRestaurants.length} restaurants found
+            {filteredRestaurants.length} {t('restaurants found')}
           </span>
         </section>
 
@@ -135,7 +135,7 @@ export default function RestaurantsPage() {
           >
             <option value="all">{t('All cuisines')}</option>
             {cuisines.map((cuisine) => (
-              <option key={cuisine} value={cuisine}>{cuisine}</option>
+              <option key={cuisine} value={cuisine}>{t(cuisine)}</option>
             ))}
           </Select>
           <Select
@@ -171,7 +171,7 @@ export default function RestaurantsPage() {
         {filteredRestaurants.length > 0 ? (
           <>
             <section
-              aria-label="Restaurants"
+              aria-label={t("Restaurants")}
               className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4"
             >
               {paginatedRestaurants.map((restaurant) => (
