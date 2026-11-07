@@ -8,12 +8,14 @@ import { Select } from '../../shared/components/Select'
 import { Spinner } from '../../shared/components/Spinner'
 import { useRestaurants } from '../../shared/hooks/useRestaurants'
 import RestaurantCard from './RestaurantCard'
+import { useLanguage } from '../../shared/hooks/useLanguage'
 
 const ITEMS_PER_PAGE = 8
 
 type RestaurantSort = 'rating' | 'delivery' | 'name'
 
 export default function RestaurantsPage() {
+  const { t } = useLanguage()
   const { data: restaurants, loading, error, refetch } = useRestaurants()
   const [searchTerm, setSearchTerm] = useState('')
   const [selectedCuisine, setSelectedCuisine] = useState('all')
@@ -86,9 +88,9 @@ export default function RestaurantsPage() {
       <main className="min-h-[60vh] bg-surface-cream px-4 py-12">
         <div className="mx-auto max-w-7xl">
           <EmptyState
-            title="Unable to load restaurants"
+            title={t('Unable to load restaurants')}
             description={error}
-            action={<Button onClick={() => void refetch()}>Try again</Button>}
+            action={<Button onClick={() => void refetch()}>{t('Try again')}</Button>}
           />
         </div>
       </main>
@@ -105,10 +107,10 @@ export default function RestaurantsPage() {
             </span>
             <div>
               <h1 className="text-2xl font-bold text-text-main sm:text-3xl">
-                Explore Restaurants
+                {t('Explore Restaurants')}
               </h1>
               <p className="mt-1 text-sm text-text-slate">
-                Discover local kitchens and find your next favorite meal.
+                {t('Discover local kitchens and find your next favorite meal.')}
               </p>
             </div>
           </div>
@@ -119,28 +121,28 @@ export default function RestaurantsPage() {
 
         <section className="grid gap-4 rounded-xl border border-border-subtle bg-surface-white p-4 sm:grid-cols-2 lg:grid-cols-4">
           <Input
-            label="Search restaurants"
+          label={t('Search restaurants')}
             type="search"
-            placeholder="Name or cuisine..."
+          placeholder={t('Name or cuisine...')}
             value={searchTerm}
             onChange={(event) => setSearchTerm(event.target.value)}
           />
           <Select
-            label="Cuisine"
+            label={t('Cuisine')}
             value={selectedCuisine}
             onChange={(event) => setSelectedCuisine(event.target.value)}
           >
-            <option value="all">All cuisines</option>
+            <option value="all">{t('All cuisines')}</option>
             {cuisines.map((cuisine) => (
               <option key={cuisine} value={cuisine}>{cuisine}</option>
             ))}
           </Select>
           <Select
-            label="Minimum rating"
+            label={t('Minimum rating')}
             value={minimumRating}
             onChange={(event) => setMinimumRating(event.target.value)}
           >
-            <option value="all">Any rating</option>
+            <option value="all">{t('Any rating')}</option>
             <option value="4">4.0 and above</option>
             <option value="4.5">4.5 and above</option>
           </Select>
@@ -149,9 +151,9 @@ export default function RestaurantsPage() {
             value={sortBy}
             onChange={(event) => setSortBy(event.target.value as RestaurantSort)}
           >
-            <option value="rating">Top rated</option>
-            <option value="delivery">Fastest delivery</option>
-            <option value="name">Name (A–Z)</option>
+            <option value="rating">{t('Top rated')}</option>
+            <option value="delivery">{t('Fastest delivery')}</option>
+            <option value="name">{t('Name (A–Z)')}</option>
           </Select>
           <label className="flex items-center gap-2 text-sm font-medium text-text-main sm:col-span-2 lg:col-span-4">
             <input
@@ -161,7 +163,7 @@ export default function RestaurantsPage() {
               className="size-4 accent-brand-red"
             />
             <SlidersHorizontal aria-hidden="true" size={16} className="text-text-slate" />
-            Show open restaurants only
+            {t('Show open restaurants only')}
           </label>
         </section>
 

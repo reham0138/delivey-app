@@ -32,7 +32,7 @@ export default function OrderDetailsPage() {
   const [cancelOpen, setCancelOpen] = useState(false)
   const [busy, setBusy] = useState(false)
   const [message, setMessage] = useState('')
-  const [now, setNow] = useState(Date.now())
+  const [now, setNow] = useState(() => Date.now())
 
   const currentStatus = order?.status
 

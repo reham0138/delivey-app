@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import { ArrowDown, ArrowLeft, ArrowRight, Clock3, MapPin, Utensils } from 'lucide-react'
 import { Button } from '../shared/components/Button'
 import { useNavigate } from 'react-router-dom'
+import { useLanguage } from '../shared/hooks/useLanguage'
 
 const slides = [
   {
@@ -33,6 +34,7 @@ const slides = [
 const categories = ['Burgers', 'Pizza', 'Shawarma', 'Sushi', 'Grill', 'Desserts', 'Coffee', 'Healthy']
 
 export default function HomePage() {
+  const { t } = useLanguage()
   const [activeSlide, setActiveSlide] = useState(0)
   const navigate = useNavigate()
   const currentSlide = slides[activeSlide]
@@ -93,20 +95,20 @@ export default function HomePage() {
                   onClick={() => navigate('/meals')}
                   className="!bg-brand-red !text-white hover:!bg-brand-red-hover"
                 >
-                  Explore food <ArrowRight aria-hidden="true" size={18} />
+                  {t('Explore food')} <ArrowRight aria-hidden="true" size={18} />
                 </Button>
                 <button
                   type="button"
                   onClick={() => document.getElementById('how-it-works')?.scrollIntoView({ behavior: 'smooth' })}
                   className="inline-flex min-h-12 items-center gap-2 rounded-lg border border-white/45 px-5 py-3 text-sm font-semibold text-white transition-colors hover:bg-white/10"
                 >
-                  How it works
+                  {t('How it works')}
                 </button>
               </div>
             </div>
 
             <div className="flex items-center justify-between gap-4">
-              <div className="flex items-center gap-2" aria-label="Choose featured slide">
+              <div className="flex items-center gap-2"               aria-label={t('Choose featured slide')}>
                 {slides.map((slide, index) => (
                   <button
                     key={slide.eyebrow}
@@ -119,10 +121,10 @@ export default function HomePage() {
                 ))}
               </div>
               <div className="flex items-center gap-2">
-                <button type="button" onClick={showPrevious} aria-label="Previous slide" className="inline-flex size-10 items-center justify-center rounded-full border border-white/45 text-white transition-colors hover:bg-white/15">
+                <button type="button" onClick={showPrevious} aria-label={t('Previous slide')} className="inline-flex size-10 items-center justify-center rounded-full border border-white/45 text-white transition-colors hover:bg-white/15">
                   <ArrowLeft size={18} aria-hidden="true" />
                 </button>
-                <button type="button" onClick={showNext} aria-label="Next slide" className="inline-flex size-10 items-center justify-center rounded-full border border-white/45 text-white transition-colors hover:bg-white/15">
+                <button type="button" onClick={showNext} aria-label={t('Next slide')} className="inline-flex size-10 items-center justify-center rounded-full border border-white/45 text-white transition-colors hover:bg-white/15">
                   <ArrowRight size={18} aria-hidden="true" />
                 </button>
               </div>
@@ -134,8 +136,8 @@ export default function HomePage() {
       <section id="categories" className="scroll-mt-8 border-y border-border-subtle bg-surface-white">
         <div className="mx-auto flex max-w-7xl flex-col gap-5 px-4 py-10 sm:px-6 lg:flex-row lg:items-center lg:justify-between lg:px-8 lg:py-12">
           <div>
-            <p className="text-xs font-semibold tracking-[0.18em] text-brand-red">WHAT ARE YOU CRAVING?</p>
-            <h2 className="mt-2 text-2xl font-bold sm:text-3xl">A world of flavour awaits.</h2>
+            <p className="text-xs font-semibold tracking-[0.18em] text-brand-red">{t('WHAT ARE YOU CRAVING?')}</p>
+            <h2 className="mt-2 text-2xl font-bold sm:text-3xl">{t('A world of flavour awaits.')}</h2>
           </div>
           <div className="flex max-w-3xl flex-wrap gap-2">
             {categories.map((category) => (
@@ -149,41 +151,41 @@ export default function HomePage() {
 
       <section id="how-it-works" className="scroll-mt-8 mx-auto max-w-7xl px-4 py-14 sm:px-6 lg:px-8 lg:py-20">
         <div className="max-w-2xl">
-          <p className="text-xs font-semibold tracking-[0.18em] text-brand-red">GOOD FOOD, MADE SIMPLE</p>
-          <h2 className="mt-2 text-3xl font-bold sm:text-4xl">Your next meal is just a few steps away.</h2>
-          <p className="mt-4 leading-7 text-text-slate">A smoother way to find what you love and enjoy it wherever you are.</p>
+          <p className="text-xs font-semibold tracking-[0.18em] text-brand-red">{t('GOOD FOOD, MADE SIMPLE')}</p>
+          <h2 className="mt-2 text-3xl font-bold sm:text-4xl">{t('Your next meal is just a few steps away.')}</h2>
+          <p className="mt-4 leading-7 text-text-slate">{t('A smoother way to find what you love and enjoy it wherever you are.')}</p>
         </div>
         <div className="mt-10 grid gap-8 sm:grid-cols-3 sm:gap-10">
           <div className="border-t-2 border-brand-red pt-5">
             <span className="text-sm font-bold tracking-widest text-brand-red">01</span>
             <div className="mt-4 flex size-11 items-center justify-center rounded-full bg-brand-red/10 text-brand-red"><MapPin size={21} /></div>
-            <h3 className="mt-4 text-lg font-semibold">Find your flavour</h3>
-            <p className="mt-2 text-sm leading-6 text-text-slate">Explore food and discover something that sounds just right.</p>
+            <h3 className="mt-4 text-lg font-semibold">{t('Find your flavour')}</h3>
+            <p className="mt-2 text-sm leading-6 text-text-slate">{t('Explore food and discover something that sounds just right.')}</p>
           </div>
           <div className="border-t-2 border-brand-red pt-5">
             <span className="text-sm font-bold tracking-widest text-brand-red">02</span>
             <div className="mt-4 flex size-11 items-center justify-center rounded-full bg-brand-red/10 text-brand-red"><Utensils size={21} /></div>
-            <h3 className="mt-4 text-lg font-semibold">Choose your favourites</h3>
-            <p className="mt-2 text-sm leading-6 text-text-slate">Take your time, explore the menu, and pick what you love.</p>
+            <h3 className="mt-4 text-lg font-semibold">{t('Choose your favourites')}</h3>
+            <p className="mt-2 text-sm leading-6 text-text-slate">{t('Take your time, explore the menu, and pick what you love.')}</p>
           </div>
           <div className="border-t-2 border-brand-red pt-5">
             <span className="text-sm font-bold tracking-widest text-brand-red">03</span>
             <div className="mt-4 flex size-11 items-center justify-center rounded-full bg-brand-red/10 text-brand-red"><Clock3 size={21} /></div>
-            <h3 className="mt-4 text-lg font-semibold">Enjoy the moment</h3>
-            <p className="mt-2 text-sm leading-6 text-text-slate">Sit back and look forward to a delicious moment.</p>
+            <h3 className="mt-4 text-lg font-semibold">{t('Enjoy the moment')}</h3>
+            <p className="mt-2 text-sm leading-6 text-text-slate">{t('Sit back and look forward to a delicious moment.')}</p>
           </div>
         </div>
         <div className="mt-12 flex flex-wrap items-center justify-between gap-4 rounded-xl bg-brand-red px-6 py-7 text-white sm:px-8">
           <div>
-            <h2 className="text-xl font-bold sm:text-2xl">Ready for something delicious?</h2>
-            <p className="mt-1 text-sm text-white/85">Your next favourite meal is waiting to be discovered.</p>
+            <h2 className="text-xl font-bold sm:text-2xl">{t('Ready for something delicious?')}</h2>
+            <p className="mt-1 text-sm text-white/85">{t('Your next favourite meal is waiting to be discovered.')}</p>
           </div>
           <button
             type="button"
             onClick={() => navigate('/meals')}
             className="inline-flex min-h-11 items-center gap-2 rounded-lg bg-surface-white px-5 py-2.5 text-sm font-semibold text-brand-red transition-colors hover:bg-surface-cream"
           >
-            Explore categories <ArrowDown size={17} aria-hidden="true" />
+            {t('Explore categories')} <ArrowDown size={17} aria-hidden="true" />
           </button>
         </div>
       </section>

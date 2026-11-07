@@ -9,6 +9,7 @@ import { EmptyState } from '../shared/components/EmptyState'
 import { Spinner } from '../shared/components/Spinner'
 import { Button } from '../shared/components/Button'
 import { useCart } from '../shared/hooks/useCart'
+import { useLanguage } from '../shared/hooks/useLanguage'
 
 interface MenuItem {
   id: number
@@ -35,6 +36,7 @@ interface Restaurant {
 const ITEMS_PER_PAGE = 8
 
 export default function Meals() {
+  const { t } = useLanguage()
   const [meals, setMeals] = useState<MenuItem[]>([])
   const [restaurants, setRestaurants] = useState<Restaurant[]>([])
   const [searchTerm, setSearchTerm] = useState('')
@@ -215,11 +217,11 @@ export default function Meals() {
 
             <div>
               <h1 className="text-2xl font-bold text-text-main sm:text-3xl">
-                Explore Meals
+                {t('Explore Meals')}
               </h1>
 
               <p className="mt-1 text-sm text-text-slate">
-                Find your favorite meals from our restaurants.
+                {t('Find your favorite meals from our restaurants.')}
               </p>
             </div>
           </div>
@@ -245,18 +247,18 @@ export default function Meals() {
 
         <section className="grid gap-4 rounded-xl border border-border-subtle bg-surface-white p-4 sm:grid-cols-2">
           <Input
-            label="Search meals"
-            placeholder="Search by meal name..."
+          label={t('Search meals')}
+          placeholder={t('Search by meal name...')}
             value={searchTerm}
             onChange={(event) => setSearchTerm(event.target.value)}
           />
 
           <Select
-            label="Filter by restaurant"
+            label={t('Filter by restaurant')}
             value={selectedRestaurant}
             onChange={(event) => setSelectedRestaurant(event.target.value)}
           >
-            <option value="all">All restaurants</option>
+            <option value="all">{t('All restaurants')}</option>
 
             {availableRestaurants.map((restaurant) => (
               <option key={restaurant.id} value={restaurant.id}>
