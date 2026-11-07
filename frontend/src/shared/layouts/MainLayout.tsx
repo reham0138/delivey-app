@@ -85,9 +85,10 @@ function FloatingCartPrompt() {
           <X size={16} />
         </button>
       </div>
-      <div
+      <button
+        type="button"
         onClick={() => navigate('/checkout')}
-        className="cursor-pointer px-3 py-3"
+        className="block w-full cursor-pointer px-3 py-3 text-start transition-colors hover:bg-brand-red/5"
       >
         <div className="mb-2 flex items-center justify-between gap-2">
           <span className="flex items-center gap-2 text-sm font-bold text-text-main">
@@ -108,14 +109,10 @@ function FloatingCartPrompt() {
             </div>
           ))}
         </div>
-        <button
-          type="button"
-          onClick={(event) => { event.stopPropagation(); navigate('/checkout') }}
-          className="mt-3 flex w-full items-center justify-center gap-2 rounded-xl bg-brand-red px-4 py-2.5 text-sm font-semibold !text-white transition-colors hover:bg-brand-red/90"
-        >
+        <span className="mt-3 flex w-full items-center justify-center gap-2 rounded-xl bg-brand-red px-4 py-2.5 text-sm font-semibold !text-white transition-colors hover:bg-brand-red/90">
           {t('Checkout')} <span aria-hidden="true">→</span>
-        </button>
-      </div>
+        </span>
+      </button>
     </section>
   )
 }
