@@ -108,7 +108,7 @@ export default function RestaurantDetailsPage() {
         <div className="mx-auto max-w-7xl">
           <EmptyState
             title={t('Unable to load restaurant')}
-            description={error}
+            description={t(error)}
             action={<Button onClick={() => void refetch()}>{t('Try again')}</Button>}
           />
         </div>
