@@ -98,16 +98,6 @@ export default function OrderDetailsPage() {
           : 5
 
   const reorder = async () => {
-    if (
-      cart.items.length &&
-      cart.restaurantId !== order.restaurantId
-    ) {
-      setMessage(
-        'Your cart contains meals from another restaurant. Clear it before reordering.'
-      )
-      return
-    }
-
     try {
       const response = await fetch('/mock/menu-items.json')
 
