@@ -60,7 +60,7 @@ export default function OrdersPage() {
         <div className="flex justify-center py-20"><Spinner label={t('Loading your orders...')} /></div>
       ) : error ? (
         <Card>
-          <EmptyState title={t("We couldn't load your orders")} description={error} action={<Button onClick={() => void retry()}>{t('Try again')}</Button>} />
+          <EmptyState title={t("We couldn't load your orders")} description={t(error)} action={<Button onClick={() => void retry()}>{t('Try again')}</Button>} />
         </Card>
       ) : data.length === 0 ? (
         <Card>
