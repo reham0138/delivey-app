@@ -68,7 +68,7 @@ export default function OrderConfirmationPage() {
           </div>
           <div className="flex justify-between text-sm">
             <span className="text-text-slate">{t('Payment')}</span>
-            <span className="font-medium capitalize">{t(order.paymentMethod)}{order.paymentStatus === 'simulated' ? ' · demo' : ''}</span>
+            <span className="font-medium capitalize">{t(order.paymentMethod === 'cash' ? 'Cash on delivery' : 'Card')}{order.paymentStatus === 'simulated' ? ' · demo' : ''}</span>
           </div>
           {order.estimatedDeliveryAt && (
             <div className="flex justify-between text-sm">
