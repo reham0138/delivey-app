@@ -7,6 +7,8 @@ import {
   Clock3,
   CreditCard,
   MapPin,
+  Minus,
+  Plus,
   ShoppingBag,
   Tag,
   Wallet,
@@ -584,20 +586,55 @@ export default function CheckoutPage() {
               <p className="text-sm font-semibold text-text-slate">
                 {restaurant?.name ?? cart.restaurantName}
               </p>
-              {cart.items.map((item) => (
-                <div
-                  key={item.menuItemId}
-                  className="flex items-start justify-between gap-3 text-sm"
-                >
-                  <div>
-                    <p className="font-medium">{item.name}</p>
-                    <p className="text-xs text-text-slate">
-                      Qty {item.quantity}
-                    </p>
+              <div className="space-y-3">
+                {cart.items.map((item) => (
+                  <div
+                    key={item.menuItemId}
+                    className="rounded-xl border border-border-subtle bg-surface-white p-3 shadow-sm"
+                  >
+                    <div className="flex items-center gap-3">
+                      {item.image ? (
+                        <img
+                          src={item.image}
+                          alt={item.name}
+                          className="size-16 shrink-0 rounded-lg object-cover"
+                        />
+                      ) : (
+                        <div className="flex size-16 shrink-0 items-center justify-center rounded-lg bg-brand-yellow/20 text-brand-red">
+                          <ShoppingBag size={22} />
+                        </div>
+                      )}
+                      <div className="min-w-0 flex-1">
+                        <p className="font-semibold leading-snug text-text-main">{t(item.name)}</p>
+                        <p className="mt-1 text-xs text-text-slate">{money(item.price)} / {t("item")}</p>
+                        <p className="mt-1 text-sm font-bold text-brand-red">{money(item.price * item.quantity)}</p>
+                      </div>
+                    </div>
+                    <div className="mt-3 flex items-center justify-between border-t border-border-subtle pt-3">
+                      <span className="text-xs font-medium text-text-slate">{t("Quantity")}</span>
+                      <div className="flex items-center gap-3">
+                        <button
+                          type="button"
+                          aria-label={t("Decrease quantity of {name}", { name: t(item.name) })}
+                          onClick={() => item.quantity <= 1 ? cart.removeFromCart(item.menuItemId) : cart.updateQuantity(item.menuItemId, item.quantity - 1)}
+                          className="inline-flex size-8 items-center justify-center rounded-lg border border-border-subtle text-text-main transition-colors hover:border-brand-red hover:text-brand-red"
+                        >
+                          <Minus size={15} />
+                        </button>
+                        <span className="min-w-5 text-center text-sm font-bold tabular-nums">{item.quantity}</span>
+                        <button
+                          type="button"
+                          aria-label={t("Increase quantity of {name}", { name: t(item.name) })}
+                          onClick={() => cart.updateQuantity(item.menuItemId, item.quantity + 1)}
+                          className="inline-flex size-8 items-center justify-center rounded-lg border border-border-subtle text-text-main transition-colors hover:border-brand-red hover:text-brand-red"
+                        >
+                          <Plus size={15} />
+                        </button>
+                      </div>
+                    </div>
                   </div>
-                  <span>{money(item.price * item.quantity)}</span>
-                </div>
-              ))}
+                ))}
+              </div>
               <div className="border-t border-border-subtle pt-4">
                 <div className="flex gap-2">
                   <Input
