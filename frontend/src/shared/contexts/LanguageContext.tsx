@@ -494,6 +494,7 @@ Object.assign(translations, {
   'Something went wrong. Please try again.': 'حدث خطأ ما. يرجى المحاولة مجدداً.',
   'Image processing is unavailable.': 'معالجة الصور غير متاحة.',
   'The image is too large to store locally.': 'حجم الصورة كبير جداً للحفظ محلياً.',
+  'We could not create your orders. Please try again.': 'تعذر إنشاء طلباتك. يرجى المحاولة مجدداً.',
 })
 
 function getInitialLanguage(): Language {
