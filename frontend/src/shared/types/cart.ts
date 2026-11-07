@@ -13,8 +13,8 @@ export interface CartContextValue {
   restaurantId: number | null
   restaurantName: string | null
   addToCart: (item: CartItem) => boolean
-  removeFromCart: (menuItemId: number) => void
-  updateQuantity: (menuItemId: number, quantity: number) => void
+  removeFromCart: (restaurantId: number, menuItemId: number) => void
+  updateQuantity: (restaurantId: number, menuItemId: number, quantity: number) => void
   clearCart: () => void
   isCartPromptOpen: boolean
   showCartPrompt: () => void
