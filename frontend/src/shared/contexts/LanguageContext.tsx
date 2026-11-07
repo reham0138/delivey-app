@@ -420,6 +420,8 @@ Object.assign(translations, {
   'Track order #{id}': ({ id }: Record<string, string | number>) => `تتبع الطلب رقم ${id}`,
   'Order #{id}': ({ id }: Record<string, string | number>) => `الطلب رقم ${id}`,
   'Restaurant #{id}': ({ id }: Record<string, string | number>) => `المطعم رقم ${id}`,
+  'Saved address': 'عنوان محفوظ',
+  'We could not place your order. Please try again.': 'تعذر إرسال طلبك. يرجى المحاولة مجدداً.',
   'Cash on delivery': 'الدفع عند الاستلام',
   'Your cart contains meals from another restaurant. Clear it before reordering.': 'يمكنك الآن إعادة طلب وجبات من مطاعم متعددة في السلة نفسها.',
   'items count': ({ count }: Record<string, string | number>) => `${count} عناصر`,
