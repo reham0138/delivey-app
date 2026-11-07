@@ -30,19 +30,15 @@ export function CartProvider({ children }: { children: ReactNode }) {
   }, [items])
 
   const addToCart = useCallback((newItem: CartItem) => {
-    if (
-      items.length > 0 &&
-      items[0].restaurantId !== newItem.restaurantId
-    ) {
-      return false
-    }
-
     const existingItem = items.find(
-      (item) => item.menuItemId === newItem.menuItemId
+      (item) =>
+        item.restaurantId === newItem.restaurantId &&
+        item.menuItemId === newItem.menuItemId
     )
 
     if (existingItem) {
       setItems(items.map((item) =>
+        item.restaurantId === newItem.restaurantId &&
         item.menuItemId === newItem.menuItemId
           ? { ...item, quantity: item.quantity + 1 }
           : item
@@ -54,19 +50,19 @@ export function CartProvider({ children }: { children: ReactNode }) {
     return true
   }, [items])
 
-  const removeFromCart = useCallback((menuItemId: number) => {
+  const removeFromCart = useCallback((restaurantId: number, menuItemId: number) => {
     setItems((current) =>
-      current.filter((item) => item.menuItemId !== menuItemId)
+      current.filter((item) => !(item.restaurantId === restaurantId && item.menuItemId === menuItemId))
     )
   }, [])
 
   const updateQuantity = useCallback(
-    (menuItemId: number, quantity: number) => {
+    (restaurantId: number, menuItemId: number, quantity: number) => {
       if (quantity < 1) return
 
       setItems((current) =>
         current.map((item) =>
-          item.menuItemId === menuItemId
+          item.restaurantId === restaurantId && item.menuItemId === menuItemId
             ? { ...item, quantity }
             : item
         )
