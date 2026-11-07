@@ -51,6 +51,7 @@ export default function Meals() {
     addToCart,
     restaurantName: cartRestaurantName,
     totalItems,
+    showCartPrompt,
   } = useCart()
 
   const fetchMeals = useCallback(async () => {
@@ -164,7 +165,8 @@ export default function Meals() {
 
     if (added) {
       setCartError(false)
-      setCartMessage(t('{name} added to your cart.', { name: t(meal.name) }))
+      setCartMessage('')
+      showCartPrompt()
     } else {
       setCartError(true)
       setCartMessage(
@@ -232,14 +234,10 @@ export default function Meals() {
           </div>
         </section>
 
-        {cartMessage && (
+        {cartMessage && cartError && (
           <div
-            role="status"
-            className={`rounded-lg border p-3 text-sm ${
-              cartError
-                ? 'border-brand-red/30 bg-brand-red/10 text-brand-red'
-                : 'border-green-600/30 bg-green-600/10 text-green-700'
-            }`}
+            role="alert"
+            className="fixed bottom-5 left-5 z-[60] max-w-[min(380px,calc(100vw-2rem))] rounded-xl border border-brand-red/30 bg-surface-white p-4 text-sm text-brand-red shadow-xl"
           >
             {cartMessage}
           </div>
