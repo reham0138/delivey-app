@@ -261,8 +261,8 @@ function RestaurantProfileContent({
 							<Input label={t("Address")} autoComplete="street-address" wrapperClassName="sm:col-span-2" {...register('address')} error={errors.address?.message} />
 							<Input label={t("Phone number")} type="tel" autoComplete="tel" {...register('phone')} error={errors.phone?.message} />
 							<Input label={t("Delivery time (minutes)")} type="number" min="1" step="1" {...register('deliveryTimeMinutes', { valueAsNumber: true })} error={errors.deliveryTimeMinutes?.message} />
-							<Input label="Delivery fee" type="number" min="0" step="0.01" {...register('deliveryFee', { valueAsNumber: true })} error={errors.deliveryFee?.message} />
-							<Input label="Minimum order" type="number" min="0" step="0.01" {...register('minOrder', { valueAsNumber: true })} error={errors.minOrder?.message} />
+							<Input label={t("Delivery fee")} type="number" min="0" step="0.01" {...register('deliveryFee', { valueAsNumber: true })} error={errors.deliveryFee?.message} />
+							<Input label={t("Minimum order")} type="number" min="0" step="0.01" {...register('minOrder', { valueAsNumber: true })} error={errors.minOrder?.message} />
 							<Input label={t("Opening hours")} autoComplete="off" hint={t("Optional; enter the hours as shown to guests.")} wrapperClassName="sm:col-span-2" {...register('openingHours')} error={errors.openingHours?.message} />
 						</div>
 						<div className="space-y-3">
@@ -323,7 +323,7 @@ function RestaurantProfileContent({
 						<dl className="mt-5 space-y-5">
 							<ProfileDetail icon={<MapPin aria-hidden="true" size={18} />} label={t("Address")} value={restaurant.address} />
 							<ProfileDetail icon={<Phone aria-hidden="true" size={18} />} label={t("Phone")} value={restaurant.phone} />
-							<ProfileDetail icon={<Clock3 aria-hidden="true" size={18} />} label="Opening hours" value={restaurant.openingHours?.trim() || t(t('Hours not provided'))} muted={!restaurant.openingHours?.trim()} />
+							<ProfileDetail icon={<Clock3 aria-hidden="true" size={18} />} label={t("Opening hours")} value={restaurant.openingHours?.trim() || t('Hours not provided')} muted={!restaurant.openingHours?.trim()} />
 						</dl>
 					</Card>
 					<Card className="rounded-2xl bg-surface-cream" padding="lg">
@@ -368,7 +368,7 @@ async function encodeImageForStorage(file: File): Promise<string> {
 			canvas.width = Math.max(1, Math.round(bitmap.width * scale))
 			canvas.height = Math.max(1, Math.round(bitmap.height * scale))
 			const context = canvas.getContext('2d')
-			if (!context) throw new Error(t('Image processing is unavailable.'))
+			if (!context) throw new Error('Image processing is unavailable.')
 			context.drawImage(bitmap, 0, 0, canvas.width, canvas.height)
 
 			for (const quality of [0.86, 0.74, 0.62, 0.5]) {
@@ -377,7 +377,7 @@ async function encodeImageForStorage(file: File): Promise<string> {
 			}
 			maxDimension = Math.round(maxDimension * 0.75)
 		}
-		throw new Error(t('The image is too large to store locally.'))
+		throw new Error('The image is too large to store locally.')
 	} finally {
 		bitmap.close()
 	}
