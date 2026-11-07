@@ -80,6 +80,8 @@ const translations: Record<string, TranslationValue> = {
   'View details': 'عرض التفاصيل',
   Previous: 'السابق',
   Next: 'التالي',
+  Pagination: 'التنقل بين الصفحات',
+  'Go to page {page}': ({ page }) => `الانتقال إلى الصفحة ${page}`,
   'From date': 'من تاريخ',
   'To date': 'إلى تاريخ',
   'Search orders': 'البحث في الطلبات',
