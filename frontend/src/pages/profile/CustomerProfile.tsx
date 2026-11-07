@@ -42,7 +42,7 @@ export default function CustomerProfile({ user }: { user: User }) {
 			setSaved(true)
 		} catch (error) {
 			setError('root.serverError', {
-				message: error instanceof Error ? error.message : 'Something went wrong. Please try again.',
+				message: error instanceof Error ? error.message : t('Something went wrong. Please try again.'),
 			})
 		}
 	}
@@ -110,10 +110,10 @@ export default function CustomerProfile({ user }: { user: User }) {
 						)}
 						<div className="flex flex-col gap-3 sm:flex-row sm:justify-end">
 							<Button type="submit" loading={isSubmitting} disabled={!isDirty}>
-								Save changes
+								{t('Save changes')}
 							</Button>
 							<Button type="button" variant="ghost" onClick={resetSavedValues}>
-								Reset
+								{t('Reset')}
 							</Button>
 						</div>
 					</form>
