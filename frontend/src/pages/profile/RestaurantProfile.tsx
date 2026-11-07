@@ -256,14 +256,14 @@ function RestaurantProfileContent({
 					</div>
 					<form noValidate className="space-y-5" onSubmit={handleSubmit(onSubmit)}>
 						<div className="grid gap-4 sm:grid-cols-2">
-							<Input label={t("Restaurant name")} autoComplete="organization" {...register('name')} error={errors.name?.message} />
-							<Input label={t("Cuisine")} autoComplete="off" {...register('cuisine')} error={errors.cuisine?.message} />
-							<Input label={t("Address")} autoComplete="street-address" wrapperClassName="sm:col-span-2" {...register('address')} error={errors.address?.message} />
-							<Input label={t("Phone number")} type="tel" autoComplete="tel" {...register('phone')} error={errors.phone?.message} />
-							<Input label={t("Delivery time (minutes)")} type="number" min="1" step="1" {...register('deliveryTimeMinutes', { valueAsNumber: true })} error={errors.deliveryTimeMinutes?.message} />
-							<Input label={t("Delivery fee")} type="number" min="0" step="0.01" {...register('deliveryFee', { valueAsNumber: true })} error={errors.deliveryFee?.message} />
-							<Input label={t("Minimum order")} type="number" min="0" step="0.01" {...register('minOrder', { valueAsNumber: true })} error={errors.minOrder?.message} />
-							<Input label={t("Opening hours")} autoComplete="off" hint={t("Optional; enter the hours as shown to guests.")} wrapperClassName="sm:col-span-2" {...register('openingHours')} error={errors.openingHours?.message} />
+							<Input label={t("Restaurant name")} autoComplete="organization" {...register('name')} error={errors.name?.message ? t(errors.name.message) : undefined} />
+							<Input label={t("Cuisine")} autoComplete="off" {...register('cuisine')} error={errors.cuisine?.message ? t(errors.cuisine.message) : undefined} />
+							<Input label={t("Address")} autoComplete="street-address" wrapperClassName="sm:col-span-2" {...register('address')} error={errors.address?.message ? t(errors.address.message) : undefined} />
+							<Input label={t("Phone number")} type="tel" autoComplete="tel" {...register('phone')} error={errors.phone?.message ? t(errors.phone.message) : undefined} />
+							<Input label={t("Delivery time (minutes)")} type="number" min="1" step="1" {...register('deliveryTimeMinutes', { valueAsNumber: true })} error={errors.deliveryTimeMinutes?.message ? t(errors.deliveryTimeMinutes.message) : undefined} />
+							<Input label={t("Delivery fee")} type="number" min="0" step="0.01" {...register('deliveryFee', { valueAsNumber: true })} error={errors.deliveryFee?.message ? t(errors.deliveryFee.message) : undefined} />
+							<Input label={t("Minimum order")} type="number" min="0" step="0.01" {...register('minOrder', { valueAsNumber: true })} error={errors.minOrder?.message ? t(errors.minOrder.message) : undefined} />
+							<Input label={t("Opening hours")} autoComplete="off" hint={t("Optional; enter the hours as shown to guests.")} wrapperClassName="sm:col-span-2" {...register('openingHours')} error={errors.openingHours?.message ? t(errors.openingHours.message) : undefined} />
 						</div>
 						<div className="space-y-3">
 							<div>
