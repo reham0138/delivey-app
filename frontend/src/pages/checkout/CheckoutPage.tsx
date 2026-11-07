@@ -300,7 +300,7 @@ export default function CheckoutPage() {
           id: selectedAddressId || crypto.randomUUID(),
           label:
             addresses.find((item) => item.id === selectedAddressId)?.label ??
-            "Saved address",
+            t("Saved address"),
           address: form.address.trim(),
           phone: form.phone.trim(),
         });
@@ -316,7 +316,7 @@ export default function CheckoutPage() {
       setError(
         reason instanceof Error
           ? reason.message
-          : "We could not place your order. Please try again.",
+          : t("We could not place your order. Please try again."),
       );
     } finally {
       setSubmitting(false);
