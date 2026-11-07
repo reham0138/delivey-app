@@ -153,15 +153,41 @@ export default function CheckoutPage() {
   const tip = form.customTip.trim()
     ? Math.max(0, Number(form.customTip) || 0)
     : form.tip;
+  const groupedTotals = useMemo(() => {
+    let allocatedDiscount = 0;
+    let allocatedTip = 0;
+    return cartGroups.map((group, index) => {
+      const isLast = index === cartGroups.length - 1;
+      const discountShare = isLast
+        ? Number(((promo?.discount ?? 0) - allocatedDiscount).toFixed(2))
+        : Number(((promo?.discount ?? 0) * group.subtotal / (cart.subtotal || 1)).toFixed(2));
+      const tipShare = isLast
+        ? Number((tip - allocatedTip).toFixed(2))
+        : Number((tip * group.subtotal / (cart.subtotal || 1)).toFixed(2));
+      allocatedDiscount += discountShare;
+      allocatedTip += tipShare;
+      return {
+        ...group,
+        totals: calculateOrderTotals({
+          subtotal: group.subtotal,
+          deliveryFee: promo?.deliveryFee === 0 ? 0 : (group.restaurant?.deliveryFee ?? 0),
+          discount: discountShare,
+          tip: tipShare,
+        }),
+      };
+    });
+  }, [cartGroups, promo, tip, cart.subtotal]);
   const totals = useMemo(
-    () =>
-      calculateOrderTotals({
-        subtotal: cart.subtotal,
-        deliveryFee,
-        discount: promo?.discount ?? 0,
-        tip,
-      }),
-    [cart.subtotal, deliveryFee, promo, tip],
+    () => groupedTotals.reduce((sum, group) => ({
+      subtotal: sum.subtotal + group.totals.subtotal,
+      deliveryFee: sum.deliveryFee + group.totals.deliveryFee,
+      serviceFee: sum.serviceFee + group.totals.serviceFee,
+      tax: sum.tax + group.totals.tax,
+      discount: sum.discount + group.totals.discount,
+      tip: sum.tip + group.totals.tip,
+      total: sum.total + group.totals.total,
+    }), { subtotal: 0, deliveryFee: 0, serviceFee: 0, tax: 0, discount: 0, tip: 0, total: 0 }),
+    [groupedTotals],
   );
   const [slotsStart] = useState(() => Date.now());
   const slots = useMemo(
@@ -235,28 +261,12 @@ export default function CheckoutPage() {
     setError("");
     try {
       const scheduledFor = form.delivery === "scheduled" ? form.slot : null;
-      let allocatedDiscount = 0;
-      let allocatedTip = 0;
       const orders: Order[] = [];
-      for (let index = 0; index < cartGroups.length; index += 1) {
-        const group = cartGroups[index];
+      for (let index = 0; index < groupedTotals.length; index += 1) {
+        const group = groupedTotals[index];
         const currentRestaurant = group.restaurant;
         if (!currentRestaurant) throw new Error(t('Some restaurant details could not be loaded. Please refresh and try again.'));
-        const isLast = index === cartGroups.length - 1;
-        const discountShare = isLast
-          ? Number(((promo?.discount ?? 0) - allocatedDiscount).toFixed(2))
-          : Number(((promo?.discount ?? 0) * group.subtotal / cart.subtotal).toFixed(2));
-        const tipShare = isLast
-          ? Number((tip - allocatedTip).toFixed(2))
-          : Number((tip * group.subtotal / cart.subtotal).toFixed(2));
-        allocatedDiscount += discountShare;
-        allocatedTip += tipShare;
-        const groupTotals = calculateOrderTotals({
-          subtotal: group.subtotal,
-          deliveryFee: promo?.deliveryFee === 0 ? 0 : currentRestaurant.deliveryFee,
-          discount: discountShare,
-          tip: tipShare,
-        });
+        const groupTotals = group.totals;
         const estimated = new Date(
           Date.now() + (currentRestaurant.deliveryTimeMinutes + 15) * 60000,
         );
