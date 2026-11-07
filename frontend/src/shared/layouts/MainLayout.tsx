@@ -12,18 +12,24 @@ function FloatingCartPrompt() {
   const cart = useCart()
   const location = useLocation()
   const navigate = useNavigate()
-  const [position, setPosition] = useState({ x: 0, y: 0 })
+  const [position, setPosition] = useState<{ x: number; y: number } | null>(null)
   const dragRef = useRef<{ pointerX: number; pointerY: number; x: number; y: number } | null>(null)
   const movedRef = useRef(false)
 
   useEffect(() => {
     if (!cart.isCartPromptOpen) return
+    if (!position) {
+      setPosition({
+        x: Math.max(8, window.innerWidth - 300),
+        y: Math.max(8, window.innerHeight - 250),
+      })
+    }
     const closeOnEscape = (event: KeyboardEvent) => {
       if (event.key === 'Escape') cart.closeCartPrompt()
     }
     window.addEventListener('keydown', closeOnEscape)
     return () => window.removeEventListener('keydown', closeOnEscape)
-  }, [cart.isCartPromptOpen, cart.closeCartPrompt])
+  }, [cart.isCartPromptOpen, cart.closeCartPrompt, position])
 
   useEffect(() => {
     cart.closeCartPrompt()
@@ -37,8 +43,8 @@ function FloatingCartPrompt() {
       const dy = event.clientY - dragRef.current.pointerY
       if (Math.abs(dx) + Math.abs(dy) > 4) movedRef.current = true
       setPosition({
-        x: Math.max(-window.innerWidth + 300, Math.min(0, dragRef.current.x + dx)),
-        y: Math.max(-window.innerHeight + 220, Math.min(0, dragRef.current.y + dy)),
+        x: Math.max(8, Math.min(window.innerWidth - 288, dragRef.current.x + dx)),
+        y: Math.max(8, Math.min(window.innerHeight - 220, dragRef.current.y + dy)),
       })
     }
     const stop = () => { dragRef.current = null }
@@ -55,7 +61,9 @@ function FloatingCartPrompt() {
   return (
     <section
       aria-label={t('Open checkout')}
-      style={{ transform: `translate(${position.x}px, ${position.y}px)` }}
+      style={position
+        ? { left: position.x, top: position.y, right: 'auto', bottom: 'auto' }
+        : { right: 20, bottom: 20 }}
       className="fixed bottom-5 right-5 z-[70] w-[min(280px,calc(100vw-2rem))] overflow-hidden rounded-2xl border border-border-subtle bg-surface-white shadow-2xl animate-[profile-fade-up_250ms_ease-out_both] transition-[box-shadow] hover:shadow-2xl"
     >
       <div
@@ -64,7 +72,7 @@ function FloatingCartPrompt() {
           movedRef.current = false
           dragRef.current = { pointerX: event.clientX, pointerY: event.clientY, x: position.x, y: position.y }
         }}
-        className="flex cursor-grab items-center justify-between gap-3 border-b border-border-subtle bg-surface-cream px-4 py-2 active:cursor-grabbing"
+        className="flex touch-none select-none cursor-grab items-center justify-between gap-3 border-b border-border-subtle bg-surface-cream px-4 py-2 active:cursor-grabbing"
       >
         <span className="flex items-center gap-2 text-xs font-semibold text-text-slate">
           <GripVertical size={16} /> {t('Your order is ready')}
@@ -89,7 +97,7 @@ function FloatingCartPrompt() {
         </div>
         <div className="max-h-36 space-y-2 overflow-y-auto">
           {cart.items.map((item) => (
-            <div key={item.menuItemId} className="flex min-w-0 items-center justify-between gap-2 rounded-lg bg-surface-cream px-2.5 py-2">
+            <div key={`${item.restaurantId}-${item.menuItemId}`} className="flex min-w-0 items-center justify-between gap-2 rounded-lg bg-surface-cream px-2.5 py-2">
               <div className="min-w-0 flex-1">
                 <p className="truncate text-xs font-semibold text-text-main">{t(item.name)}</p>
                 <p className="text-[11px] text-text-slate">{item.quantity} × {item.price.toFixed(2)}</p>
