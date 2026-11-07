@@ -495,6 +495,11 @@ Object.assign(translations, {
   'Image processing is unavailable.': 'معالجة الصور غير متاحة.',
   'The image is too large to store locally.': 'حجم الصورة كبير جداً للحفظ محلياً.',
   'We could not create your orders. Please try again.': 'تعذر إنشاء طلباتك. يرجى المحاولة مجدداً.',
+  'Close dialog': 'إغلاق النافذة',
+  'Main navigation': 'التنقل الرئيسي',
+  'Unknown restaurant': 'مطعم غير معروف',
+  'Failed to load meals data.': 'تعذر تحميل بيانات الوجبات.',
+  'Something went wrong.': 'حدث خطأ ما.',
 })
 
 function getInitialLanguage(): Language {
