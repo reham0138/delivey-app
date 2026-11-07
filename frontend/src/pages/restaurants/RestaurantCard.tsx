@@ -44,7 +44,7 @@ export default function RestaurantCard({ restaurant }: RestaurantCardProps) {
         <div className="flex flex-1 flex-col gap-3 p-4">
           <div>
             <h2 className="truncate text-lg font-semibold text-text-main group-hover:text-brand-red">
-              {restaurant.name}
+              {t(restaurant.name)}
             </h2>
             <p className="mt-1 text-sm text-text-slate">{t(restaurant.cuisine)}</p>
           </div>
