@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
 import { Outlet, useLocation, useNavigate } from 'react-router-dom'
-import { ShoppingCart, X, GripVertical } from 'lucide-react'
+import { ShoppingCart, X, GripVertical, Minus, Plus } from 'lucide-react'
 import { useCart } from '../hooks/useCart'
 import { useLanguage } from '../hooks/useLanguage'
 
@@ -79,20 +79,33 @@ function FloatingCartPrompt() {
           <X size={16} />
         </button>
       </div>
-      <button
-        type="button"
-        onClick={() => navigate('/checkout')}
-        className="flex w-full flex-col items-center gap-3 px-5 py-5 text-center transition-colors hover:bg-brand-red/5"
-      >
-        <span className="flex size-12 items-center justify-center rounded-2xl bg-brand-red/10 text-brand-red">
-          <ShoppingCart size={23} />
-        </span>
-        <span>
-          <span className="block font-semibold text-text-main">{t('Your cart ({count})', { count: cart.totalItems })}</span>
-          <span className="mt-1 block text-sm text-text-slate">{cart.subtotal.toFixed(2)} · {t('Tap to continue to checkout')}</span>
-        </span>
-        <span className="w-full rounded-xl bg-brand-red px-4 py-2.5 text-sm font-semibold !text-white">{t('Checkout')}</span>
-      </button>
+      <div className="px-3 py-3">
+        <div className="mb-2 flex items-center justify-between gap-2">
+          <span className="flex items-center gap-2 text-sm font-bold text-text-main">
+            <ShoppingCart size={17} className="text-brand-red" />
+            {t('Your cart ({count})', { count: cart.totalItems })}
+          </span>
+          <span className="text-sm font-bold text-brand-red">{cart.subtotal.toFixed(2)}</span>
+        </div>
+        <div className="max-h-36 space-y-2 overflow-y-auto">
+          {cart.items.map((item) => (
+            <div key={item.menuItemId} className="flex min-w-0 items-center justify-between gap-2 rounded-lg bg-surface-cream px-2.5 py-2">
+              <div className="min-w-0 flex-1">
+                <p className="truncate text-xs font-semibold text-text-main">{t(item.name)}</p>
+                <p className="text-[11px] text-text-slate">{item.quantity} × {item.price.toFixed(2)}</p>
+              </div>
+              <span className="shrink-0 text-xs font-semibold text-text-main">{(item.price * item.quantity).toFixed(2)}</span>
+            </div>
+          ))}
+        </div>
+        <button
+          type="button"
+          onClick={() => navigate('/checkout')}
+          className="mt-3 flex w-full items-center justify-center gap-2 rounded-xl bg-brand-red px-4 py-2.5 text-sm font-semibold !text-white transition-colors hover:bg-brand-red/90"
+        >
+          {t('Checkout')} <span aria-hidden="true">→</span>
+        </button>
+      </div>
     </section>
   )
 }
