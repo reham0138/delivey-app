@@ -99,17 +99,25 @@ export default function OrderDetailsPage() {
 
   const reorder = async () => {
     try {
-      const response = await fetch('/mock/menu-items.json')
+      const [response, restaurantsResponse] = await Promise.all([
+        fetch('/mock/menu-items.json'),
+        fetch('/mock/restaurants.json'),
+      ])
 
-      if (!response.ok) {
+      if (!response.ok || !restaurantsResponse.ok) {
         throw new Error(t('Could not verify current menu availability.'))
       }
 
-      const menuItems = await response.json() as Array<{
+      const [menuItems, restaurants] = await Promise.all([
+        response.json() as Promise<Array<{
         id: number
         restaurantId: number
         isAvailable: boolean
-      }>
+      }>>,
+        restaurantsResponse.json() as Promise<Array<{ id: number; name: string }>>,
+      ])
+      const restaurantName = restaurants.find(value => value.id === order.restaurantId)?.name
+        ?? t('Restaurant #{id}', { id: order.restaurantId })
 
       const available = order.items.filter(item =>
         menuItems.some(
@@ -131,7 +139,7 @@ export default function OrderDetailsPage() {
         cart.addToCart({
           menuItemId: item.menuItemId,
           restaurantId: order.restaurantId,
-          restaurantName: `Restaurant #${order.restaurantId}`,
+          restaurantName,
           name: item.name,
           price: item.unitPrice,
           quantity: item.quantity
