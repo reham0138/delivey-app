@@ -97,7 +97,7 @@ function FloatingCartPrompt() {
           </span>
           <span className="text-sm font-bold text-brand-red">{cart.subtotal.toFixed(2)}</span>
         </div>
-        <div className="max-h-24 space-y-2 overflow-y-auto">
+        <div onClick={(event) => event.stopPropagation()} className="max-h-24 space-y-2 overflow-y-auto">
           {cart.items.map((item) => (
             <div key={`${item.restaurantId}-${item.menuItemId}`} className="flex min-w-0 items-center justify-between gap-2 rounded-lg bg-surface-cream px-2.5 py-2">
               <div className="min-w-0 flex-1">
