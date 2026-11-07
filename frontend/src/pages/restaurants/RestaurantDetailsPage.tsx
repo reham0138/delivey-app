@@ -25,13 +25,12 @@ export default function RestaurantDetailsPage() {
   const { id } = useParams()
   const restaurantId = id && /^\d+$/.test(id) ? Number(id) : null
   const { data, loading, error, refetch } = useRestaurant(restaurantId)
-  const { addToCart, restaurantName: cartRestaurantName, showCartPrompt } = useCart()
+  const { addToCart, showCartPrompt } = useCart()
   const [searchTerm, setSearchTerm] = useState('')
   const [selectedCategory, setSelectedCategory] = useState('all')
   const [sortBy, setSortBy] = useState<MealSort>('popular')
   const [currentPage, setCurrentPage] = useState(1)
   const [cartMessage, setCartMessage] = useState('')
-  const [, setCartError] = useState(false)
 
   const restaurant = data.restaurant
   const categories = useMemo(
@@ -71,12 +70,11 @@ export default function RestaurantDetailsPage() {
     setCartMessage('')
 
     if (!restaurant?.isOpen) {
-      setCartError(true)
       setCartMessage(t('This restaurant is currently closed. Please try again later.'))
       return
     }
 
-    const added = addToCart({
+    addToCart({
       menuItemId: meal.id,
       restaurantId: meal.restaurantId,
       restaurantName: restaurant.name,
@@ -85,10 +83,8 @@ export default function RestaurantDetailsPage() {
       image: meal.image,
       quantity: 1,
     })
-
-    setCartError(!added)
-    setCartMessage(added ? '' : t('Your cart already contains meals from {name}. Clear your cart before choosing another restaurant.', { name: cartRestaurantName ? t(cartRestaurantName) : t('another restaurant') }))
-    if (added) showCartPrompt()
+    setCartMessage('')
+    showCartPrompt()
   }
 
   const clearFilters = () => {
