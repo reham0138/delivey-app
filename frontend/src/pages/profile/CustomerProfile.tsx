@@ -66,7 +66,7 @@ export default function CustomerProfile({ user }: { user: User }) {
 					</div>
 					<p className="mt-5 break-words text-lg font-semibold text-text-main">{user.name}</p>
 					<p className="mx-auto mt-2 w-fit rounded-full border border-border-subtle bg-surface-cream px-3 py-1 text-xs capitalize text-text-slate">
-						{user.role}
+						{t(user.role === 'customer' ? 'Customer' : user.role === 'restaurant' ? 'Restaurant' : 'Admin')}
 					</p>
 					<div className="mt-6 space-y-3 text-left">
 						<div className="flex min-w-0 items-start gap-3 text-sm text-text-main">
