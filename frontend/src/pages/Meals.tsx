@@ -181,7 +181,7 @@ export default function Meals() {
         <div className="mx-auto max-w-7xl">
           <EmptyState
             title={t('Unable to load meals')}
-            description={error}
+            description={t(error)}
             action={
               <Button onClick={fetchMeals}>
                 {t('Try again')}
