@@ -70,11 +70,10 @@ function FloatingCartPrompt() {
         }
         navigate('/checkout')
       }}
-      className="cursor-pointer"
       style={position
         ? { left: position.x, top: position.y, right: 'auto', bottom: 'auto' }
         : { right: 20, bottom: 20 }}
-      className="fixed bottom-5 right-5 z-[70] w-[min(280px,calc(100vw-2rem))] overflow-hidden rounded-2xl border border-border-subtle bg-surface-white shadow-2xl animate-[profile-fade-up_250ms_ease-out_both] transition-[box-shadow] hover:shadow-2xl"
+      className="fixed bottom-5 right-5 z-[70] cursor-pointer w-[min(280px,calc(100vw-2rem))] overflow-hidden rounded-2xl border border-border-subtle bg-surface-white shadow-2xl animate-[profile-fade-up_250ms_ease-out_both] transition-[box-shadow] hover:shadow-2xl"
     >
       <div
         onPointerDown={(event) => {
