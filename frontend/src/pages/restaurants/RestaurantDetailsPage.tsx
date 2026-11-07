@@ -243,10 +243,10 @@ export default function RestaurantDetailsPage() {
               value={sortBy}
               onChange={(event) => setSortBy(event.target.value as MealSort)}
             >
-              <option value="popular"{t('Popular first')}</option>
-              <option value="rating"{t('Top rated')}</option>
-              <option value="price"{t('Price: low to high')}</option>
-              <option value="name"{t('Name (A–Z)')}</option>
+              <option value="popular">{t('Popular first')}</option>
+              <option value="rating">{t('Top rated')}</option>
+              <option value="price">{t('Price: low to high')}</option>
+              <option value="name">{t('Name (A–Z)')}</option>
             </Select>
           </div>
 
