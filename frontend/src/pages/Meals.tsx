@@ -168,7 +168,7 @@ export default function Meals() {
     } else {
       setCartError(true)
       setCartMessage(
-        t('Your cart already contains meals from {name}. Clear your cart before choosing another restaurant.', { name: t(cartRestaurantName) })
+        t('Your cart already contains meals from {name}. Clear your cart before choosing another restaurant.', { name: cartRestaurantName ? t(cartRestaurantName) : t('another restaurant') })
       )
     }
   }
