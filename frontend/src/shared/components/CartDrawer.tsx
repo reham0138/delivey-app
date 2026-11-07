@@ -47,7 +47,7 @@ export function CartDrawer({ open, onClose }: CartDrawerProps) {
             <Link
               to="/meals"
               onClick={onClose}
-              className="inline-flex min-h-10 items-center justify-center rounded-lg bg-brand-red px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-brand-red-hover"
+              className="inline-flex min-h-10 items-center justify-center rounded-lg bg-brand-red px-4 py-2 text-sm font-medium !text-white transition-colors hover:bg-brand-red-hover"
             >
               {t('Browse meals')}
             </Link>
@@ -110,7 +110,7 @@ export function CartDrawer({ open, onClose }: CartDrawerProps) {
                 <Link
                   to="/checkout"
                   onClick={onClose}
-                  className="inline-flex min-h-10 flex-1 items-center justify-center rounded-lg bg-brand-red px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-brand-red-hover"
+                  className="inline-flex min-h-10 flex-1 items-center justify-center rounded-lg bg-brand-red px-4 py-2 text-sm font-medium !text-white transition-colors hover:bg-brand-red-hover"
                 >
                   {t('Proceed to checkout')}
                 </Link>
