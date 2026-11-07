@@ -10,27 +10,22 @@ import {
   Utensils,
   Store,
   ClipboardList,
-  ShoppingCart,
   UserRound,
   X,
 } from "lucide-react";
 import { Link, NavLink } from "react-router-dom";
 import { Button } from "@/shared/components/Button";
-import { CartDrawer } from "@/shared/components/CartDrawer";
 
 import { useTheme } from "../contexts/ThemeContext";
 import { useAuth } from "@/shared/hooks/useAuth";
-import { useCart } from "@/shared/hooks/useCart";
 import { useLanguage } from "@/shared/hooks/useLanguage";
 
 export default function NavBar() {
   const { theme, toggleTheme } = useTheme();
   const { user, isAuthenticated, logout } = useAuth();
-  const cart = useCart();
   const { language, t, toggleLanguage } = useLanguage();
   const [isLoggingOut, setIsLoggingOut] = useState(false);
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
-  const [isCartOpen, setIsCartOpen] = useState(false);
 
   const nextThemeLabel = theme === "dark" ? "light" : "dark";
 
@@ -119,20 +114,7 @@ export default function NavBar() {
               )}
             </button>
 
-            <button
-              type="button"
-              onClick={() => setIsCartOpen(true)}
-              aria-label={`Open cart with ${cart.totalItems} items`}
-              title="Open cart"
-              className="relative inline-flex size-10 items-center justify-center rounded-full border border-border-subtle bg-surface-cream text-text-main transition-colors hover:border-brand-yellow hover:bg-brand-yellow/20"
-            >
-              <ShoppingCart aria-hidden="true" size={18} />
-              {cart.totalItems > 0 && (
-                <span className="absolute -end-1 -top-1 flex min-w-5 items-center justify-center rounded-full bg-brand-red px-1 text-xs font-bold leading-5 text-white">
-                  {cart.totalItems > 99 ? '99+' : cart.totalItems}
-                </span>
-              )}
-            </button>
+
 
             <button
               type="button"
@@ -256,7 +238,6 @@ export default function NavBar() {
         </>
       )}
 
-      <CartDrawer open={isCartOpen} onClose={() => setIsCartOpen(false)} />
     </>
   );
 }
