@@ -1,8 +1,9 @@
 import { useEffect, useMemo, useState } from 'react'
-import { ArrowLeft, ChevronLeft, ChevronRight, Clock3, MapPin, Store } from 'lucide-react'
+import { ArrowLeft, Clock3, MapPin, Store } from 'lucide-react'
 import { Link, useParams } from 'react-router-dom'
 
 import { Button } from '../../shared/components/Button'
+import { Pagination } from '../../shared/components/Pagination'
 import { EmptyState } from '../../shared/components/EmptyState'
 import { Input } from '../../shared/components/Input'
 import MealCard from '../../shared/components/MealCard'
@@ -263,49 +264,7 @@ export default function RestaurantDetailsPage() {
                   />
                 ))}
               </div>
-              {totalPages > 1 && (
-                <nav
-                  aria-label={t('Pagination')}
-                  dir={direction}
-                  className="flex flex-wrap items-center justify-center gap-2 pt-5"
-                >
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    disabled={currentPage === 1}
-                    onClick={() => setCurrentPage((page) => Math.max(1, page - 1))}
-                    className="inline-flex min-w-24 items-center justify-center gap-2"
-                  >
-                    {direction === 'rtl' ? <ChevronRight size={16} /> : <ChevronLeft size={16} />}
-                    {t('Previous')}
-                  </Button>
-                  <div className="flex items-center gap-1.5" dir="ltr">
-                    {Array.from({ length: totalPages }, (_, index) => index + 1).map((page) => (
-                      <Button
-                        key={page}
-                        size="sm"
-                        variant={currentPage === page ? 'primary' : 'outline'}
-                        aria-current={currentPage === page ? 'page' : undefined}
-                        aria-label={t('Go to page {page}', { page })}
-                        onClick={() => setCurrentPage(page)}
-                        className="min-w-9 tabular-nums"
-                      >
-                        {page}
-                      </Button>
-                    ))}
-                  </div>
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    disabled={currentPage === totalPages}
-                    onClick={() => setCurrentPage((page) => Math.min(totalPages, page + 1))}
-                    className="inline-flex min-w-24 items-center justify-center gap-2"
-                  >
-                    {t('Next')}
-                    {direction === 'rtl' ? <ChevronLeft size={16} /> : <ChevronRight size={16} />}
-                  </Button>
-                </nav>
-              )}
+              <Pagination currentPage={currentPage} totalPages={totalPages} onPageChange={setCurrentPage} />
             </>
           ) : (
             <EmptyState
