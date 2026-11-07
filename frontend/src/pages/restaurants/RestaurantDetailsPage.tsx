@@ -89,7 +89,7 @@ export default function RestaurantDetailsPage() {
     setCartMessage(
       added
         ? t('{name} added to your cart.', { name: t(meal.name) })
-        : t('Your cart already contains meals from {name}. Clear your cart before choosing another restaurant.', { name: t(cartRestaurantName) }),
+        : t('Your cart already contains meals from {name}. Clear your cart before choosing another restaurant.', { name: cartRestaurantName ? t(cartRestaurantName) : t('another restaurant') }),
     )
   }
 
