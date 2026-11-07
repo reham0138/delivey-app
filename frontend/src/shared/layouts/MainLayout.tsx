@@ -37,8 +37,8 @@ function FloatingCartPrompt() {
       const dy = event.clientY - dragRef.current.pointerY
       if (Math.abs(dx) + Math.abs(dy) > 4) movedRef.current = true
       setPosition({
-        x: Math.max(-window.innerWidth + 260, Math.min(0, dragRef.current.x + dx)),
-        y: Math.max(-window.innerHeight + 210, Math.min(0, dragRef.current.y + dy)),
+        x: Math.max(-window.innerWidth + 300, Math.min(0, dragRef.current.x + dx)),
+        y: Math.max(-window.innerHeight + 220, Math.min(0, dragRef.current.y + dy)),
       })
     }
     const stop = () => { dragRef.current = null }
@@ -56,7 +56,7 @@ function FloatingCartPrompt() {
     <section
       aria-label={t('Open checkout')}
       style={{ transform: `translate(${position.x}px, ${position.y}px)` }}
-      className="fixed bottom-5 right-5 z-[70] w-[min(280px,calc(100vw-2rem))] overflow-hidden rounded-2xl border border-border-subtle bg-surface-white shadow-2xl transition-[box-shadow] hover:shadow-2xl"
+      className="fixed bottom-5 right-5 z-[70] w-[min(280px,calc(100vw-2rem))] overflow-hidden rounded-2xl border border-border-subtle bg-surface-white shadow-2xl animate-[profile-fade-up_250ms_ease-out_both] transition-[box-shadow] hover:shadow-2xl"
     >
       <div
         onPointerDown={(event) => {
