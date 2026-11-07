@@ -33,7 +33,7 @@ function FloatingCartPrompt() {
 
   useEffect(() => {
     cart.closeCartPrompt()
-    setPosition({ x: 0, y: 0 })
+    setPosition(null)
   }, [location.pathname, cart.closeCartPrompt])
 
   useEffect(() => {
@@ -99,6 +99,7 @@ function FloatingCartPrompt() {
           {cart.items.map((item) => (
             <div key={`${item.restaurantId}-${item.menuItemId}`} className="flex min-w-0 items-center justify-between gap-2 rounded-lg bg-surface-cream px-2.5 py-2">
               <div className="min-w-0 flex-1">
+                <p className="truncate text-[10px] font-medium text-text-slate">{t(item.restaurantName)}</p>
                 <p className="truncate text-xs font-semibold text-text-main">{t(item.name)}</p>
                 <p className="text-[11px] text-text-slate">{item.quantity} × {item.price.toFixed(2)}</p>
               </div>
