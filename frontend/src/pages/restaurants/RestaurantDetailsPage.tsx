@@ -145,7 +145,7 @@ export default function RestaurantDetailsPage() {
           <div className="relative h-52 bg-surface-cream sm:h-72">
             <RestaurantImage
               restaurant={restaurant}
-              alt={`${restaurant.name} restaurant cover`}
+              alt={t("{name} restaurant cover", { name: t(restaurant.name) })}
               className="h-full w-full object-cover"
             />
             <span
