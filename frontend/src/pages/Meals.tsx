@@ -50,7 +50,6 @@ export default function Meals() {
 
   const {
     addToCart,
-    restaurantName: cartRestaurantName,
     totalItems,
     showCartPrompt,
   } = useCart()
@@ -171,7 +170,7 @@ export default function Meals() {
     } else {
       setCartError(true)
       setCartMessage(
-        t('Your cart already contains meals from {name}. Clear your cart before choosing another restaurant.', { name: cartRestaurantName ? t(cartRestaurantName) : t('another restaurant') })
+        t('Your cart already contains meals from {name}. Clear your cart before choosing another restaurant.', { name: t('another restaurant') })
       )
     }
   }
