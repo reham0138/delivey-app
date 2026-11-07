@@ -120,7 +120,7 @@ export default function CheckoutPage() {
       .catch((reason) =>
         setError(
           reason instanceof Error
-            ? reason.message
+            ? t(reason.message)
             : "Could not load restaurant details.",
         ),
       )
