@@ -45,8 +45,6 @@ export default function Meals() {
   const [currentPage, setCurrentPage] = useState(1)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
-  const [cartMessage, setCartMessage] = useState('')
-  const [cartError, setCartError] = useState(false)
 
   const {
     addToCart,
@@ -149,11 +147,9 @@ export default function Meals() {
   }
 
   const handleAddToCart = (meal: MenuItem) => {
-    setCartMessage('')
-
     const restaurantName = getRestaurantName(meal.restaurantId)
 
-    const added = addToCart({
+    addToCart({
       menuItemId: meal.id,
       restaurantId: meal.restaurantId,
       restaurantName,
@@ -162,17 +158,7 @@ export default function Meals() {
       image: meal.image,
       quantity: 1,
     })
-
-    if (added) {
-      setCartError(false)
-      setCartMessage('')
-      showCartPrompt()
-    } else {
-      setCartError(true)
-      setCartMessage(
-        t('Your cart already contains meals from {name}. Clear your cart before choosing another restaurant.', { name: t('another restaurant') })
-      )
-    }
+    showCartPrompt()
   }
 
   const clearFilters = () => {
@@ -234,14 +220,7 @@ export default function Meals() {
           </div>
         </section>
 
-        {cartMessage && cartError && (
-          <div
-            role="alert"
-            className="fixed bottom-5 left-5 z-[60] max-w-[min(380px,calc(100vw-2rem))] rounded-xl border border-brand-red/30 bg-surface-white p-4 text-sm text-brand-red shadow-xl"
-          >
-            {cartMessage}
-          </div>
-        )}
+
 
         <section className="grid gap-4 rounded-xl border border-border-subtle bg-surface-white p-4 sm:grid-cols-2">
           <Input
