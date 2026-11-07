@@ -59,7 +59,7 @@ export function CartDrawer({ open, onClose }: CartDrawerProps) {
                 <div key={item.menuItemId} className="rounded-xl border border-border-subtle p-3">
                   <div className="flex items-start justify-between gap-3">
                     <div className="min-w-0">
-                      <p className="truncate font-medium text-text-main">{item.name}</p>
+                      <p className="truncate font-medium text-text-main">{t(item.name)}</p>
                       <p className="mt-1 text-sm text-text-slate">
                         {item.price.toFixed(2)} {t('each')}
                       </p>
@@ -67,7 +67,7 @@ export function CartDrawer({ open, onClose }: CartDrawerProps) {
                     <button
                       type="button"
                       onClick={() => cart.removeFromCart(item.menuItemId)}
-                      aria-label={`${t('Remove')} ${item.name}`}
+                      aria-label={`${t('Remove')} ${t(item.name)}`}
                       className="text-text-slate hover:text-brand-red"
                     >
                       <Trash2 aria-hidden="true" size={17} />
@@ -79,7 +79,7 @@ export function CartDrawer({ open, onClose }: CartDrawerProps) {
                         type="button"
                         onClick={() => cart.updateQuantity(item.menuItemId, item.quantity - 1)}
                         disabled={item.quantity <= 1}
-                        aria-label={`Decrease ${item.name}`}
+                        aria-label={`${t('Decrease')} ${t(item.name)}`}
                         className="inline-flex size-8 items-center justify-center rounded-full border border-border-subtle disabled:opacity-40"
                       >
                         <Minus aria-hidden="true" size={14} />
@@ -88,7 +88,7 @@ export function CartDrawer({ open, onClose }: CartDrawerProps) {
                       <button
                         type="button"
                         onClick={() => cart.updateQuantity(item.menuItemId, item.quantity + 1)}
-                        aria-label={`Increase ${item.name}`}
+                        aria-label={`${t('Increase')} ${t(item.name)}`}
                         className="inline-flex size-8 items-center justify-center rounded-full border border-border-subtle"
                       >
                         <Plus aria-hidden="true" size={14} />
