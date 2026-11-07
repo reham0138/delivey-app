@@ -125,7 +125,7 @@ export default function CheckoutPage() {
         ),
       )
       .finally(() => setLoadingRestaurant(false));
-  }, []);
+  }, [t]);
   useEffect(() => {
     localStorage.setItem(DRAFT_KEY, JSON.stringify(form));
   }, [form]);
