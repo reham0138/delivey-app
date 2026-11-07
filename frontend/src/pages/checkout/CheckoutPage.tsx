@@ -698,7 +698,7 @@ export default function CheckoutPage() {
               <Button
                 type="submit"
                 loading={submitting}
-                className="mt-5 w-full"
+                className="mt-5 w-full !text-white"
                 disabled={!restaurant || submitting}
               >
                 <CheckCircle2 size={17} />
