@@ -10,6 +10,7 @@ import {
   Utensils,
   Store,
   ClipboardList,
+  ShoppingCart,
   UserRound,
   X,
 } from "lucide-react";
@@ -177,6 +178,13 @@ export default function NavBar() {
                 <Store aria-hidden="true" size={19} />
                 {t('Restaurants')}
               </NavLink>
+
+              {isAuthenticated && (
+                <NavLink to="/checkout" onClick={closeSidebar} className={linkClassName}>
+                  <ShoppingCart aria-hidden="true" size={19} />
+                  {t('Checkout')}
+                </NavLink>
+              )}
 
               {isAuthenticated && (
                 <NavLink to="/orders" onClick={closeSidebar} className={linkClassName}>
