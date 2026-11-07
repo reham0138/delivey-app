@@ -503,6 +503,17 @@ Object.assign(translations, {
   'Unknown restaurant': 'مطعم غير معروف',
   'Failed to load meals data.': 'تعذر تحميل بيانات الوجبات.',
   'Something went wrong.': 'حدث خطأ ما.',
+  'Enter a valid email address.': 'أدخل عنوان بريد إلكتروني صحيحاً.',
+  'Password must be at least 6 characters.': 'يجب ألا تقل كلمة المرور عن 6 أحرف.',
+  'Name must be at least 2 characters.': 'يجب ألا يقل الاسم عن حرفين.',
+  'Passwords do not match.': 'كلمتا المرور غير متطابقتين.',
+  'Restaurant name must be at least 2 characters.': 'يجب ألا يقل اسم المطعم عن حرفين.',
+  'Cuisine must be at least 2 characters.': 'يجب ألا يقل نوع المطبخ عن حرفين.',
+  'Enter a valid address.': 'أدخل عنواناً صحيحاً.',
+  'Delivery time must be at least 1 minute.': 'يجب أن يكون وقت التوصيل دقيقة واحدة على الأقل.',
+  'Delivery fee cannot be negative.': 'لا يمكن أن تكون رسوم التوصيل سالبة.',
+  'Minimum order cannot be negative.': 'لا يمكن أن يكون الحد الأدنى للطلب سالباً.',
+  'Please choose an account type.': 'يرجى اختيار نوع الحساب.',
 })
 
 function getInitialLanguage(): Language {
