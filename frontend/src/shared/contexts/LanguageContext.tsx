@@ -30,6 +30,7 @@ const translations: Record<string, TranslationValue> = {
   'Log out': 'تسجيل الخروج',
   'Your cart ({count})': ({ count }) => `سلتك (${count})`,
   'Your cart is empty': 'سلتك فارغة',
+  'another restaurant': 'مطعم آخر',
   'Browse meals and add something delicious to your order.': 'تصفح الوجبات وأضف شيئًا لذيذًا إلى طلبك.',
   'Browse meals': 'تصفح الوجبات',
   'Clear cart': 'إفراغ السلة',
