@@ -197,7 +197,7 @@ export default function OrderDetailsPage() {
 
     if (navigator.share) {
       try {
-        await navigator.share({ title: `Order #${order.id}`, url })
+        await navigator.share({ title: t('Order #{id}', { id: order.id }), url })
       } catch {
         /* dismissed */
       }
@@ -213,7 +213,7 @@ export default function OrderDetailsPage() {
         className="mb-5 inline-flex items-center gap-2 text-sm font-medium text-brand-red"
       >
         <ArrowLeft size={16} />
-        All orders
+        {t('All orders')}
       </Link>
 
       <header className="mb-7 flex flex-wrap items-start justify-between gap-4">
@@ -222,7 +222,7 @@ export default function OrderDetailsPage() {
             {t("Order tracking")}
           </p>
           <h1 className="mt-1 text-3xl font-bold">
-            Order #{order.id}
+            {t('Order #{id}', { id: order.id })}
           </h1>
           <p className="mt-2 text-sm text-text-slate">
             {t("Placed")} {formatDateTime(order.createdAt)}
@@ -268,7 +268,7 @@ export default function OrderDetailsPage() {
                     aria-live="polite"
                   >
                     {remaining > 0
-                      ? `About ${remaining} min remaining`
+                      ? t('About {minutes} min remaining', { minutes: remaining })
                       : t('Your order should arrive soon.')}
                   </p>
 
