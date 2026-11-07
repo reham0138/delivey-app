@@ -64,8 +64,7 @@ export default function OrderDetailsPage() {
         <EmptyState
           title={t("Order not found")}
           description={
-            error ??
-            t('This order may not exist or may belong to another account.')
+            error ? t(error) : t('This order may not exist or may belong to another account.')
           }
           action={<Button onClick={() => void retry()}>{t("Try again")}</Button>}
         />
@@ -156,7 +155,7 @@ export default function OrderDetailsPage() {
     } catch (reason) {
       setMessage(
         reason instanceof Error
-          ? reason.message
+          ? t(reason.message)
           : t('Unable to reorder this meal list.')
       )
     }
