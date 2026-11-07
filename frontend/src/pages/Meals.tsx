@@ -80,7 +80,7 @@ export default function Meals() {
     } finally {
       setLoading(false)
     }
-  }, [])
+  }, [t])
 
   useEffect(() => {
     fetchMeals()
