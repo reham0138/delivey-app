@@ -30,7 +30,7 @@ export default function RestaurantDetailsPage() {
   const [sortBy, setSortBy] = useState<MealSort>('popular')
   const [currentPage, setCurrentPage] = useState(1)
   const [cartMessage, setCartMessage] = useState('')
-  const [cartError, setCartError] = useState(false)
+  const [, setCartError] = useState(false)
 
   const restaurant = data.restaurant
   const categories = useMemo(
