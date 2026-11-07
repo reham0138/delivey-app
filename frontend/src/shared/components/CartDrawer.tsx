@@ -56,7 +56,7 @@ export function CartDrawer({ open, onClose }: CartDrawerProps) {
           <>
             <div className="flex-1 space-y-3 overflow-y-auto p-4">
               {cart.items.map((item) => (
-                <div key={item.menuItemId} className="rounded-xl border border-border-subtle p-3">
+                <div key={`${item.restaurantId}-${item.menuItemId}`} className="rounded-xl border border-border-subtle p-3">
                   <div className="flex items-start justify-between gap-3">
                     <div className="min-w-0">
                       <p className="truncate font-medium text-text-main">{t(item.name)}</p>
@@ -66,7 +66,7 @@ export function CartDrawer({ open, onClose }: CartDrawerProps) {
                     </div>
                     <button
                       type="button"
-                      onClick={() => cart.removeFromCart(item.menuItemId)}
+                      onClick={() => cart.removeFromCart(item.restaurantId, item.menuItemId)}
                       aria-label={`${t('Remove')} ${t(item.name)}`}
                       className="text-text-slate hover:text-brand-red"
                     >
@@ -77,7 +77,7 @@ export function CartDrawer({ open, onClose }: CartDrawerProps) {
                     <div className="flex items-center gap-2">
                       <button
                         type="button"
-                        onClick={() => cart.updateQuantity(item.menuItemId, item.quantity - 1)}
+                        onClick={() => cart.updateQuantity(item.restaurantId, item.menuItemId, item.quantity - 1)}
                         disabled={item.quantity <= 1}
                         aria-label={`${t('Decrease')} ${t(item.name)}`}
                         className="inline-flex size-8 items-center justify-center rounded-full border border-border-subtle disabled:opacity-40"
@@ -87,7 +87,7 @@ export function CartDrawer({ open, onClose }: CartDrawerProps) {
                       <span className="w-6 text-center">{item.quantity}</span>
                       <button
                         type="button"
-                        onClick={() => cart.updateQuantity(item.menuItemId, item.quantity + 1)}
+                        onClick={() => cart.updateQuantity(item.restaurantId, item.menuItemId, item.quantity + 1)}
                         aria-label={`${t('Increase')} ${t(item.name)}`}
                         className="inline-flex size-8 items-center justify-center rounded-full border border-border-subtle"
                       >
