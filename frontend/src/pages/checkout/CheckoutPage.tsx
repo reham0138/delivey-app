@@ -262,8 +262,7 @@ export default function CheckoutPage() {
     try {
       const scheduledFor = form.delivery === "scheduled" ? form.slot : null;
       const orders: Order[] = [];
-      for (let index = 0; index < groupedTotals.length; index += 1) {
-        const group = groupedTotals[index];
+      for (const group of groupedTotals) {
         const currentRestaurant = group.restaurant;
         if (!currentRestaurant) throw new Error(t('Some restaurant details could not be loaded. Please refresh and try again.'));
         const groupTotals = group.totals;
@@ -649,7 +648,7 @@ export default function CheckoutPage() {
                 {cartGroups.map((group) => (
                   <section key={group.restaurantId} className="space-y-2">
                     <h3 className="text-sm font-bold text-text-main">
-                      {t(group.restaurant?.name ?? group.items[0].restaurantName)}
+                      {t(group.restaurant?.name ?? group.items[0]?.restaurantName ?? 'Unknown restaurant')}
                     </h3>
                     {group.items.map((item) => (
                   <div
