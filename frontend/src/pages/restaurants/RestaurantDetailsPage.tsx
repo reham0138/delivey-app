@@ -21,7 +21,7 @@ const ITEMS_PER_PAGE = 8
 type MealSort = 'popular' | 'rating' | 'price' | 'name'
 
 export default function RestaurantDetailsPage() {
-  const { t, direction } = useLanguage()
+const { t } = useLanguage()
   const { id } = useParams()
   const restaurantId = id && /^\d+$/.test(id) ? Number(id) : null
   const { data, loading, error, refetch } = useRestaurant(restaurantId)
