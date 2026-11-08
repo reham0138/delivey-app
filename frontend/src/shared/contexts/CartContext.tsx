@@ -15,7 +15,22 @@ const STORAGE_KEY = 'crown-anchor-cart'
 function getInitialCart(): CartItem[] {
   try {
     const savedCart = localStorage.getItem(STORAGE_KEY)
-    return savedCart ? JSON.parse(savedCart) as CartItem[] : []
+    if (!savedCart) return []
+
+    const parsed: unknown = JSON.parse(savedCart)
+    if (!Array.isArray(parsed)) return []
+
+    return parsed.filter((item): item is CartItem => (
+      item !== null &&
+      typeof item === 'object' &&
+      Number.isFinite(item.price) &&
+      Number.isFinite(item.quantity) &&
+      item.quantity > 0 &&
+      Number.isFinite(item.menuItemId) &&
+      Number.isFinite(item.restaurantId) &&
+      typeof item.restaurantName === 'string' &&
+      typeof item.name === 'string'
+    ))
   } catch {
     return []
   }
