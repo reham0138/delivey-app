@@ -103,9 +103,9 @@ function FloatingCartPrompt() {
               <div className="min-w-0 flex-1">
                 <p className="truncate text-[10px] font-medium text-text-slate">{t(item.restaurantName)}</p>
                 <p className="truncate text-xs font-semibold text-text-main">{t(item.name)}</p>
-                <p className="text-[11px] text-text-slate">{item.quantity} × {item.price.toFixed(2)}</p>
+                <p className="text-[11px] text-text-slate">{item.quantity} × {(item.price ?? 0).toFixed(2)}</p>
               </div>
-              <span className="shrink-0 text-xs font-semibold text-text-main">{(item.price * item.quantity).toFixed(2)}</span>
+              <span className="shrink-0 text-xs font-semibold text-text-main">{((item.price ?? 0) * item.quantity).toFixed(2)}</span>
             </div>
           ))}
         </div>
