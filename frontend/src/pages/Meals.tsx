@@ -1,6 +1,6 @@
 
 import { useCallback, useEffect, useMemo, useState } from 'react'
-import { Utensils, ShoppingCart, ChevronLeft, ChevronRight } from 'lucide-react'
+import { Utensils, ShoppingCart } from 'lucide-react'
 
 import MealCard from '../shared/components/MealCard'
 import { Input } from '../shared/components/Input'
@@ -8,7 +8,9 @@ import { Select } from '../shared/components/Select'
 import { EmptyState } from '../shared/components/EmptyState'
 import { Spinner } from '../shared/components/Spinner'
 import { Button } from '../shared/components/Button'
+import { Pagination } from '../shared/components/Pagination'
 import { useCart } from '../shared/hooks/useCart'
+import { useLanguage } from '../shared/hooks/useLanguage'
 
 interface MenuItem {
   id: number
@@ -35,6 +37,7 @@ interface Restaurant {
 const ITEMS_PER_PAGE = 8
 
 export default function Meals() {
+  const { t } = useLanguage()
   const [meals, setMeals] = useState<MenuItem[]>([])
   const [restaurants, setRestaurants] = useState<Restaurant[]>([])
   const [searchTerm, setSearchTerm] = useState('')
@@ -42,13 +45,11 @@ export default function Meals() {
   const [currentPage, setCurrentPage] = useState(1)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
-  const [cartMessage, setCartMessage] = useState('')
-  const [cartError, setCartError] = useState(false)
 
   const {
     addToCart,
-    restaurantName: cartRestaurantName,
     totalItems,
+    showCartPrompt,
   } = useCart()
 
   const fetchMeals = useCallback(async () => {
@@ -62,7 +63,7 @@ export default function Meals() {
       ])
 
       if (!mealsResponse.ok || !restaurantsResponse.ok) {
-        throw new Error('Failed to load meals data.')
+        throw new Error(t('Failed to load meals data.'))
       }
 
       const [mealsData, restaurantsData] = await Promise.all([
@@ -74,12 +75,12 @@ export default function Meals() {
       setRestaurants(restaurantsData)
     } catch (err) {
       setError(
-        err instanceof Error ? err.message : 'Something went wrong.'
+        err instanceof Error ? err.message : t('Something went wrong.')
       )
     } finally {
       setLoading(false)
     }
-  }, [])
+  }, [t])
 
   useEffect(() => {
     fetchMeals()
@@ -141,16 +142,14 @@ export default function Meals() {
   const getRestaurantName = (restaurantId: number) => {
     return (
       restaurants.find((restaurant) => restaurant.id === restaurantId)?.name ??
-      'Unknown restaurant'
+      t('Unknown restaurant')
     )
   }
 
   const handleAddToCart = (meal: MenuItem) => {
-    setCartMessage('')
-
     const restaurantName = getRestaurantName(meal.restaurantId)
 
-    const added = addToCart({
+    addToCart({
       menuItemId: meal.id,
       restaurantId: meal.restaurantId,
       restaurantName,
@@ -159,16 +158,7 @@ export default function Meals() {
       image: meal.image,
       quantity: 1,
     })
-
-    if (added) {
-      setCartError(false)
-      setCartMessage(`${meal.name} added to your cart.`)
-    } else {
-      setCartError(true)
-      setCartMessage(
-        `Your cart already contains meals from ${cartRestaurantName}. Clear your cart before choosing another restaurant.`
-      )
-    }
+    showCartPrompt()
   }
 
   const clearFilters = () => {
@@ -180,7 +170,7 @@ export default function Meals() {
   if (loading) {
     return (
       <div className="flex min-h-[60vh] items-center justify-center bg-surface-cream">
-        <Spinner size="lg" label="Loading meals..." />
+        <Spinner size="lg" label={t('Loading meals...')} />
       </div>
     )
   }
@@ -190,11 +180,11 @@ export default function Meals() {
       <div className="min-h-[60vh] bg-surface-cream px-4 py-12">
         <div className="mx-auto max-w-7xl">
           <EmptyState
-            title="Unable to load meals"
-            description={error}
+            title={t('Unable to load meals')}
+            description={t(error)}
             action={
               <Button onClick={fetchMeals}>
-                Try again
+                {t('Try again')}
               </Button>
             }
           />
@@ -215,52 +205,41 @@ export default function Meals() {
 
             <div>
               <h1 className="text-2xl font-bold text-text-main sm:text-3xl">
-                Explore Meals
+                {t('Explore Meals')}
               </h1>
 
               <p className="mt-1 text-sm text-text-slate">
-                Find your favorite meals from our restaurants.
+                {t('Find your favorite meals from our restaurants.')}
               </p>
             </div>
           </div>
 
           <div className="flex items-center gap-2 text-sm font-medium text-text-main">
             <ShoppingCart size={20} className="text-brand-red" />
-            <span>{totalItems} items in cart</span>
+            <span>{totalItems} {t('items in cart')}</span>
           </div>
         </section>
 
-        {cartMessage && (
-          <div
-            role="status"
-            className={`rounded-lg border p-3 text-sm ${
-              cartError
-                ? 'border-brand-red/30 bg-brand-red/10 text-brand-red'
-                : 'border-green-600/30 bg-green-600/10 text-green-700'
-            }`}
-          >
-            {cartMessage}
-          </div>
-        )}
+
 
         <section className="grid gap-4 rounded-xl border border-border-subtle bg-surface-white p-4 sm:grid-cols-2">
           <Input
-            label="Search meals"
-            placeholder="Search by meal name..."
+          label={t('Search meals')}
+          placeholder={t('Search by meal name...')}
             value={searchTerm}
             onChange={(event) => setSearchTerm(event.target.value)}
           />
 
           <Select
-            label="Filter by restaurant"
+            label={t('Filter by restaurant')}
             value={selectedRestaurant}
             onChange={(event) => setSelectedRestaurant(event.target.value)}
           >
-            <option value="all">All restaurants</option>
+            <option value="all">{t('All restaurants')}</option>
 
             {availableRestaurants.map((restaurant) => (
               <option key={restaurant.id} value={restaurant.id}>
-                {restaurant.name}
+                {t(restaurant.name)}
               </option>
             ))}
           </Select>
@@ -269,11 +248,11 @@ export default function Meals() {
         <section className="space-y-5">
           <div className="flex flex-wrap items-center justify-between gap-2">
             <h2 className="text-xl font-semibold text-text-main">
-              Available Meals
+              {t('Available Meals')}
             </h2>
 
             <span className="text-sm text-text-slate">
-              {filteredMeals.length} meals found
+              {filteredMeals.length} {t('meals found')}
             </span>
           </div>
 
@@ -298,61 +277,24 @@ export default function Meals() {
                 ))}
               </div>
 
-              {/* Pagination */}
-              <div className="flex flex-wrap items-center justify-center gap-2 pt-6">
-                <Button
-                  variant="outline"
-                  size="sm"
-                  disabled={currentPage === 1}
-                  onClick={() => setCurrentPage((page) => page - 1)}
-                  aria-label="Previous page"
-                >
-                  <ChevronLeft size={16} />
-                  Previous
-                </Button>
-
-                {Array.from({ length: totalPages }, (_, index) => index + 1).map(
-                  (page) => (
-                    <Button
-                      key={page}
-                      size="sm"
-                      variant={currentPage === page ? 'primary' : 'outline'}
-                      aria-current={currentPage === page ? 'page' : undefined}
-                      onClick={() => setCurrentPage(page)}
-                    >
-                      {page}
-                    </Button>
-                  )
-                )}
-
-                <Button
-                  variant="outline"
-                  size="sm"
-                  disabled={currentPage === totalPages}
-                  onClick={() => setCurrentPage((page) => page + 1)}
-                  aria-label="Next page"
-                >
-                  Next
-                  <ChevronRight size={16} />
-                </Button>
-              </div>
+              <Pagination currentPage={currentPage} totalPages={totalPages} onPageChange={setCurrentPage} />
 
               <p className="text-center text-sm text-text-slate">
-                Showing{' '}
+                {t('Showing')}{' '}
                 {(currentPage - 1) * ITEMS_PER_PAGE + 1}
                 {' - '}
                 {Math.min(currentPage * ITEMS_PER_PAGE, filteredMeals.length)}
-                {' of '}
-                {filteredMeals.length} meals
+                {' '}{t('of')}{' '}
+                {filteredMeals.length} {t('meals found')}
               </p>
             </>
           ) : (
             <EmptyState
-              title="No meals found"
-              description="Try changing your search or selecting another restaurant."
+              title={t('No meals found')}
+              description={t('Try changing your search or selecting another restaurant.')}
               action={
                 <Button variant="outline" onClick={clearFilters}>
-                  Clear filters
+                  {t('Clear filters')}
                 </Button>
               }
             />

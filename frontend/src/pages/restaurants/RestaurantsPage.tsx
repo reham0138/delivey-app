@@ -2,18 +2,21 @@ import { useEffect, useMemo, useState } from 'react'
 import { SlidersHorizontal, Store } from 'lucide-react'
 
 import { Button } from '../../shared/components/Button'
+import { Pagination } from '../../shared/components/Pagination'
 import { EmptyState } from '../../shared/components/EmptyState'
 import { Input } from '../../shared/components/Input'
 import { Select } from '../../shared/components/Select'
 import { Spinner } from '../../shared/components/Spinner'
 import { useRestaurants } from '../../shared/hooks/useRestaurants'
 import RestaurantCard from './RestaurantCard'
+import { useLanguage } from '../../shared/hooks/useLanguage'
 
 const ITEMS_PER_PAGE = 8
 
 type RestaurantSort = 'rating' | 'delivery' | 'name'
 
 export default function RestaurantsPage() {
+  const { t } = useLanguage()
   const { data: restaurants, loading, error, refetch } = useRestaurants()
   const [searchTerm, setSearchTerm] = useState('')
   const [selectedCuisine, setSelectedCuisine] = useState('all')
@@ -76,7 +79,7 @@ export default function RestaurantsPage() {
   if (loading) {
     return (
       <div className="flex min-h-[60vh] items-center justify-center bg-surface-cream">
-        <Spinner size="lg" label="Loading restaurants..." />
+        <Spinner size="lg" label={t("Loading restaurants...")} />
       </div>
     )
   }
@@ -86,9 +89,9 @@ export default function RestaurantsPage() {
       <main className="min-h-[60vh] bg-surface-cream px-4 py-12">
         <div className="mx-auto max-w-7xl">
           <EmptyState
-            title="Unable to load restaurants"
-            description={error}
-            action={<Button onClick={() => void refetch()}>Try again</Button>}
+            title={t('Unable to load restaurants')}
+            description={t(error)}
+            action={<Button onClick={() => void refetch()}>{t('Try again')}</Button>}
           />
         </div>
       </main>
@@ -105,53 +108,53 @@ export default function RestaurantsPage() {
             </span>
             <div>
               <h1 className="text-2xl font-bold text-text-main sm:text-3xl">
-                Explore Restaurants
+                {t('Explore Restaurants')}
               </h1>
               <p className="mt-1 text-sm text-text-slate">
-                Discover local kitchens and find your next favorite meal.
+                {t('Discover local kitchens and find your next favorite meal.')}
               </p>
             </div>
           </div>
           <span className="text-sm font-medium text-text-slate">
-            {filteredRestaurants.length} restaurants found
+            {filteredRestaurants.length} {t('restaurants found')}
           </span>
         </section>
 
         <section className="grid gap-4 rounded-xl border border-border-subtle bg-surface-white p-4 sm:grid-cols-2 lg:grid-cols-4">
           <Input
-            label="Search restaurants"
+          label={t('Search restaurants')}
             type="search"
-            placeholder="Name or cuisine..."
+          placeholder={t('Name or cuisine...')}
             value={searchTerm}
             onChange={(event) => setSearchTerm(event.target.value)}
           />
           <Select
-            label="Cuisine"
+            label={t('Cuisine')}
             value={selectedCuisine}
             onChange={(event) => setSelectedCuisine(event.target.value)}
           >
-            <option value="all">All cuisines</option>
+            <option value="all">{t('All cuisines')}</option>
             {cuisines.map((cuisine) => (
-              <option key={cuisine} value={cuisine}>{cuisine}</option>
+              <option key={cuisine} value={cuisine}>{t(cuisine)}</option>
             ))}
           </Select>
           <Select
-            label="Minimum rating"
+            label={t('Minimum rating')}
             value={minimumRating}
             onChange={(event) => setMinimumRating(event.target.value)}
           >
-            <option value="all">Any rating</option>
-            <option value="4">4.0 and above</option>
-            <option value="4.5">4.5 and above</option>
+            <option value="all">{t('Any rating')}</option>
+            <option value="4">{t('4.0 and above')}</option>
+            <option value="4.5">{t('4.5 and above')}</option>
           </Select>
           <Select
-            label="Sort by"
+            label={t('Sort by')}
             value={sortBy}
             onChange={(event) => setSortBy(event.target.value as RestaurantSort)}
           >
-            <option value="rating">Top rated</option>
-            <option value="delivery">Fastest delivery</option>
-            <option value="name">Name (A–Z)</option>
+            <option value="rating">{t('Top rated')}</option>
+            <option value="delivery">{t('Fastest delivery')}</option>
+            <option value="name">{t('Name (A–Z)')}</option>
           </Select>
           <label className="flex items-center gap-2 text-sm font-medium text-text-main sm:col-span-2 lg:col-span-4">
             <input
@@ -161,14 +164,14 @@ export default function RestaurantsPage() {
               className="size-4 accent-brand-red"
             />
             <SlidersHorizontal aria-hidden="true" size={16} className="text-text-slate" />
-            Show open restaurants only
+            {t('Show open restaurants only')}
           </label>
         </section>
 
         {filteredRestaurants.length > 0 ? (
           <>
             <section
-              aria-label="Restaurants"
+              aria-label={t("Restaurants")}
               className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4"
             >
               {paginatedRestaurants.map((restaurant) => (
@@ -176,44 +179,16 @@ export default function RestaurantsPage() {
               ))}
             </section>
 
-            <div className="flex flex-wrap items-center justify-center gap-2">
-              <Button
-                variant="outline"
-                size="sm"
-                disabled={currentPage === 1}
-                onClick={() => setCurrentPage((page) => page - 1)}
-              >
-                Previous
-              </Button>
-              {Array.from({ length: totalPages }, (_, index) => index + 1).map((page) => (
-                <Button
-                  key={page}
-                  size="sm"
-                  variant={currentPage === page ? 'primary' : 'outline'}
-                  aria-current={currentPage === page ? 'page' : undefined}
-                  onClick={() => setCurrentPage(page)}
-                >
-                  {page}
-                </Button>
-              ))}
-              <Button
-                variant="outline"
-                size="sm"
-                disabled={currentPage === totalPages}
-                onClick={() => setCurrentPage((page) => page + 1)}
-              >
-                Next
-              </Button>
-            </div>
+            <Pagination currentPage={currentPage} totalPages={totalPages} onPageChange={setCurrentPage} />
             <p className="text-center text-sm text-text-slate">
-              Showing {(currentPage - 1) * ITEMS_PER_PAGE + 1}–{Math.min(currentPage * ITEMS_PER_PAGE, filteredRestaurants.length)} of {filteredRestaurants.length} restaurants
+              {t('Showing')} {(currentPage - 1) * ITEMS_PER_PAGE + 1}–{Math.min(currentPage * ITEMS_PER_PAGE, filteredRestaurants.length)} {t('of')} {filteredRestaurants.length} {t('restaurants found')}
             </p>
           </>
         ) : (
           <EmptyState
-            title="No restaurants found"
-            description="Try a different name or adjust your filters to see more restaurants."
-            action={<Button variant="outline" onClick={clearFilters}>Clear filters</Button>}
+            title={t('No restaurants found')}
+            description={t('Try a different name or adjust your filters to see more restaurants.')}
+            action={<Button variant="outline" onClick={clearFilters}>{t('Clear filters')}</Button>}
           />
         )}
       </div>

@@ -5,15 +5,18 @@ import { AuthProvider } from '@/shared/contexts/AuthContext'
 import './App.css'
 import App from './App'
 import { CartProvider } from './shared/contexts/CartContext'
+import { LanguageProvider } from './shared/contexts/LanguageContext'
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
     <ThemeProvider>
-      <AuthProvider>
-        <CartProvider>
-        <App />
-        </CartProvider>
-      </AuthProvider>
+      <LanguageProvider>
+        <AuthProvider>
+          <CartProvider>
+            <App />
+          </CartProvider>
+        </AuthProvider>
+      </LanguageProvider>
     </ThemeProvider>
   </StrictMode>,
 )

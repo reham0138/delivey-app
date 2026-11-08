@@ -5,16 +5,19 @@ import { Card } from '../../shared/components/Card'
 import { Rating } from '../../shared/components/Rating'
 import { RestaurantImage } from '../../shared/components/RestaurantImage'
 import type { Restaurant } from '../../shared/types'
+import { useLanguage } from '../../shared/hooks/useLanguage'
 
 interface RestaurantCardProps {
   restaurant: Restaurant
 }
 
 export default function RestaurantCard({ restaurant }: RestaurantCardProps) {
+  const { t } = useLanguage()
+
   return (
     <Link
       to={`/restaurants/${restaurant.id}`}
-      aria-label={`View ${restaurant.name} restaurant`}
+      aria-label={t('View {name} restaurant', { name: t(restaurant.name) })}
       className="group block h-full rounded-xl focus-visible:outline-offset-4"
     >
       <Card
@@ -34,16 +37,16 @@ export default function RestaurantCard({ restaurant }: RestaurantCardProps) {
                 : 'border border-border-subtle bg-surface-white/95 text-text-slate'
             }`}
           >
-            {restaurant.isOpen ? 'Open now' : 'Closed'}
+            {restaurant.isOpen ? t('Open now') : t('Closed')}
           </span>
         </div>
 
         <div className="flex flex-1 flex-col gap-3 p-4">
           <div>
             <h2 className="truncate text-lg font-semibold text-text-main group-hover:text-brand-red">
-              {restaurant.name}
+              {t(restaurant.name)}
             </h2>
-            <p className="mt-1 text-sm text-text-slate">{restaurant.cuisine}</p>
+            <p className="mt-1 text-sm text-text-slate">{t(restaurant.cuisine)}</p>
           </div>
 
           <div className="flex flex-wrap items-center justify-between gap-2 border-t border-border-subtle pt-3">
@@ -55,7 +58,7 @@ export default function RestaurantCard({ restaurant }: RestaurantCardProps) {
             </div>
             <span className="inline-flex items-center gap-1 text-sm text-text-slate">
               <Clock3 aria-hidden="true" size={15} />
-              {restaurant.deliveryTimeMinutes} min
+              {restaurant.deliveryTimeMinutes} {t('min')}
             </span>
           </div>
 

@@ -1,4 +1,5 @@
 import { X } from 'lucide-react'
+import { useLanguage } from '../hooks/useLanguage'
 import { useEffect, useId, useRef } from 'react'
 import type { DialogHTMLAttributes, ReactNode } from 'react'
 
@@ -30,6 +31,7 @@ export function Modal({
 	contentClassName,
 	...props
 }: ModalProps) {
+  const { t } = useLanguage()
 	const dialogRef = useRef<HTMLDialogElement>(null)
 	const titleId = useId()
 
@@ -72,7 +74,7 @@ export function Modal({
 					<button
 						type="button"
 						onClick={onClose}
-						aria-label="Close dialog"
+						aria-label={t("Close dialog")}
 						className="-me-2 -mt-2 inline-flex size-10 shrink-0 items-center justify-center rounded-lg text-text-slate transition-colors hover:bg-border-subtle/50 hover:text-text-main"
 					>
 						<X aria-hidden="true" size={20} />

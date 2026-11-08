@@ -16,14 +16,15 @@ import {
 } from "lucide-react";
 import { Link, NavLink } from "react-router-dom";
 import { Button } from "@/shared/components/Button";
+
 import { useTheme } from "../contexts/ThemeContext";
 import { useAuth } from "@/shared/hooks/useAuth";
-import { useCart } from "@/shared/hooks/useCart";
+import { useLanguage } from "@/shared/hooks/useLanguage";
 
 export default function NavBar() {
   const { theme, toggleTheme } = useTheme();
   const { user, isAuthenticated, logout } = useAuth();
-  const cart = useCart();
+  const { language, t, toggleLanguage } = useLanguage();
   const [isLoggingOut, setIsLoggingOut] = useState(false);
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
@@ -63,13 +64,13 @@ export default function NavBar() {
 
   return (
     <>
-      <header className="relative z-30 border-b border-border-subtle bg-surface-white">
+      <header dir="ltr" className="relative z-30 border-b border-border-subtle bg-surface-white">
         <div className="flex w-full items-center justify-between gap-4 px-4 py-3 sm:px-6 lg:px-8">
           <Link
             to="/"
             onClick={closeSidebar}
             className="flex min-w-0 items-center gap-3 rounded-lg focus-visible:outline-offset-4"
-            aria-label="The Crown & Anchor home"
+            aria-label={t('The Crown & Anchor home')}
           >
             <img
               src={
@@ -85,12 +86,21 @@ export default function NavBar() {
                 The Crown &amp; Anchor
               </span>
               <span className="hidden text-xs tracking-[0.16em] text-text-slate sm:block">
-                MORE THAN JUST A DELIVERY APP
+                {t('MORE THAN JUST A DELIVERY APP')}
               </span>
             </span>
           </Link>
 
           <div className="ms-auto flex items-center gap-2">
+            <button
+              type="button"
+              onClick={toggleLanguage}
+              aria-label={t(language === "en" ? "Switch to Arabic" : "Switch to English")}
+              title={t(language === "en" ? "Switch to Arabic" : "Switch to English")}
+              className="inline-flex h-10 min-w-10 items-center justify-center rounded-full border border-border-subtle bg-surface-cream px-2 text-xs font-bold text-text-main transition-colors hover:border-brand-yellow hover:bg-brand-yellow/20"
+            >
+              {language === "en" ? "عربي" : "EN"}
+            </button>
             <button
               type="button"
               onClick={toggleTheme}
@@ -104,6 +114,8 @@ export default function NavBar() {
                 <Moon aria-hidden="true" size={18} />
               )}
             </button>
+
+
 
             <button
               type="button"
@@ -127,20 +139,21 @@ export default function NavBar() {
         <>
           <button
             type="button"
-            aria-label="Close navigation menu"
+            aria-label={t("Close navigation menu")}
             onClick={closeSidebar}
             className="fixed inset-0 z-40 cursor-default bg-black/45"
           />
 
           <aside
             id="main-navigation-sidebar"
-            aria-label="Main navigation"
+            dir="ltr"
+            aria-label={t("Main navigation")}
             className="fixed inset-y-0 right-0 z-50 flex w-[min(88vw,360px)] flex-col border-l border-border-subtle bg-surface-white shadow-2xl"
           >
             <div className="flex items-center justify-between border-b border-border-subtle px-5 py-5">
               <div>
                 <p className="font-semibold text-brand-red">The Crown &amp; Anchor</p>
-                <p className="mt-1 text-xs text-text-slate">Your next meal starts here</p>
+                <p dir={language === 'ar' ? 'rtl' : 'ltr'} className="mt-1 text-xs text-text-slate">{t('Your next meal starts here')}</p>
               </div>
               <button
                 type="button"
@@ -155,32 +168,34 @@ export default function NavBar() {
             <nav className="flex-1 space-y-2 overflow-y-auto p-4">
               <NavLink to="/" end onClick={closeSidebar} className={linkClassName}>
                 <House aria-hidden="true" size={19} />
-                Home
+                {t('Home')}
               </NavLink>
               <NavLink to="/meals" onClick={closeSidebar} className={linkClassName}>
                 <Utensils aria-hidden="true" size={19} />
-                Meals
+                {t('Meals')}
               </NavLink>
               <NavLink to="/restaurants" onClick={closeSidebar} className={linkClassName}>
                 <Store aria-hidden="true" size={19} />
-                Restaurants
+                {t('Restaurants')}
               </NavLink>
-              {cart.totalItems > 0 && (
+
+              {isAuthenticated && (
                 <NavLink to="/checkout" onClick={closeSidebar} className={linkClassName}>
                   <ShoppingCart aria-hidden="true" size={19} />
-                  Checkout ({cart.totalItems})
+                  {t('Checkout')}
                 </NavLink>
               )}
+
               {isAuthenticated && (
                 <NavLink to="/orders" onClick={closeSidebar} className={linkClassName}>
                   <ClipboardList aria-hidden="true" size={19} />
-                  My orders
+                  {t('My orders')}
                 </NavLink>
               )}
               {isAuthenticated && (
                 <NavLink to="/profile" onClick={closeSidebar} className={linkClassName}>
                   <UserRound aria-hidden="true" size={19} />
-                  Profile
+                  {t('Profile')}
                 </NavLink>
               )}
 
@@ -189,9 +204,9 @@ export default function NavBar() {
               {isAuthenticated ? (
                 <>
                   <div className="rounded-xl bg-surface-cream px-4 py-3">
-                    <p className="text-xs text-text-slate">Signed in as</p>
+                    <p className="text-xs text-text-slate">{t('Signed in as')}</p>
                     <p className="mt-1 truncate text-sm font-semibold text-text-main">
-                      {user?.name || "Your account"}
+                      {user?.name || t('Your account')}
                     </p>
                   </div>
                   <Button
@@ -202,29 +217,30 @@ export default function NavBar() {
                     onClick={handleLogout}
                   >
                     <LogOut aria-hidden="true" size={17} />
-                    Log out
+                    {t('Log out')}
                   </Button>
                 </>
               ) : (
                 <>
                   <NavLink to="/login" onClick={closeSidebar} className={linkClassName}>
                     <LogIn aria-hidden="true" size={19} />
-                    Sign in / Log in
+                    {t('Sign in / Log in')}
                   </NavLink>
                   <NavLink to="/register" onClick={closeSidebar} className={linkClassName}>
                     <UserPlus aria-hidden="true" size={19} />
-                    Create account / Sign up
+                    {t('Create account / Sign up')}
                   </NavLink>
                 </>
               )}
             </nav>
 
             <div className="border-t border-border-subtle px-5 py-4">
-              <p className="text-xs text-text-slate">MORE THAN JUST A DELIVERY APP</p>
+              <p className="text-xs text-text-slate">{t('MORE THAN JUST A DELIVERY APP')}</p>
             </div>
           </aside>
         </>
       )}
+
     </>
   );
 }
