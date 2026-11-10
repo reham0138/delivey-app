@@ -1,5 +1,6 @@
 import { Star } from 'lucide-react'
 import type { HTMLAttributes } from 'react'
+import { useLanguage } from '../hooks/useLanguage'
 
 export interface RatingProps extends HTMLAttributes<HTMLDivElement> {
 	value: number
@@ -7,6 +8,7 @@ export interface RatingProps extends HTMLAttributes<HTMLDivElement> {
 }
 
 export function Rating({ value, max = 5, className, ...props }: RatingProps) {
+	const { t } = useLanguage()
 	const boundedValue = Math.min(Math.max(value, 0), max)
 	const formattedValue = Number.isInteger(boundedValue) ? String(boundedValue) : boundedValue.toFixed(1)
 
@@ -14,7 +16,7 @@ export function Rating({ value, max = 5, className, ...props }: RatingProps) {
 		<div
 			{...props}
 			role="img"
-			aria-label={`${formattedValue} out of ${max}`}
+			aria-label={t('{value} out of {max}', { value: formattedValue, max })}
 			className={['inline-flex items-center gap-2 text-sm text-text-main', className].filter(Boolean).join(' ')}
 		>
 			<span aria-hidden="true" className="inline-flex items-center gap-1">
@@ -35,7 +37,7 @@ export function Rating({ value, max = 5, className, ...props }: RatingProps) {
 					)
 				})}
 			</span>
-			<span>{formattedValue} out of {max}</span>
+			<span>{formattedValue} {t('out of')} {max}</span>
 		</div>
 	)
 }
