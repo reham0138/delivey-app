@@ -15,6 +15,15 @@ export const reviewService = {
   async getCustomerMealReview(customerId: number, menuItemId: number): Promise<Review | null> {
     return (await getAll()).find(review => review.customerId === customerId && review.menuItemId === menuItemId) ?? null
   },
+  // TODO: replace with API call when the backend is ready
+  async getByRestaurantId(
+    restaurantId: number,
+    { includeReported = false }: { includeReported?: boolean } = {},
+  ): Promise<Review[]> {
+    return (await getAll())
+      .filter(review => review.restaurantId === restaurantId && (includeReported || !review.isReported))
+      .sort((first, second) => second.createdAt.localeCompare(first.createdAt))
+  },
   async createReview(order: Order, customerName: string, menuItemId: number, rating: number, comment: string): Promise<Review> {
     if (order.status !== 'delivered' || order.items.every(item => item.menuItemId !== menuItemId)) throw new Error('Reviews are available only for meals in delivered orders.')
     const reviews = await getAll()

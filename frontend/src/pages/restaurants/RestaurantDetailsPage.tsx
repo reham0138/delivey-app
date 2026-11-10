@@ -9,9 +9,11 @@ import { Input } from '../../shared/components/Input'
 import MealCard from '../../shared/components/MealCard'
 import { Rating } from '../../shared/components/Rating'
 import { RestaurantImage } from '../../shared/components/RestaurantImage'
+import { ReviewList } from '../../shared/components/ReviewList'
 import { Select } from '../../shared/components/Select'
 import { Spinner } from '../../shared/components/Spinner'
 import { useCart } from '../../shared/hooks/useCart'
+import { useRestaurantReviews } from '../../shared/hooks/useRestaurantReviews'
 import { useRestaurant } from '../../shared/hooks/useRestaurants'
 import type { MenuItem } from '../../shared/types'
 import { useLanguage } from '../../shared/hooks/useLanguage'
@@ -25,6 +27,12 @@ const { t } = useLanguage()
   const { id } = useParams()
   const restaurantId = id && /^\d+$/.test(id) ? Number(id) : null
   const { data, loading, error, refetch } = useRestaurant(restaurantId)
+  const {
+    reviews,
+    isLoading: reviewsLoading,
+    error: reviewsError,
+    reload: reloadReviews,
+  } = useRestaurantReviews(restaurantId)
   const { addToCart, showCartPrompt } = useCart()
   const [searchTerm, setSearchTerm] = useState('')
   const [selectedCategory, setSelectedCategory] = useState('all')
@@ -268,6 +276,26 @@ const { t } = useLanguage()
               description={t(data.meals.length === 0 ? 'This restaurant has not added any meals to its menu yet.' : 'Try changing your search or category filter.')}
               action={data.meals.length === 0 ? undefined : <Button variant="outline" onClick={clearFilters}>{t('Clear filters')}</Button>}
             />
+          )}
+        </section>
+
+        <section className="space-y-5">
+          <div>
+            <h2 className="text-2xl font-bold text-text-main">{t('Customer Reviews')}</h2>
+          </div>
+
+          {reviewsLoading ? (
+            <div className="flex justify-center py-10">
+              <Spinner label={t('Loading reviews...')} />
+            </div>
+          ) : reviewsError ? (
+            <EmptyState
+              title={t("We couldn't load reviews")}
+              description={t(reviewsError)}
+              action={<Button onClick={() => void reloadReviews()}>{t('Try again')}</Button>}
+            />
+          ) : (
+            <ReviewList reviews={reviews} />
           )}
         </section>
       </div>
