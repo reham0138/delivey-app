@@ -530,6 +530,11 @@ Object.assign(translations, {
   'Please choose an account type.': 'يرجى اختيار نوع الحساب.',
 })
 
+export function getArabicTranslation(text: string): string | undefined {
+  const value = translations[text]
+  return typeof value === 'string' ? value : undefined
+}
+
 function getInitialLanguage(): Language {
   if (typeof window === 'undefined') return 'en'
   return window.localStorage.getItem(STORAGE_KEY) === 'ar' ? 'ar' : 'en'

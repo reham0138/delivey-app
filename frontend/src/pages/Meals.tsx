@@ -12,6 +12,7 @@ import { Pagination } from '../shared/components/Pagination'
 import { useCart } from '../shared/hooks/useCart'
 import { useLanguage } from '../shared/hooks/useLanguage'
 import { searchMealsSemantically } from '../shared/services/semanticSearch.service'
+import { getArabicTranslation } from '../shared/contexts/LanguageContext'
 
 interface MenuItem {
   id: number
@@ -138,9 +139,8 @@ export default function Meals() {
       try {
         const searchItems = restaurantMeals.map((meal) => ({
           ...meal,
-          localizedName: t(meal.name) !== meal.name ? t(meal.name) : undefined,
-          localizedCategory:
-            t(meal.category) !== meal.category ? t(meal.category) : undefined,
+          localizedName: getArabicTranslation(meal.name),
+          localizedCategory: getArabicTranslation(meal.category),
         }))
 
         const results = await searchMealsSemantically(
@@ -165,7 +165,7 @@ export default function Meals() {
       controller.abort()
       window.clearTimeout(timer)
     }
-  }, [trimmedSearch, searchKey, restaurantMeals, t])
+  }, [trimmedSearch, searchKey, restaurantMeals])
 
   const hasSemanticResponse =
     trimmedSearch !== '' && semanticSearch.key === searchKey
@@ -181,7 +181,7 @@ export default function Meals() {
     const nameMatches = restaurantMeals.filter(
       (meal) =>
         meal.name.toLowerCase().includes(term) ||
-        t(meal.name).toLowerCase().includes(term)
+        getArabicTranslation(meal.name)?.includes(trimmedSearch)
     )
 
     if (semanticSearch.key !== searchKey || !semanticSearch.mealIds) {
@@ -197,7 +197,7 @@ export default function Meals() {
       .filter((meal): meal is MenuItem => meal !== undefined)
 
     return [...nameMatches, ...semanticMatches]
-  }, [restaurantMeals, trimmedSearch, searchKey, semanticSearch, t])
+  }, [restaurantMeals, trimmedSearch, searchKey, semanticSearch])
 
   // Reset to the first page whenever filters change
   useEffect(() => {
