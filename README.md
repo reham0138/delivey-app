@@ -41,7 +41,18 @@ Run these from `frontend/`:
 | `npm run build` | Run the TypeScript project build and create the production bundle in `dist/` |
 | `npm run preview` | Preview the production bundle locally after building |
 
-There is no configured API URL or `.env` file requirement at this stage. Do not add credentials or private keys to frontend environment variables; values prefixed with `VITE_` are included in browser code.
+No `.env` file is required. The only optional setting is `VITE_SEARCH_API_URL` (see [Semantic search](#semantic-search-meals-page)). Do not add credentials or private keys to frontend environment variables; values prefixed with `VITE_` are included in browser code.
+
+### Semantic search (Meals page)
+
+The Meals page search box searches by meaning, in Arabic and English, using the shared [semantic-search-engine](https://github.com/reham0138/semantic-search-engine) service (the store app uses the same service). To use it locally:
+
+1. Clone and start the service by following **Run it** in its README. In short: `pip install -r requirements.txt`, then `python -m uvicorn app.main:app --port 8000`. The first start downloads a ~470 MB model.
+2. Keep it running and start the frontend as usual with `npm run dev`.
+
+The frontend calls `http://127.0.0.1:8000` by default. To use another address, create `frontend/.env.local` containing `VITE_SEARCH_API_URL=http://your-host:8000`.
+
+If the service is not running, the Meals page still works: it falls back to plain name search and shows a notice.
 
 ## What is in this repository
 
