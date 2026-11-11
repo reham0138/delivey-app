@@ -11,6 +11,7 @@ import { Button } from '../shared/components/Button'
 import { Pagination } from '../shared/components/Pagination'
 import { useCart } from '../shared/hooks/useCart'
 import { useLanguage } from '../shared/hooks/useLanguage'
+import { searchMealsSemantically } from '../shared/services/semanticSearch.service'
 
 interface MenuItem {
   id: number
@@ -45,6 +46,11 @@ export default function Meals() {
   const [currentPage, setCurrentPage] = useState(1)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
+  // mealIds is null when the semantic search API could not be reached
+  const [semanticSearch, setSemanticSearch] = useState<{
+    key: string
+    mealIds: number[] | null
+  }>({ key: '', mealIds: null })
 
   const {
     addToCart,
@@ -110,19 +116,88 @@ export default function Meals() {
     )
   }, [availableMeals, restaurants])
 
+  const trimmedSearch = searchTerm.trim()
+  const searchKey = `${selectedRestaurant}:${trimmedSearch}`
+
+  const restaurantMeals = useMemo(
+    () =>
+      availableMeals.filter(
+        (meal) =>
+          selectedRestaurant === 'all' ||
+          meal.restaurantId === Number(selectedRestaurant)
+      ),
+    [availableMeals, selectedRestaurant]
+  )
+
+  useEffect(() => {
+    if (!trimmedSearch) return
+
+    const controller = new AbortController()
+
+    const timer = window.setTimeout(async () => {
+      try {
+        const searchItems = restaurantMeals.map((meal) => ({
+          ...meal,
+          localizedName: t(meal.name) !== meal.name ? t(meal.name) : undefined,
+          localizedCategory:
+            t(meal.category) !== meal.category ? t(meal.category) : undefined,
+        }))
+
+        const results = await searchMealsSemantically(
+          trimmedSearch,
+          searchItems,
+          controller.signal
+        )
+
+        setSemanticSearch({
+          key: searchKey,
+          mealIds: results.map((result) => result.item.id),
+        })
+      } catch (err) {
+        if (controller.signal.aborted) return
+
+        console.error('Semantic meal search failed:', err)
+        setSemanticSearch({ key: searchKey, mealIds: null })
+      }
+    }, 300)
+
+    return () => {
+      controller.abort()
+      window.clearTimeout(timer)
+    }
+  }, [trimmedSearch, searchKey, restaurantMeals, t])
+
+  const hasSemanticResponse =
+    trimmedSearch !== '' && semanticSearch.key === searchKey
+  const isSearching = trimmedSearch !== '' && !hasSemanticResponse
+  const semanticSearchFailed =
+    hasSemanticResponse && semanticSearch.mealIds === null
+
+  // Name matches come first; semantic matches follow once the API responds
   const filteredMeals = useMemo(() => {
-    return availableMeals.filter((meal) => {
-      const matchesName = meal.name
-        .toLowerCase()
-        .includes(searchTerm.trim().toLowerCase())
+    if (!trimmedSearch) return restaurantMeals
 
-      const matchesRestaurant =
-        selectedRestaurant === 'all' ||
-        meal.restaurantId === Number(selectedRestaurant)
+    const term = trimmedSearch.toLowerCase()
+    const nameMatches = restaurantMeals.filter(
+      (meal) =>
+        meal.name.toLowerCase().includes(term) ||
+        t(meal.name).toLowerCase().includes(term)
+    )
 
-      return matchesName && matchesRestaurant
-    })
-  }, [availableMeals, searchTerm, selectedRestaurant])
+    if (semanticSearch.key !== searchKey || !semanticSearch.mealIds) {
+      return nameMatches
+    }
+
+    const nameMatchIds = new Set(nameMatches.map((meal) => meal.id))
+    const mealsById = new Map(restaurantMeals.map((meal) => [meal.id, meal]))
+
+    const semanticMatches = semanticSearch.mealIds
+      .filter((id) => !nameMatchIds.has(id))
+      .map((id) => mealsById.get(id))
+      .filter((meal): meal is MenuItem => meal !== undefined)
+
+    return [...nameMatches, ...semanticMatches]
+  }, [restaurantMeals, trimmedSearch, searchKey, semanticSearch, t])
 
   // Reset to the first page whenever filters change
   useEffect(() => {
@@ -225,7 +300,7 @@ export default function Meals() {
         <section className="grid gap-4 rounded-xl border border-border-subtle bg-surface-white p-4 sm:grid-cols-2">
           <Input
           label={t('Search meals')}
-          placeholder={t('Search by meal name...')}
+          placeholder={t('Search by name, ingredient, or craving...')}
             value={searchTerm}
             onChange={(event) => setSearchTerm(event.target.value)}
           />
@@ -243,6 +318,12 @@ export default function Meals() {
               </option>
             ))}
           </Select>
+
+          {semanticSearchFailed && (
+            <p className="text-sm text-brand-red sm:col-span-2">
+              {t('Smart search is unavailable. Showing name matches instead.')}
+            </p>
+          )}
         </section>
 
         <section className="space-y-5">
@@ -252,7 +333,9 @@ export default function Meals() {
             </h2>
 
             <span className="text-sm text-text-slate">
-              {filteredMeals.length} {t('meals found')}
+              {isSearching
+                ? t('Searching...')
+                : `${filteredMeals.length} ${t('meals found')}`}
             </span>
           </div>
 
