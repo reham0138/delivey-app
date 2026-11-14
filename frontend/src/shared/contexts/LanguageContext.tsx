@@ -130,6 +130,9 @@ const translations: Record<string, TranslationValue> = {
   'Find your favorite meals from our restaurants.': 'اعثر على وجباتك المفضلة من مطاعمنا.',
   'Search meals': 'البحث عن الوجبات',
   'Search by meal name...': 'ابحث باسم الوجبة...',
+  'Search by name, ingredient, or craving...': 'ابحث بالاسم أو المكونات أو ما تشتهيه...',
+  'Smart search is unavailable. Showing name matches instead.': 'البحث الذكي غير متاح حالياً. نعرض الوجبات المطابقة للاسم.',
+  'Searching...': 'جارٍ البحث...',
   'Filter by restaurant': 'التصفية حسب المطعم',
   'All restaurants': 'كل المطاعم',
   'Explore Restaurants': 'استكشف المطاعم',
@@ -534,6 +537,11 @@ Object.assign(translations, {
   'Minimum order cannot be negative.': 'لا يمكن أن يكون الحد الأدنى للطلب سالباً.',
   'Please choose an account type.': 'يرجى اختيار نوع الحساب.',
 })
+
+export function getArabicTranslation(text: string): string | undefined {
+  const value = translations[text]
+  return typeof value === 'string' ? value : undefined
+}
 
 function getInitialLanguage(): Language {
   if (typeof window === 'undefined') return 'en'
