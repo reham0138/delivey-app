@@ -25,6 +25,7 @@ import {
   orderService,
   type OrderAddress,
 } from "@/shared/services/order.service";
+import { restaurantService } from "@/shared/services/restaurant.service";
 import { calculateOrderTotals } from "@/shared/services/orderTotals.service";
 import type { Order, Restaurant } from "@/shared/types";
 import { formatCurrency } from "@/shared/utils/format";
@@ -112,11 +113,9 @@ export default function CheckoutPage() {
   const [saveAddress, setSaveAddress] = useState(false);
 
   useEffect(() => {
-    fetch("/mock/restaurants.json")
-      .then(async (response) => {
-        if (!response.ok) throw new Error("Could not load restaurant details.");
-        setRestaurants((await response.json()) as Restaurant[]);
-      })
+    restaurantService
+      .getAll()
+      .then(setRestaurants)
       .catch((reason) =>
         setError(
           reason instanceof Error
@@ -795,6 +794,11 @@ export default function CheckoutPage() {
               {errors.cart && (
                 <p role="alert" className="mt-3 text-sm text-danger">
                   {errors.cart}
+                </p>
+              )}
+              {cartGroups.some((group) => !group.restaurant) && (
+                <p role="alert" className="mt-3 text-sm text-danger">
+                  {t('A restaurant in your cart is no longer available. Remove its items to continue.')}
                 </p>
               )}
               <Button

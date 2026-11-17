@@ -16,21 +16,10 @@ export interface CreateOrderInput {
 }
 export interface PaginatedResponse<T> { data: T[]; meta: { total: number; page: number; limit: number; total_pages: number } }
 
-function isStoredOrder(value: unknown): value is Order {
-  if (typeof value !== 'object' || value === null) return false
-  const order = value as Partial<Order>
-  return (
-    typeof order.id === 'number' && Number.isFinite(order.id) &&
-    typeof order.customerId === 'number' && Number.isFinite(order.customerId) &&
-    Array.isArray(order.items)
-  )
-}
 function readOrders(): Order[] {
   try {
     const value = localStorage.getItem(STORAGE_KEY)
-    if (!value) return []
-    const parsed: unknown = JSON.parse(value)
-    return Array.isArray(parsed) ? parsed.filter(isStoredOrder) : []
+    return value ? JSON.parse(value) as Order[] : []
   } catch { return [] }
 }
 function writeOrders(orders: Order[]) {
@@ -62,7 +51,7 @@ async function seedOrders(): Promise<Order[]> {
 }
 async function allOrders(): Promise<Order[]> {
   const stored = readOrders()
-  if (stored.length) return stored.map(advanceOrder)
+  if (stored !== null) return stored.map(advanceOrder)
   const seed = await seedOrders()
   writeOrders(seed)
   return seed.map(advanceOrder)
@@ -71,9 +60,19 @@ export const orderService = {
   async listOrders(customerId: number, page = 1, limit = 6, filters?: { status?: string; search?: string; from?: string; to?: string }): Promise<PaginatedResponse<Order>> {
     const all = (await allOrders()).filter(order => order.customerId === customerId).sort((a,b) => b.createdAt.localeCompare(a.createdAt))
     const filtered = all.filter(order => (!filters?.status || filters.status === 'all' || order.status === filters.status) && (!filters?.search || (String(order.id) + ' ' + order.items.map(item => item.name).join(' ')).toLowerCase().includes(filters.search.toLowerCase())) && (!filters?.from || order.createdAt.slice(0,10) >= filters.from) && (!filters?.to || order.createdAt.slice(0,10) <= filters.to))
-    writeOrders(all.length ? [...readOrders().filter(o => o.customerId !== customerId), ...all] : readOrders())
+    const stored = readOrders() ?? []
+    writeOrders(all.length ? [...stored.filter(o => o.customerId !== customerId), ...all] : stored)
     const start = (page - 1) * limit
     return { data: filtered.slice(start, start + limit), meta: { total: filtered.length, page, limit, total_pages: Math.max(1, Math.ceil(filtered.length / limit)) } }
+  },
+  async listAllOrders(): Promise<Order[]> {
+    return (await allOrders()).sort((first, second) => second.createdAt.localeCompare(first.createdAt))
+  },
+  async deleteOrder(id: number): Promise<void> {
+    const orders = await allOrders()
+    const remaining = orders.filter(order => order.id !== id)
+    if (remaining.length === orders.length) throw new Error('Order not found.')
+    writeOrders(remaining)
   },
   async getOrder(id: number, customerId: number): Promise<Order | null> {
     return (await allOrders()).find(order => order.id === id && order.customerId === customerId) ?? null
