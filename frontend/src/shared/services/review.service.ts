@@ -12,6 +12,17 @@ async function getAll(): Promise<Review[]> {
   return reviews
 }
 export const reviewService = {
+  async listAll(): Promise<Review[]> {
+    return (await getAll()).sort((first, second) => second.createdAt.localeCompare(first.createdAt))
+  },
+
+  async deleteReview(id: number): Promise<void> {
+    const reviews = await getAll()
+    const remaining = reviews.filter(review => review.id !== id)
+    if (remaining.length === reviews.length) throw new Error('Review not found.')
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(remaining))
+  },
+
   async getCustomerMealReview(customerId: number, menuItemId: number): Promise<Review | null> {
     return (await getAll()).find(review => review.customerId === customerId && review.menuItemId === menuItemId) ?? null
   },

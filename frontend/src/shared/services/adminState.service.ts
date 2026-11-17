@@ -10,16 +10,34 @@ const STORAGE_KEY = 'crown-anchor-admin-state'
 interface AdminState {
   /** Account status per e-mail address (lower-case). */
   userStatus: Record<string, AccountStatus>
+  /** Administrator overrides to each restaurant fixture's activation state. */
+  restaurantIsActive: Record<string, boolean>
 }
 
 function readState(): AdminState {
   try {
     const parsed: unknown = JSON.parse(window.localStorage.getItem(STORAGE_KEY) ?? 'null')
-    const candidate = (parsed as Partial<AdminState> | null)?.userStatus
-    const isRecord = typeof candidate === 'object' && candidate !== null && !Array.isArray(candidate)
-    return { userStatus: isRecord ? candidate : {} }
+    if (typeof parsed !== 'object' || parsed === null || Array.isArray(parsed)) {
+      return { userStatus: {}, restaurantIsActive: {} }
+    }
+
+    const candidate = parsed as Partial<AdminState>
+    const userStatus = candidate.userStatus
+    const restaurantIsActive = candidate.restaurantIsActive
+    return {
+      userStatus:
+        typeof userStatus === 'object' && userStatus !== null && !Array.isArray(userStatus)
+          ? userStatus
+          : {},
+      restaurantIsActive:
+        typeof restaurantIsActive === 'object' &&
+        restaurantIsActive !== null &&
+        !Array.isArray(restaurantIsActive)
+          ? restaurantIsActive
+          : {},
+    }
   } catch {
-    return { userStatus: {} }
+    return { userStatus: {}, restaurantIsActive: {} }
   }
 }
 
@@ -43,5 +61,18 @@ export const adminState = {
   setUserStatus(email: string, status: AccountStatus): void {
     const state = readState()
     writeState({ ...state, userStatus: { ...state.userStatus, [normalize(email)]: status } })
+  },
+
+  getRestaurantIsActive(id: number, fallback: boolean): boolean {
+    const stored = readState().restaurantIsActive[String(id)]
+    return typeof stored === 'boolean' ? stored : fallback
+  },
+
+  setRestaurantIsActive(id: number, isActive: boolean): void {
+    const state = readState()
+    writeState({
+      ...state,
+      restaurantIsActive: { ...state.restaurantIsActive, [id]: isActive },
+    })
   },
 }

@@ -1,7 +1,8 @@
 import type { MenuItem, Restaurant, RestaurantProfileChanges } from '../types'
+import { adminState } from './adminState.service'
+import { menuItemService } from './menuItem.service'
 
 const RESTAURANTS_URL = '/mock/restaurants.json'
-const MENU_ITEMS_URL = '/mock/menu-items.json'
 const PROFILE_OVERRIDES_KEY = 'crown-anchor-restaurant-profile-overrides'
 
 type ProfileOverrides = Record<string, Partial<RestaurantProfileChanges>>
@@ -24,7 +25,7 @@ interface RestaurantData {
 async function loadRestaurantData(): Promise<RestaurantData> {
   const [restaurants, menuItems] = await Promise.all([
     fetchJson<Restaurant[]>(RESTAURANTS_URL),
-    fetchJson<MenuItem[]>(MENU_ITEMS_URL),
+    menuItemService.getAll(),
   ])
 
   return { restaurants, menuItems }
@@ -38,18 +39,22 @@ function withReviewCounts(
   const overrides = readProfileOverrides()
 
   return restaurants
-    .filter((restaurant) => includeInactive || restaurant.isActive)
     .map((restaurant) => {
+      const withAdminStatus = {
+        ...restaurant,
+        isActive: adminState.getRestaurantIsActive(restaurant.id, restaurant.isActive),
+      }
       const withProfileChanges = applyProfileChanges(
-        restaurant,
-        overrides[String(restaurant.id)] ?? {},
+        withAdminStatus,
+        overrides[String(withAdminStatus.id)] ?? {},
       )
       const reviewsCount = menuItems
-        .filter((item) => item.restaurantId === restaurant.id)
+        .filter((item) => item.restaurantId === withAdminStatus.id)
         .reduce((total, item) => total + item.reviewsCount, 0)
 
       return { ...withProfileChanges, reviewsCount }
     })
+    .filter((restaurant) => includeInactive || restaurant.isActive)
 }
 
 function readProfileOverrides(): ProfileOverrides {

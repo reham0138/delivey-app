@@ -11,6 +11,8 @@ import { Button } from '../shared/components/Button'
 import { Pagination } from '../shared/components/Pagination'
 import { useCart } from '../shared/hooks/useCart'
 import { useLanguage } from '../shared/hooks/useLanguage'
+import { menuItemService } from '../shared/services/menuItem.service'
+import { restaurantService } from '../shared/services/restaurant.service'
 import { searchMealsSemantically } from '../shared/services/semanticSearch.service'
 import { getArabicTranslation } from '../shared/contexts/LanguageContext'
 
@@ -63,19 +65,9 @@ export default function Meals() {
     try {
       setLoading(true)
       setError('')
-
-      const [mealsResponse, restaurantsResponse] = await Promise.all([
-        fetch('/mock/menu-items.json'),
-        fetch('/mock/restaurants.json'),
-      ])
-
-      if (!mealsResponse.ok || !restaurantsResponse.ok) {
-        throw new Error(t('Failed to load meals data.'))
-      }
-
       const [mealsData, restaurantsData] = await Promise.all([
-        mealsResponse.json() as Promise<MenuItem[]>,
-        restaurantsResponse.json() as Promise<Restaurant[]>,
+        menuItemService.getAll(),
+        restaurantService.getAll(),
       ])
 
       setMeals(mealsData)

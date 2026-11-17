@@ -31,6 +31,18 @@ const AdminDashboard = lazy(
 const AdminUsersPage = lazy(
   () => import("@/pages/dashboard/admin/AdminUsersPage"),
 );
+const AdminRestaurantsPage = lazy(
+  () => import("@/pages/dashboard/admin/AdminRestaurantsPage"),
+);
+const AdminOrdersPage = lazy(
+  () => import("@/pages/dashboard/admin/AdminOrdersPage"),
+);
+const AdminReviewsPage = lazy(
+  () => import("@/pages/dashboard/admin/AdminReviewsPage"),
+);
+const AdminMealsPage = lazy(
+  () => import("@/pages/dashboard/admin/AdminMealsPage"),
+);
 
 function LoadingFallback({ label }: { label: string }) {
   const { t } = useLanguage();
@@ -115,6 +127,10 @@ function App() {
           <Route element={<DashboardLayout />}>
             <Route path="dashboard/admin" element={<AdminDashboard />} />
             <Route path="dashboard/admin/users" element={<AdminUsersPage />} />
+            <Route path="dashboard/admin/restaurants" element={<AdminRestaurantsPage />} />
+            <Route path="dashboard/admin/orders" element={<AdminOrdersPage />} />
+            <Route path="dashboard/admin/reviews" element={<AdminReviewsPage />} />
+            <Route path="dashboard/admin/meals" element={<AdminMealsPage />} />
           </Route>
         </Route>
         <Route element={<AuthLayout />}>

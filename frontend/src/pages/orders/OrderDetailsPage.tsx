@@ -12,6 +12,7 @@ import { useAuth } from '@/shared/hooks/useAuth'
 import { useCart } from '@/shared/hooks/useCart'
 import { useOrder } from '@/shared/hooks/useOrders'
 import { orderService } from '@/shared/services/order.service'
+import { restaurantService } from '@/shared/services/restaurant.service'
 import OrderTimeline from './OrderTimeline'
 import { formatCurrency, formatDateTime, formatTime } from '@/shared/utils/format'
 import MealReviewForm from './MealReviewForm'
@@ -98,31 +99,17 @@ export default function OrderDetailsPage() {
 
   const reorder = async () => {
     try {
-      const [response, restaurantsResponse] = await Promise.all([
-        fetch('/mock/menu-items.json'),
-        fetch('/mock/restaurants.json'),
-      ])
-
-      if (!response.ok || !restaurantsResponse.ok) {
-        throw new Error(t('Could not verify current menu availability.'))
+      const { restaurant, meals } = await restaurantService.getById(order.restaurantId)
+      if (!restaurant) {
+        setMessage(t('This restaurant is no longer available.'))
+        return
       }
-
-      const [menuItems, restaurants] = await Promise.all([
-        response.json() as Promise<Array<{
-        id: number
-        restaurantId: number
-        isAvailable: boolean
-      }>>,
-        restaurantsResponse.json() as Promise<Array<{ id: number; name: string }>>,
-      ])
-      const restaurantName = restaurants.find(value => value.id === order.restaurantId)?.name
-        ?? t('Restaurant #{id}', { id: order.restaurantId })
+      const restaurantName = restaurant.name
 
       const available = order.items.filter(item =>
-        menuItems.some(
+        meals.some(
           meal =>
             meal.id === item.menuItemId &&
-            meal.restaurantId === order.restaurantId &&
             meal.isAvailable
         )
       )
