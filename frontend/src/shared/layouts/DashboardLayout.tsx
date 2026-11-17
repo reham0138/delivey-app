@@ -1,6 +1,6 @@
 import { Suspense, useEffect, useState } from 'react'
 import { Link, NavLink, Outlet } from 'react-router-dom'
-import { LayoutDashboard, LogOut, Menu, Moon, Sun, X } from 'lucide-react'
+import { LayoutDashboard, LogOut, Menu, Moon, Sun, Users, X } from 'lucide-react'
 import type { LucideIcon } from 'lucide-react'
 import { Spinner } from '@/shared/components/Spinner'
 import { useTheme } from '@/shared/contexts/ThemeContext'
@@ -17,7 +17,10 @@ interface NavItem {
 
 const navByRole: Record<Exclude<Role, 'customer'>, NavItem[]> = {
   restaurant: [{ to: '/dashboard/restaurant', label: 'Overview', icon: LayoutDashboard, end: true }],
-  admin: [{ to: '/dashboard/admin', label: 'Overview', icon: LayoutDashboard, end: true }],
+  admin: [
+    { to: '/dashboard/admin', label: 'Overview', icon: LayoutDashboard, end: true },
+    { to: '/dashboard/admin/users', label: 'Users', icon: Users },
+  ],
 }
 
 export default function DashboardLayout() {

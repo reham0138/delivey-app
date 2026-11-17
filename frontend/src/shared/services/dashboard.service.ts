@@ -1,8 +1,8 @@
 import { orderService } from '@/shared/services/order.service'
 import { restaurantService } from '@/shared/services/restaurant.service'
-import type { AdminStats, Order, Restaurant, RestaurantStats, Review, User } from '@/shared/types'
+import type { AdminStats, Order, Restaurant, RestaurantStats, Review } from '@/shared/types'
 import { computeAdminStats, computeRestaurantStats } from '@/shared/utils/stats'
-
+import { adminService } from '@/shared/services/admin.service'
 // Replace the bodies with Axios calls when the backend is ready. Keep the signatures and return types.
 
 async function fetchJson<T>(url: string): Promise<T> {
@@ -43,7 +43,7 @@ export const dashboardService = {
   async getAdminOverview(): Promise<AdminOverview> {
     const [ordersResponse, users, restaurants, reviews] = await Promise.all([
         orderService.listOrders(1),
-      fetchJson<User[]>('/mock/users.json'),
+      adminService.listUsers(),
       fetchJson<Restaurant[]>('/mock/restaurants.json'),
       fetchJson<Review[]>('/mock/reviews.json'),
     ])

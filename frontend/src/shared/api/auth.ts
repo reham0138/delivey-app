@@ -1,6 +1,8 @@
 // Replace the bodies with Axios calls when the backend is ready. Keep the signatures.
 import { getRefreshToken, getStoredUser } from '@/shared/services/auth.service'
 import type { AuthResponse, LoginPayload, RegisterPayload, Role, UpdateProfilePayload, User } from '@/shared/types/user'
+import { adminState } from '@/shared/services/adminState.service'
+import type { User as DemoUser } from '@/shared/types'
 
 const USERS_STORAGE_KEY = 'crown-anchor-mock-auth-users'
 const MOCK_DELAY_MS = 500
@@ -72,11 +74,18 @@ function waitForMockApi(): Promise<void> {
 	return new Promise((resolve) => window.setTimeout(resolve, MOCK_DELAY_MS))
 }
 
+async function findDemoUser(email: string): Promise<DemoUser | undefined> {
+	const response = await fetch('/mock/users.json')
+	if (!response.ok) throw new Error(`Unable to load demo users (HTTP ${response.status}).`)
+	const users = (await response.json()) as DemoUser[]
+	return users.find((user) => user.email.toLowerCase() === email)
+}
+
 function createToken(prefix: string): string {
 	return `${prefix}-${Date.now()}-${Math.random().toString(36).slice(2)}`
 }
 
-function createAuthResponse(record: StoredMockUser): AuthResponse {
+function createAuthResponse(record: User): AuthResponse {
 	const user: User = {
 		id: record.id,
 		name: record.name,
@@ -96,12 +105,27 @@ export async function login(payload: LoginPayload): Promise<AuthResponse> {
 	await waitForMockApi()
 	const email = payload.email.trim().toLowerCase()
 	const record = readUsers().find((user) => user.email.toLowerCase() === email)
-	if (!record || record.password !== payload.password) {
-		throw new Error('Invalid email or password.')
+	if (record) {
+		if (record.password !== payload.password) throw new Error('Invalid email or password.')
+		if (adminState.getUserStatus(record.email, 'active') === 'suspended') throw new Error('This account has been suspended.')
+		return createAuthResponse(record)
 	}
-	return createAuthResponse(record)
-}
 
+	const demo = await findDemoUser(email)
+	if (!demo || demo.mockPassword !== payload.password) throw new Error('Invalid email or password.')
+	if (adminState.getUserStatus(demo.email, demo.status) === 'suspended') throw new Error('This account has been suspended.')
+	return createAuthResponse(demo)
+}
+/** Admin dashboard: accounts created with the mock sign-up form (never includes passwords). */
+export function listRegisteredUsers(): User[] {
+	return readUsers().map((user) => ({
+		id: user.id,
+		name: user.name,
+		email: user.email,
+		...(user.phone === undefined ? {} : { phone: user.phone }),
+		role: user.role,
+	}))
+}
 export async function register(payload: RegisterPayload): Promise<AuthResponse> {
 	await waitForMockApi()
 	const users = readUsers()

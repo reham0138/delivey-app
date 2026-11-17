@@ -84,7 +84,7 @@ export function computeRestaurantStats(
 
 export interface AdminStatsInput {
   orders: Order[]
-  users: User[]
+  users: Pick<User, 'role' | 'status'>[]
   restaurants: Restaurant[]
   reviews: Review[]
 }

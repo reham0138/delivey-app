@@ -28,6 +28,9 @@ const RestaurantDashboard = lazy(
 const AdminDashboard = lazy(
   () => import("@/pages/dashboard/admin/AdminDashboard"),
 );
+const AdminUsersPage = lazy(
+  () => import("@/pages/dashboard/admin/AdminUsersPage"),
+);
 
 function LoadingFallback({ label }: { label: string }) {
   const { t } = useLanguage();
@@ -111,6 +114,7 @@ function App() {
         <Route element={<RoleRoute allow={["admin"]} />}>
           <Route element={<DashboardLayout />}>
             <Route path="dashboard/admin" element={<AdminDashboard />} />
+            <Route path="dashboard/admin/users" element={<AdminUsersPage />} />
           </Route>
         </Route>
         <Route element={<AuthLayout />}>
