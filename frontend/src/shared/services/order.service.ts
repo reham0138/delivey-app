@@ -16,19 +16,17 @@ export interface CreateOrderInput {
 }
 export interface PaginatedResponse<T> { data: T[]; meta: { total: number; page: number; limit: number; total_pages: number } }
 
-function readOrders(): Order[] | null {
+function readOrders(): Order[] {
   try {
     const value = localStorage.getItem(STORAGE_KEY)
-    if (value === null) return null
-    const parsed: unknown = JSON.parse(value)
-    return Array.isArray(parsed) ? parsed as Order[] : null
-  } catch { return null }
+    return value ? JSON.parse(value) as Order[] : []
+  } catch { return [] }
 }
 function writeOrders(orders: Order[]) {
   localStorage.setItem(STORAGE_KEY, JSON.stringify(orders))
 }
 function advanceOrder(order: Order): Order {
-  if (!order.simulatedTracking || TERMINAL.includes(order.status) || order.statusHistory.length === 0) return order
+  if (!order.simulatedTracking || TERMINAL.includes(order.status) || !Array.isArray(order.statusHistory) || order.statusHistory.length === 0) return order
   const start = new Date(order.createdAt).getTime()
   const elapsed = Math.max(0, (Date.now() - start) / 60000)
   const totalMinutes = Math.max(10, (new Date(order.estimatedDeliveryAt ?? order.createdAt).getTime() - start) / 60000)

@@ -1,4 +1,5 @@
 
+import { Link } from 'react-router-dom'
 import { Clock3, ShoppingCart, Utensils } from 'lucide-react'
 
 import { Card } from './Card'
@@ -17,6 +18,7 @@ interface MealCardProps {
   preparationTimeMinutes: number
   restaurantName: string
   isPopular: boolean
+  detailsTo?: string
   onOrder: () => void
 }
 
@@ -31,39 +33,69 @@ export default function MealCard({
   preparationTimeMinutes,
   restaurantName,
   isPopular,
+  detailsTo,
   onOrder,
 }: MealCardProps) {
   const { t } = useLanguage()
+
+  const imageContent = (
+    <>
+      {image ? (
+        <img
+          src={image}
+          alt={t(name)}
+          loading="lazy"
+          className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
+        />
+      ) : (
+        <div className="flex h-full items-center justify-center text-text-slate">
+          <Utensils size={40} />
+        </div>
+      )}
+
+      {isPopular && (
+        <span className="absolute start-3 top-3 rounded-full bg-brand-yellow px-3 py-1 text-xs font-semibold text-text-main">
+          {t('Popular')}
+        </span>
+      )}
+    </>
+  )
 
   return (
     <Card
       padding="none"
       className="group flex h-full flex-col overflow-hidden transition-shadow hover:shadow-md"
     >
-      <div className="relative aspect-[4/3] overflow-hidden bg-surface-cream">
-        {image ? (
-          <img
-            src={image}
-            alt={t(name)}
-            loading="lazy"
-            className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
-          />
-        ) : (
-          <div className="flex h-full items-center justify-center text-text-slate">
-            <Utensils size={40} />
+      {detailsTo ? (
+        <Link
+          to={detailsTo}
+          className="block"
+          aria-label={t('View {name} meal', { name: t(name) })}
+        >
+          <div className="relative aspect-[4/3] overflow-hidden bg-surface-cream">
+            {imageContent}
           </div>
-        )}
-
-        {isPopular && (
-          <span className="absolute start-3 top-3 rounded-full bg-brand-yellow px-3 py-1 text-xs font-semibold text-text-main">
-            {t('Popular')}
-          </span>
-        )}
-      </div>
+        </Link>
+      ) : (
+        <div className="relative aspect-[4/3] overflow-hidden bg-surface-cream">
+          {imageContent}
+        </div>
+      )}
 
       <div className="flex flex-1 flex-col gap-3 p-4">
         <div className="flex items-start justify-between gap-2">
-          <h3 className="font-semibold text-text-main">{t(name)}</h3>
+          <h3 className="font-semibold text-text-main">
+            {detailsTo ? (
+              <Link
+                to={detailsTo}
+                className="transition-colors hover:text-brand-red hover:underline"
+              >
+                {t(name)}
+              </Link>
+            ) : (
+              t(name)
+            )}
+          </h3>
 
           <span className="shrink-0 font-bold text-brand-red">
             ${price.toFixed(2)}

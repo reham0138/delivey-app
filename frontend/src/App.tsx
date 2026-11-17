@@ -3,6 +3,7 @@ import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
 import Preview from "./pages/Preview";
 import HomePage from "./pages/HomePage";
 import Meals from "./pages/Meals";
+import MealDetailsPage from "./pages/MealDetailsPage";
 import RestaurantsPage from "./pages/restaurants/RestaurantsPage";
 import RestaurantDetailsPage from "./pages/restaurants/RestaurantDetailsPage";
 import MainLayout from "./shared/layouts/MainLayout";
@@ -60,6 +61,7 @@ function App() {
         <Route path="/" element={<MainLayout />}>
           <Route index element={<HomePage />} />
           <Route path="meals" element={<Meals />} />
+          <Route path="meals/:id" element={<MealDetailsPage />} />
           <Route path="restaurants" element={<RestaurantsPage />} />
           <Route path="restaurants/:id" element={<RestaurantDetailsPage />} />
           <Route element={<ProtectedRoute />}>

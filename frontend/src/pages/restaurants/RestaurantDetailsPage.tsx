@@ -264,6 +264,7 @@ const { t } = useLanguage()
                     preparationTimeMinutes={meal.preparationTimeMinutes}
                     restaurantName={restaurant.name}
                     isPopular={meal.isPopular}
+                    detailsTo={`/meals/${meal.id}`}
                     onOrder={() => handleAddToCart(meal)}
                   />
                 ))}

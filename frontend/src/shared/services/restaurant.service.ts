@@ -139,6 +139,23 @@ export const restaurantService = {
     return applyProfileChanges(currentRestaurant, changes)
   },
 
+  async getMealById(id: number): Promise<{
+    meal: MenuItem | null
+    restaurant: Restaurant | null
+  }> {
+    const { restaurants, menuItems } = await loadRestaurantData()
+    const meal = menuItems.find((item) => item.id === id) ?? null
+
+    if (!meal) {
+      return { meal: null, restaurant: null }
+    }
+
+    const restaurant = withReviewCounts(restaurants, menuItems, true)
+      .find((item) => item.id === meal.restaurantId) ?? null
+
+    return { meal, restaurant }
+  },
+
   async getById(id: number): Promise<{
     restaurant: Restaurant | null
     meals: MenuItem[]

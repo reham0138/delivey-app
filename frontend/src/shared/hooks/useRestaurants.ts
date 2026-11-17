@@ -79,3 +79,43 @@ export function useRestaurant(id: number | null): AsyncState<RestaurantDetails> 
 
   return { data, loading, error, refetch }
 }
+
+interface MealDetails {
+  meal: MenuItem | null
+  restaurant: Restaurant | null
+}
+
+export function useMeal(id: number | null): AsyncState<MealDetails> {
+  const [data, setData] = useState<MealDetails>({
+    meal: null,
+    restaurant: null,
+  })
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState('')
+
+  const refetch = useCallback(async () => {
+    if (id === null || !Number.isInteger(id) || id < 1) {
+      setData({ meal: null, restaurant: null })
+      setLoading(false)
+      setError('')
+      return
+    }
+
+    setLoading(true)
+    setError('')
+
+    try {
+      setData(await restaurantService.getMealById(id))
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Something went wrong.')
+    } finally {
+      setLoading(false)
+    }
+  }, [id])
+
+  useEffect(() => {
+    void refetch()
+  }, [refetch])
+
+  return { data, loading, error, refetch }
+}
