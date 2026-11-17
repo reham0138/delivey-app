@@ -16,17 +16,28 @@ export interface CreateOrderInput {
 }
 export interface PaginatedResponse<T> { data: T[]; meta: { total: number; page: number; limit: number; total_pages: number } }
 
+function isStoredOrder(value: unknown): value is Order {
+  if (typeof value !== 'object' || value === null) return false
+  const order = value as Partial<Order>
+  return (
+    typeof order.id === 'number' && Number.isFinite(order.id) &&
+    typeof order.customerId === 'number' && Number.isFinite(order.customerId) &&
+    Array.isArray(order.items)
+  )
+}
 function readOrders(): Order[] {
   try {
     const value = localStorage.getItem(STORAGE_KEY)
-    return value ? JSON.parse(value) as Order[] : []
+    if (!value) return []
+    const parsed: unknown = JSON.parse(value)
+    return Array.isArray(parsed) ? parsed.filter(isStoredOrder) : []
   } catch { return [] }
 }
 function writeOrders(orders: Order[]) {
   localStorage.setItem(STORAGE_KEY, JSON.stringify(orders))
 }
 function advanceOrder(order: Order): Order {
-  if (!order.simulatedTracking || TERMINAL.includes(order.status) || order.statusHistory.length === 0) return order
+  if (!order.simulatedTracking || TERMINAL.includes(order.status) || !Array.isArray(order.statusHistory) || order.statusHistory.length === 0) return order
   const start = new Date(order.createdAt).getTime()
   const elapsed = Math.max(0, (Date.now() - start) / 60000)
   const totalMinutes = Math.max(10, (new Date(order.estimatedDeliveryAt ?? order.createdAt).getTime() - start) / 60000)
