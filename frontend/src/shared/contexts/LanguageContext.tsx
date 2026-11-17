@@ -536,6 +536,27 @@ Object.assign(translations, {
   'Delivery fee cannot be negative.': 'لا يمكن أن تكون رسوم التوصيل سالبة.',
   'Minimum order cannot be negative.': 'لا يمكن أن يكون الحد الأدنى للطلب سالباً.',
   'Please choose an account type.': 'يرجى اختيار نوع الحساب.',
+
+  'Meal details': 'تفاصيل الوجبة',
+  'Loading meal...': 'جارٍ تحميل الوجبة...',
+  'Unable to load meal': 'تعذر تحميل الوجبة',
+  'Meal not found': 'لم يتم العثور على الوجبة',
+  'This meal may no longer be available.': 'قد لا تكون هذه الوجبة متاحة بعد الآن.',
+  'Back to meals': 'العودة إلى الوجبات',
+  'Available': 'متاح',
+  'Unavailable': 'غير متاح',
+  'Category': 'التصنيف',
+  'Preparation time': 'وقت التحضير',
+  'Ingredients': 'المكونات',
+  'Nutrition': 'القيمة الغذائية',
+  'Calories': 'السعرات الحرارية',
+  'Protein': 'البروتين',
+  'Carbs': 'الكربوهيدرات',
+  'Fat': 'الدهون',
+  'Add to cart': 'أضف إلى السلة',
+  'This meal is currently unavailable.': 'هذه الوجبة غير متاحة حالياً.',
+  'View {name} meal': ({ name }: Record<string, string | number>) => `عرض وجبة ${name}`,
+  'No reviews yet': 'لا توجد تقييمات بعد',
 })
 
 export function getArabicTranslation(text: string): string | undefined {

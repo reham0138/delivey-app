@@ -355,6 +355,7 @@ export default function Meals() {
                     preparationTimeMinutes={meal.preparationTimeMinutes}
                     restaurantName={getRestaurantName(meal.restaurantId)}
                     isPopular={meal.isPopular}
+                    detailsTo={`/meals/${meal.id}`}
                     onOrder={() => handleAddToCart(meal)}
                   />
                 ))}
