@@ -1,0 +1,22 @@
+// Every error code from API_CONTRACT.md section 1.
+export enum ErrorCode {
+  ValidationError = 'VALIDATION_ERROR',
+  InvalidPromoCode = 'INVALID_PROMO_CODE',
+  MinOrderNotMet = 'MIN_ORDER_NOT_MET',
+  RestaurantUnavailable = 'RESTAURANT_UNAVAILABLE',
+  ItemUnavailable = 'ITEM_UNAVAILABLE',
+  ReviewNotEligible = 'REVIEW_NOT_ELIGIBLE',
+  Unauthorized = 'UNAUTHORIZED',
+  TokenExpired = 'TOKEN_EXPIRED',
+  InvalidCredentials = 'INVALID_CREDENTIALS',
+  InvalidRefreshToken = 'INVALID_REFRESH_TOKEN',
+  Forbidden = 'FORBIDDEN',
+  AccountSuspended = 'ACCOUNT_SUSPENDED',
+  NotFound = 'NOT_FOUND',
+  EmailAlreadyExists = 'EMAIL_ALREADY_EXISTS',
+  ReviewAlreadyExists = 'REVIEW_ALREADY_EXISTS',
+  InvalidStatusTransition = 'INVALID_STATUS_TRANSITION',
+  OrderNotCancellable = 'ORDER_NOT_CANCELLABLE',
+  CategoryNameTaken = 'CATEGORY_NAME_TAKEN',
+  TooManyRequests = 'TOO_MANY_REQUESTS',
+}
