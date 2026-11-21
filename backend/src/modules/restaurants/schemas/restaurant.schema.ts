@@ -73,7 +73,11 @@ for (const optionName of ['toJSON', 'toObject'] as const) {
     transform: (document, value, transformOptions) => {
       const serialized =
         typeof globalTransform === 'function'
-          ? globalTransform(document, value, transformOptions)
+          ? (globalTransform as unknown as (...args: unknown[]) => object)(
+              document,
+              value,
+              transformOptions,
+            )
           : value
       Reflect.deleteProperty(serialized, 'ratingSum')
       Reflect.deleteProperty(serialized, 'ratingCount')
