@@ -6,5 +6,6 @@ export interface AuthUser {
   role: Role
   email: string
   name: string
+  phone?: string
   restaurantId?: string
 }
