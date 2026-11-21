@@ -1,5 +1,5 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose'
-import type { HydratedDocument, Schema as MongooseSchema } from 'mongoose'
+import type { HydratedDocument } from 'mongoose'
 import { Types } from 'mongoose'
 
 @Schema({ _id: false })
@@ -19,7 +19,7 @@ export class MenuItemNutrition {
 
 const MenuItemNutritionSchema = SchemaFactory.createForClass(MenuItemNutrition)
 
-@Schema()
+@Schema({ timestamps: true })
 export class MenuItem {
   @Prop({ type: Types.ObjectId, ref: 'Restaurant', required: true, index: true })
   restaurantId!: Types.ObjectId
@@ -33,8 +33,7 @@ export class MenuItem {
   @Prop({ type: Number, required: true, min: 0 })
   price!: number
 
-  // The API accepts a category name; persistence uses the category reference.
-  @Prop({ type: Types.ObjectId, ref: 'Category', required: true })
+  @Prop({ type: Types.ObjectId, ref: 'Category', required: true, select: false })
   categoryId!: Types.ObjectId
 
   @Prop({ type: String, trim: true, maxlength: 2048, default: null })
@@ -43,7 +42,7 @@ export class MenuItem {
   @Prop({ type: Boolean, default: true })
   isAvailable!: boolean
 
-  @Prop({ type: [String], required: true })
+  @Prop({ type: [String], required: true, default: [] })
   ingredients!: string[]
 
   @Prop({ type: Number, min: 0, required: true })
@@ -55,7 +54,6 @@ export class MenuItem {
   @Prop({ type: Boolean, default: false })
   isPopular!: boolean
 
-  // Internal soft-delete and rating fields are omitted from normal queries and API mapping.
   @Prop({ type: Boolean, default: true, select: false })
   isActive!: boolean
 
@@ -69,26 +67,23 @@ export class MenuItem {
 export type MenuItemDocument = HydratedDocument<MenuItem>
 export const MenuItemSchema = SchemaFactory.createForClass(MenuItem)
 
-function hideFields(schema: MongooseSchema, fields: readonly string[]): void {
-  for (const optionName of ['toJSON', 'toObject'] as const) {
-    const options = schema.get(optionName)
-    schema.set(optionName, {
-      ...options,
-      virtuals: true,
-      transform: (_doc, ret) => {
-        const rawId = ret._id
-        if (rawId !== undefined && rawId !== null) {
-          Object.assign(ret, {
-            id: typeof rawId === 'object' && 'toString' in rawId ? String(rawId) : rawId,
-          })
-        }
-        Reflect.deleteProperty(ret, '_id')
-        Reflect.deleteProperty(ret, '__v')
-        for (const field of fields) Reflect.deleteProperty(ret, field)
-        return ret
-      },
-    })
-  }
+for (const optionName of ['toJSON', 'toObject'] as const) {
+  const options = MenuItemSchema.get(optionName)
+  const globalTransform = options?.transform
+  MenuItemSchema.set(optionName, {
+    ...options,
+    transform: (document, value, transformOptions) => {
+      const serialized =
+        typeof globalTransform === 'function'
+          ? globalTransform(document, value, transformOptions)
+          : value
+      for (const field of ['categoryId', 'isActive', 'ratingSum', 'ratingCount']) {
+        Reflect.deleteProperty(serialized, field)
+      }
+      return serialized
+    },
+  })
 }
 
-hideFields(MenuItemSchema, ['categoryId', 'isActive', 'ratingSum', 'ratingCount'])
+MenuItemSchema.index({ restaurantId: 1, isActive: 1 })
+MenuItemSchema.index({ categoryId: 1, isActive: 1 })

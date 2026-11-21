@@ -1,59 +1,97 @@
-import { Transform, Type } from 'class-transformer'
-import { IsBoolean, IsEnum, IsMongoId, IsNumber, IsOptional, IsString, Min } from 'class-validator'
+import {
+  IsBooleanString,
+  IsIn,
+  IsMongoId,
+  IsNumberString,
+  IsOptional,
+  IsString,
+  MaxLength,
+} from 'class-validator'
 import { PaginationQueryDto } from '../../../common/dto/pagination-query.dto'
 
-export enum MenuItemSort {
-  Rating = 'rating',
-  PriceAscending = 'price_asc',
-  PriceDescending = 'price_desc',
-  Name = 'name',
-}
-
-export class RestaurantMenuItemsQueryDto extends PaginationQueryDto {
+export class ListMenuItemsQueryDto extends PaginationQueryDto {
   @IsOptional()
-  @Transform(({ value }) => (typeof value === 'string' ? value.trim() : value))
   @IsString()
-  category?: string
-
-  @IsOptional()
-  @Transform(({ value }) => (typeof value === 'string' ? value.trim() : value))
-  @IsString()
+  @MaxLength(100)
   search?: string
 
   @IsOptional()
-  @Transform(({ value }) => (value === 'true' ? true : value === 'false' ? false : value))
-  @IsBoolean()
-  includeUnavailable = false
-}
+  @IsString()
+  @MaxLength(60)
+  category?: string
 
-export class ListMenuItemsQueryDto extends RestaurantMenuItemsQueryDto {
   @IsOptional()
   @IsMongoId()
   restaurantId?: string
 
   @IsOptional()
-  @Type(() => Number)
-  @IsNumber({ allowNaN: false, allowInfinity: false })
-  @Min(0)
-  minPrice?: number
+  @IsNumberString()
+  minPrice?: string
 
   @IsOptional()
-  @Type(() => Number)
-  @IsNumber({ allowNaN: false, allowInfinity: false })
-  @Min(0)
-  maxPrice?: number
+  @IsNumberString()
+  maxPrice?: string
 
   @IsOptional()
-  @Transform(({ value }) => (value === 'true' ? true : value === 'false' ? false : value))
-  @IsBoolean()
-  isPopular?: boolean
+  @IsBooleanString()
+  isPopular?: string
 
   @IsOptional()
-  @Transform(({ value }) => (value === 'true' ? true : value === 'false' ? false : value))
-  @IsBoolean()
-  openOnly?: boolean
+  @IsBooleanString()
+  openOnly?: string
 
   @IsOptional()
-  @IsEnum(MenuItemSort)
-  sort = MenuItemSort.Rating
+  @IsBooleanString()
+  includeUnavailable?: string
+
+  @IsOptional()
+  @IsIn(['rating', 'price_asc', 'price_desc', 'name'])
+  sort: 'rating' | 'price_asc' | 'price_desc' | 'name' = 'rating'
+}
+
+export class RestaurantMenuItemsQueryDto extends PaginationQueryDto {
+  @IsOptional()
+  @IsString()
+  @MaxLength(60)
+  category?: string
+
+  @IsOptional()
+  @IsString()
+  @MaxLength(100)
+  search?: string
+
+  @IsOptional()
+  @IsBooleanString()
+  includeUnavailable?: string
+}
+
+export class ListOwnerMenuItemsQueryDto extends PaginationQueryDto {
+  @IsOptional()
+  @IsString()
+  @MaxLength(100)
+  search?: string
+
+  @IsOptional()
+  @IsString()
+  @MaxLength(60)
+  category?: string
+
+  @IsOptional()
+  @IsBooleanString()
+  isAvailable?: string
+}
+
+export class ListAdminMenuItemsQueryDto extends PaginationQueryDto {
+  @IsOptional()
+  @IsString()
+  @MaxLength(100)
+  search?: string
+
+  @IsOptional()
+  @IsMongoId()
+  restaurantId?: string
+
+  @IsOptional()
+  @IsBooleanString()
+  isAvailable?: string
 }
