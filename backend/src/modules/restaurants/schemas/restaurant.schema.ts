@@ -1,12 +1,13 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose'
-import type { HydratedDocument, Schema as MongooseSchema } from 'mongoose'
+import type { HydratedDocument } from 'mongoose'
 import { Types } from 'mongoose'
 
 /**
- * Stored restaurant. API responses are built by a mapper; the serialization transform also
- * removes rating counters so they cannot leak if a document is serialized directly.
+ * Stored restaurant. NEVER return a document from a controller: the API shape (contract 3.4) is built by a
+ * mapper that picks fields explicitly, so `ratingSum` and `ratingCount` can never leak.
+ * (The global Mongoose plugin replaces any schema-level toJSON, so hiding fields on the schema does not work.)
  */
-@Schema()
+@Schema({ timestamps: true })
 export class Restaurant {
   createdAt!: Date
 
@@ -64,29 +65,22 @@ export class Restaurant {
 export type RestaurantDocument = HydratedDocument<Restaurant>
 export const RestaurantSchema = SchemaFactory.createForClass(Restaurant)
 
-function hideFields(schema: MongooseSchema, fields: readonly string[]): void {
-  for (const optionName of ['toJSON', 'toObject'] as const) {
-    const options = schema.get(optionName)
-    schema.set(optionName, {
-      ...options,
-      virtuals: true,
-      transform: (_doc, ret) => {
-        const rawId = ret._id
-        if (rawId !== undefined && rawId !== null) {
-          Object.assign(ret, {
-            id: typeof rawId === 'object' && 'toString' in rawId ? String(rawId) : rawId,
-          })
-        }
-        Reflect.deleteProperty(ret, '_id')
-        Reflect.deleteProperty(ret, '__v')
-        for (const field of fields) Reflect.deleteProperty(ret, field)
-        return ret
-      },
-    })
-  }
+for (const optionName of ['toJSON', 'toObject'] as const) {
+  const options = RestaurantSchema.get(optionName)
+  const globalTransform = options?.transform
+  RestaurantSchema.set(optionName, {
+    ...options,
+    transform: (document, value, transformOptions) => {
+      const serialized =
+        typeof globalTransform === 'function'
+          ? globalTransform(document, value, transformOptions)
+          : value
+      Reflect.deleteProperty(serialized, 'ratingSum')
+      Reflect.deleteProperty(serialized, 'ratingCount')
+      return serialized
+    },
+  })
 }
-
-hideFields(RestaurantSchema, ['ratingSum', 'ratingCount'])
 
 // Public list: active restaurants, optionally only the open ones.
 RestaurantSchema.index({ isActive: 1, isOpen: 1 })
