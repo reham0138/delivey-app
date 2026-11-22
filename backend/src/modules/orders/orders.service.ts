@@ -12,6 +12,7 @@ import { CreateOrderDto } from './dto/create-order.dto'
 import { AdminOrderQueryDto, OrderQueryDto } from './dto/order-query.dto'
 import { Order, OrderDocument } from './order.schema'
 import { applyStatusTransition, calculateOrderTotals, cancelOrder } from './order-rules'
+import { escapeRegex } from './utils/escape-regex'
 
 @Injectable()
 export class OrdersService {
@@ -68,8 +69,8 @@ export class OrdersService {
 
     if (query.status) filter.status = query.status
     if (query.search?.trim()) {
-      const search = query.search.trim()
-      const orderIdTail = search.replace(/^#/, '').slice(-6)
+      const search = escapeRegex(query.search.trim())
+      const orderIdTail = escapeRegex(query.search.trim().replace(/^#/, '').slice(-6))
       filter.$or = [
         { 'items.name': { $regex: search, $options: 'i' } },
         {
@@ -257,8 +258,8 @@ export class OrdersService {
     if (query.status) filter.status = query.status
 
     if (query.search?.trim()) {
-      const search = query.search.trim()
-      const orderIdTail = search.replace(/^#/, '').slice(-6)
+      const search = escapeRegex(query.search.trim())
+      const orderIdTail = escapeRegex(query.search.trim().replace(/^#/, '').slice(-6))
       filter.$or = [
         { 'items.name': { $regex: search, $options: 'i' } },
         {

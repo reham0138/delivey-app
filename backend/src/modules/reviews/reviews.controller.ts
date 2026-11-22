@@ -1,6 +1,7 @@
 import { Body, Controller, Get, Param, Post, Query } from '@nestjs/common'
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger'
 import { CurrentUser } from '../../common/decorators/current-user.decorator'
+import { Public } from '../../common/decorators/public.decorator'
 import { Roles } from '../../common/decorators/roles.decorator'
 import { Role } from '../../common/enums'
 import type { AuthUser } from '../../common/interfaces/auth-user.interface'
@@ -27,11 +28,13 @@ export class ReviewsController {
     return this.reviewsService.findMine(user.id, id)
   }
 
+  @Public()
   @Get('menu-items/:id/reviews')
   findPublicForMenuItem(@Param('id') id: string, @Query() query: ReviewQueryDto) {
     return this.reviewsService.findPublicForMenuItem(id, query)
   }
 
+  @Public()
   @Get('restaurants/:id/reviews')
   findPublicForRestaurant(@Param('id') id: string, @Query() query: ReviewQueryDto) {
     return this.reviewsService.findPublicForRestaurant(id, query)
