@@ -1,6 +1,6 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose'
 import type { HydratedDocument } from 'mongoose'
-import { Types } from 'mongoose'
+import { Schema as MongooseSchema, Types } from 'mongoose'
 
 @Schema({ _id: false })
 export class MenuItemNutrition {
@@ -21,7 +21,7 @@ const MenuItemNutritionSchema = SchemaFactory.createForClass(MenuItemNutrition)
 
 @Schema({ timestamps: true })
 export class MenuItem {
-  @Prop({ type: Types.ObjectId, ref: 'Restaurant', required: true, index: true })
+  @Prop({ type: MongooseSchema.Types.ObjectId, ref: 'Restaurant', required: true, index: true })
   restaurantId!: Types.ObjectId
 
   @Prop({ type: String, required: true, trim: true, maxlength: 100 })
@@ -33,7 +33,7 @@ export class MenuItem {
   @Prop({ type: Number, required: true, min: 0 })
   price!: number
 
-  @Prop({ type: Types.ObjectId, ref: 'Category', required: true, select: false })
+  @Prop({ type: MongooseSchema.Types.ObjectId, ref: 'Category', required: true, select: false })
   categoryId!: Types.ObjectId
 
   @Prop({ type: String, trim: true, maxlength: 2048, default: null })

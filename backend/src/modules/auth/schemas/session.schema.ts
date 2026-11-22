@@ -1,12 +1,12 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose'
-import { HydratedDocument, Types } from 'mongoose'
+import { HydratedDocument, Schema as MongooseSchema, Types } from 'mongoose'
 import { User } from '../../users/schemas/user.schema'
 
 export type SessionDocument = HydratedDocument<Session>
 
 @Schema()
 export class Session {
-  @Prop({ type: Types.ObjectId, ref: User.name, required: true, index: true })
+  @Prop({ type: MongooseSchema.Types.ObjectId, ref: User.name, required: true, index: true })
   userId: Types.ObjectId
 
   // All rotations of one login chain share a familyId, so a reused
