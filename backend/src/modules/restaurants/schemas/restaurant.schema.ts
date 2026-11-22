@@ -1,6 +1,6 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose'
 import type { HydratedDocument } from 'mongoose'
-import { Types } from 'mongoose'
+import { Schema as MongooseSchema, Types } from 'mongoose'
 
 /**
  * Stored restaurant. NEVER return a document from a controller: the API shape (contract 3.4) is built by a
@@ -12,7 +12,7 @@ export class Restaurant {
   createdAt!: Date
 
   // One restaurant per owner. The auth module creates it when an owner registers.
-  @Prop({ type: Types.ObjectId, ref: 'User', required: true, unique: true })
+  @Prop({ type: MongooseSchema.Types.ObjectId, ref: 'User', required: true, unique: true })
   ownerId!: Types.ObjectId
 
   @Prop({ type: String, trim: true, default: '' })
