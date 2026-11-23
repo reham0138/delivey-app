@@ -9,11 +9,12 @@ function isUser(value: unknown): value is User {
 
 	const candidate = value as Record<string, unknown>
 	return (
-		typeof candidate.id === 'number' &&
+		typeof candidate.id === 'string' &&
 		typeof candidate.name === 'string' &&
 		typeof candidate.email === 'string' &&
 		(candidate.phone === undefined || typeof candidate.phone === 'string') &&
-		(candidate.role === 'customer' || candidate.role === 'restaurant' || candidate.role === 'admin')
+		(candidate.role === 'customer' || candidate.role === 'restaurant' || candidate.role === 'admin') &&
+		(candidate.restaurantId === undefined || typeof candidate.restaurantId === 'string')
 	)
 }
 

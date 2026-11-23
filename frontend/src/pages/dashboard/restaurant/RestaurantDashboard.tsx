@@ -336,7 +336,7 @@ export default function RestaurantDashboard() {
     }
   }
 
-  const updateOrder = (orderId: number, status: OrderStatus) => {
+  const updateOrder = (orderId: string, status: OrderStatus) => {
     if (!user) return
     void runAction(() => restaurantDashboardService.updateOrderStatus(user.id, orderId, status))
   }
@@ -633,7 +633,7 @@ function OrderCard({
   onAdvance,
 }: {
   order: Order
-  meals: Map<number, MenuItem>
+  meals: Map<string, MenuItem>
   busy: boolean
   onAdvance: (status: OrderStatus) => void
 }) {

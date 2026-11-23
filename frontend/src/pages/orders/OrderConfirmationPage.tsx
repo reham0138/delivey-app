@@ -14,11 +14,12 @@ const money = (value: number) => formatCurrency(value)
 
 export default function OrderConfirmationPage() {
   const { id = '' } = useParams()
+  const orderId = /^[A-Za-z0-9_-]+$/.test(id) ? id : ''
   const [searchParams] = useSearchParams()
   const { t } = useLanguage()
   const relatedIds = (searchParams.get('related') ?? '').split(',').filter(Boolean)
   const { user } = useAuth()
-  const { order, loading, error, retry } = useOrder(Number(id), user?.id ?? 0)
+  const { order, loading, error, retry } = useOrder(orderId, user?.id ?? '')
 
   if (loading) {
     return <div className="flex justify-center py-24"><Spinner label={t('Loading confirmation...')} /></div>

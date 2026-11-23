@@ -1,6 +1,6 @@
 export interface CartItem {
-  menuItemId: number
-  restaurantId: number
+  menuItemId: string
+  restaurantId: string
   restaurantName: string
   name: string
   price: number
@@ -10,11 +10,11 @@ export interface CartItem {
 
 export interface CartContextValue {
   items: CartItem[]
-  restaurantId: number | null
+  restaurantId: string | null
   restaurantName: string | null
   addToCart: (item: CartItem) => boolean
-  removeFromCart: (restaurantId: number, menuItemId: number) => void
-  updateQuantity: (restaurantId: number, menuItemId: number, quantity: number) => void
+  removeFromCart: (restaurantId: string, menuItemId: string) => void
+  updateQuantity: (restaurantId: string, menuItemId: string, quantity: number) => void
   clearCart: () => void
   isCartPromptOpen: boolean
   showCartPrompt: () => void

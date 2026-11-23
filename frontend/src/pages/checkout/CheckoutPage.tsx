@@ -130,7 +130,7 @@ export default function CheckoutPage() {
   }, [form]);
 
   const cartGroups = useMemo(() => {
-    const groups = new Map<number, { restaurant: Restaurant | null; items: typeof cart.items; subtotal: number }>();
+    const groups = new Map<string, { restaurant: Restaurant | null; items: typeof cart.items; subtotal: number }>();
     cart.items.forEach((item) => {
       const existing = groups.get(item.restaurantId);
       if (existing) {

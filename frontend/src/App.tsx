@@ -65,56 +65,60 @@ function App() {
           <Route path="restaurants" element={<RestaurantsPage />} />
           <Route path="restaurants/:id" element={<RestaurantDetailsPage />} />
           <Route element={<ProtectedRoute />}>
-            <Route
-              path="checkout"
-              element={
-                <Suspense
-                  fallback={<LoadingFallback label="Loading checkout..." />}
-                >
-                  <CheckoutPage />
-                </Suspense>
-              }
-            />
-            <Route
-              path="orders"
-              element={
-                <Suspense
-                  fallback={<LoadingFallback label="Loading orders..." />}
-                >
-                  <OrdersPage />
-                </Suspense>
-              }
-            />
-            <Route
-              path="orders/:id/confirmation"
-              element={
-                <Suspense
-                  fallback={<LoadingFallback label="Loading confirmation..." />}
-                >
-                  <OrderConfirmationPage />
-                </Suspense>
-              }
-            />
-            <Route
-              path="orders/:id"
-              element={
-                <Suspense
-                  fallback={<LoadingFallback label="Loading order..." />}
-                >
-                  <OrderDetailsPage />
-                </Suspense>
-              }
-            />
-            <Route
-              path="profile"
-              element={
-                <Suspense
-                  fallback={<LoadingFallback label="Loading profile..." />}
-                >
-                  <ProfilePage />
-                </Suspense>
-              }
-            />
+            <Route element={<RoleRoute allow={["customer"]} />}>
+              <Route
+                path="checkout"
+                element={
+                  <Suspense
+                    fallback={<LoadingFallback label="Loading checkout..." />}
+                  >
+                    <CheckoutPage />
+                  </Suspense>
+                }
+              />
+              <Route
+                path="orders"
+                element={
+                  <Suspense
+                    fallback={<LoadingFallback label="Loading orders..." />}
+                  >
+                    <OrdersPage />
+                  </Suspense>
+                }
+              />
+              <Route
+                path="orders/:id/confirmation"
+                element={
+                  <Suspense
+                    fallback={<LoadingFallback label="Loading confirmation..." />}
+                  >
+                    <OrderConfirmationPage />
+                  </Suspense>
+                }
+              />
+              <Route
+                path="orders/:id"
+                element={
+                  <Suspense
+                    fallback={<LoadingFallback label="Loading order..." />}
+                  >
+                    <OrderDetailsPage />
+                  </Suspense>
+                }
+              />
+            </Route>
+            <Route element={<RoleRoute allow={["customer", "restaurant"]} denyRedirect="/" />}>
+              <Route
+                path="profile"
+                element={
+                  <Suspense
+                    fallback={<LoadingFallback label="Loading profile..." />}
+                  >
+                    <ProfilePage />
+                  </Suspense>
+                }
+              />
+            </Route>
           </Route>
         </Route>
         <Route element={<RoleRoute allow={["restaurant"]} />}>

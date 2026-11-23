@@ -1,6 +1,7 @@
 import type { MenuItem, Restaurant, RestaurantProfileChanges } from '../types'
 import { adminState } from './adminState.service'
 import { menuItemService } from './menuItem.service'
+import { normalizeMockIds } from '@/shared/utils/normalizeMockIds'
 
 const RESTAURANTS_URL = '/mock/restaurants.json'
 const PROFILE_OVERRIDES_KEY = 'crown-anchor-restaurant-profile-overrides'
@@ -14,7 +15,7 @@ async function fetchJson<T>(url: string): Promise<T> {
     throw new Error(`Unable to load restaurant data (HTTP ${response.status}).`)
   }
 
-  return response.json() as Promise<T>
+  return Promise.resolve(normalizeMockIds((await response.json()) as T))
 }
 
 interface RestaurantData {
@@ -109,7 +110,7 @@ export const restaurantService = {
     return withReviewCounts(restaurants, menuItems)
   },
 
-  async getOwnedByOwnerId(ownerId: number): Promise<Restaurant | null> {
+  async getOwnedByOwnerId(ownerId: string): Promise<Restaurant | null> {
     const { restaurants, menuItems } = await loadRestaurantData()
     const ownedRestaurant = restaurants.find((restaurant) => restaurant.ownerId === ownerId)
     if (!ownedRestaurant) return null
@@ -118,7 +119,7 @@ export const restaurantService = {
   },
 
   async updateOwnedByOwnerId(
-    ownerId: number,
+    ownerId: string,
     changes: RestaurantProfileChanges,
   ): Promise<Restaurant> {
     const { restaurants, menuItems } = await loadRestaurantData()
@@ -139,7 +140,7 @@ export const restaurantService = {
     return applyProfileChanges(currentRestaurant, changes)
   },
 
-  async getMealById(id: number): Promise<{
+  async getMealById(id: string): Promise<{
     meal: MenuItem | null
     restaurant: Restaurant | null
   }> {
@@ -156,7 +157,7 @@ export const restaurantService = {
     return { meal, restaurant }
   },
 
-  async getById(id: number): Promise<{
+  async getById(id: string): Promise<{
     restaurant: Restaurant | null
     meals: MenuItem[]
   }> {

@@ -4,12 +4,13 @@ import { reviewService } from '@/shared/services/review.service'
 import type { AdminStats, Order, Restaurant, RestaurantStats } from '@/shared/types'
 import { computeAdminStats, computeRestaurantStats } from '@/shared/utils/stats'
 import { adminService } from '@/shared/services/admin.service'
+import { normalizeMockIds } from '@/shared/utils/normalizeMockIds'
 // Replace the bodies with Axios calls when the backend is ready. Keep the signatures and return types.
 
 async function fetchJson<T>(url: string): Promise<T> {
   const response = await fetch(url)
   if (!response.ok) throw new Error(`Unable to load dashboard data (HTTP ${response.status}).`)
-  return response.json() as Promise<T>
+  return Promise.resolve(normalizeMockIds((await response.json()) as T))
 }
 
 export interface RestaurantOverview {
@@ -28,7 +29,7 @@ export interface AdminOverview {
 }
 
 export const dashboardService = {
-  async getRestaurantOverview(ownerId: number): Promise<RestaurantOverview> {
+  async getRestaurantOverview(ownerId: string): Promise<RestaurantOverview> {
     const restaurant = await restaurantService.getOwnedByOwnerId(ownerId)
     if (!restaurant) return { restaurant: null, stats: null, orders: [] }
 

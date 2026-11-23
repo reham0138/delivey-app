@@ -7,6 +7,7 @@ import { useAuth } from '@/shared/hooks/useAuth'
 import { getHomePathForRole } from '@/shared/utils/authRedirect'
 import { loginSchema, type LoginFormValues } from '@/shared/utils/validation'
 import { useLanguage } from '@/shared/hooks/useLanguage'
+import { authErrorKey } from '@/shared/api/auth'
 
 export default function Login() {
 	const { isAuthenticated, role, login } = useAuth()
@@ -32,7 +33,7 @@ export default function Login() {
 			await login(values)
 		} catch (error) {
 			setError('root.serverError', {
-				message: error instanceof Error ? t(error.message) : t('Something went wrong. Please try again.'),
+				message: t(authErrorKey(error)),
 			})
 		}
 	}
@@ -71,9 +72,6 @@ export default function Login() {
 				<Link to="/register" className="font-medium text-brand-red underline underline-offset-4">
 					{t("Don't have an account? Create one")}
 				</Link>
-			</p>
-			<p className="rounded-lg border border-border-subtle bg-surface-cream px-3 py-2 text-xs text-text-slate">
-				{t('Demo account: admin@test.com / 123456')}
 			</p>
 		</section>
 	)

@@ -17,8 +17,8 @@ import { searchMealsSemantically } from '../shared/services/semanticSearch.servi
 import { getArabicTranslation } from '../shared/contexts/LanguageContext'
 
 interface MenuItem {
-  id: number
-  restaurantId: number
+  id: string
+  restaurantId: string
   name: string
   description: string
   price: number
@@ -32,7 +32,7 @@ interface MenuItem {
 }
 
 interface Restaurant {
-  id: number
+  id: string
   name: string
   isOpen: boolean
   isActive: boolean
@@ -52,7 +52,7 @@ export default function Meals() {
   // mealIds is null when the semantic search API could not be reached
   const [semanticSearch, setSemanticSearch] = useState<{
     key: string
-    mealIds: number[] | null
+    mealIds: string[] | null
   }>({ key: '', mealIds: null })
 
   const {
@@ -117,7 +117,7 @@ export default function Meals() {
       availableMeals.filter(
         (meal) =>
           selectedRestaurant === 'all' ||
-          meal.restaurantId === Number(selectedRestaurant)
+          String(meal.restaurantId) === String(selectedRestaurant)
       ),
     [availableMeals, selectedRestaurant]
   )
@@ -143,7 +143,7 @@ export default function Meals() {
 
         setSemanticSearch({
           key: searchKey,
-          mealIds: results.map((result) => result.item.id),
+          mealIds: results.map((result) => String(result.item.id)),
         })
       } catch (err) {
         if (controller.signal.aborted) return
@@ -180,11 +180,11 @@ export default function Meals() {
       return nameMatches
     }
 
-    const nameMatchIds = new Set(nameMatches.map((meal) => meal.id))
+    const nameMatchIds = new Set(nameMatches.map((meal) => String(meal.id)))
     const mealsById = new Map(restaurantMeals.map((meal) => [meal.id, meal]))
 
     const semanticMatches = semanticSearch.mealIds
-      .filter((id) => !nameMatchIds.has(id))
+      .filter((id) => !nameMatchIds.has(String(id)))
       .map((id) => mealsById.get(id))
       .filter((meal): meal is MenuItem => meal !== undefined)
 
@@ -206,7 +206,7 @@ export default function Meals() {
     return filteredMeals.slice(startIndex, endIndex)
   }, [filteredMeals, currentPage])
 
-  const getRestaurantName = (restaurantId: number) => {
+  const getRestaurantName = (restaurantId: string) => {
     return (
       restaurants.find((restaurant) => restaurant.id === restaurantId)?.name ??
       t('Unknown restaurant')

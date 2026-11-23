@@ -63,12 +63,12 @@ export const adminState = {
     writeState({ ...state, userStatus: { ...state.userStatus, [normalize(email)]: status } })
   },
 
-  getRestaurantIsActive(id: number, fallback: boolean): boolean {
+  getRestaurantIsActive(id: string, fallback: boolean): boolean {
     const stored = readState().restaurantIsActive[String(id)]
     return typeof stored === 'boolean' ? stored : fallback
   },
 
-  setRestaurantIsActive(id: number, isActive: boolean): void {
+  setRestaurantIsActive(id: string, isActive: boolean): void {
     const state = readState()
     writeState({
       ...state,

@@ -25,7 +25,7 @@ import { useMeal } from '../shared/hooks/useRestaurants'
 export default function MealDetailsPage() {
   const { t } = useLanguage()
   const { id } = useParams()
-  const mealId = id && /^\d+$/.test(id) ? Number(id) : null
+  const mealId = id && /^[A-Za-z0-9_-]+$/.test(id) ? id : null
   const { data, loading, error, refetch } = useMeal(mealId)
   const {
     reviews,

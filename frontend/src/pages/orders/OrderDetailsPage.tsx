@@ -23,13 +23,14 @@ const money = (value: number) => formatCurrency(value)
 export default function OrderDetailsPage() {
   const { t } = useLanguage()
   const { id = '' } = useParams()
+  const orderId = /^[A-Za-z0-9_-]+$/.test(id) ? id : ''
   const { user } = useAuth()
   const cart = useCart()
   const navigate = useNavigate()
 
   const { order, loading, error, retry } = useOrder(
-    Number(id),
-    user?.id ?? 0
+    orderId,
+    user?.id ?? ''
   )
 
   const [cancelOpen, setCancelOpen] = useState(false)
@@ -152,7 +153,7 @@ export default function OrderDetailsPage() {
     setBusy(true)
 
     try {
-      await orderService.cancelOrder(order.id, user?.id ?? 0)
+      await orderService.cancelOrder(order.id, user?.id ?? '')
       setCancelOpen(false)
       setMessage(t('Order cancelled.'))
       await retry()

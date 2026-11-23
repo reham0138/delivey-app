@@ -25,7 +25,7 @@ export default function OrdersPage() {
   const [search, setSearch] = useState('')
   const [from, setFrom] = useState('')
   const [to, setTo] = useState('')
-  const { data = [], meta, loading, error, retry } = useOrders(user?.id ?? 0, page, 8, { status, search, from, to })
+  const { data = [], meta, loading, error, retry } = useOrders(user?.id ?? '', page, 8, { status, search, from, to })
   const counts = useMemo(
     () => data.reduce<Record<string, number>>((all, order) => {
       all[order.status] = (all[order.status] ?? 0) + 1

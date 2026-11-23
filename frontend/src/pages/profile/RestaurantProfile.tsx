@@ -24,7 +24,7 @@ import { restaurantService } from '@/shared/services/restaurant.service'
 import { useLanguage } from '@/shared/hooks/useLanguage'
 
 interface RestaurantProfileProps {
-	ownerId: number
+	ownerId: string
 }
 
 export default function RestaurantProfile({ ownerId }: RestaurantProfileProps) {
@@ -71,7 +71,7 @@ function RestaurantProfileContent({
 	ownerId,
 }: {
 	initialRestaurant: Restaurant
-	ownerId: number
+	ownerId: string
 }) {
 	const { t } = useLanguage()
 	const [restaurant, setRestaurant] = useState(initialRestaurant)

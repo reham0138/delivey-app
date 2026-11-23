@@ -68,14 +68,14 @@ export function CartProvider({ children }: { children: ReactNode }) {
     return true
   }, [])
 
-  const removeFromCart = useCallback((restaurantId: number, menuItemId: number) => {
+  const removeFromCart = useCallback((restaurantId: string, menuItemId: string) => {
     setItems((current) =>
       current.filter((item) => !(item.restaurantId === restaurantId && item.menuItemId === menuItemId))
     )
   }, [])
 
   const updateQuantity = useCallback(
-    (restaurantId: number, menuItemId: number, quantity: number) => {
+    (restaurantId: string, menuItemId: string, quantity: number) => {
       if (quantity < 1) return
 
       setItems((current) =>

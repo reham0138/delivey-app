@@ -5,7 +5,7 @@ import { reviewService } from '@/shared/services/review.service'
 import type { Order, Review } from '@/shared/types'
 import { useLanguage } from '@/shared/hooks/useLanguage'
 
-export default function MealReviewForm({ order, menuItemId, customerName }: { order: Order; menuItemId: number; customerName: string }) {
+export default function MealReviewForm({ order, menuItemId, customerName }: { order: Order; menuItemId: string; customerName: string }) {
   const { t } = useLanguage()
   const [review, setReview] = useState<Review | null>(null)
   const [rating, setRating] = useState(5)

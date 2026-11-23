@@ -5,6 +5,8 @@ export interface AuthContextValue {
 	user: User | null
 	role: Role | null
 	isAuthenticated: boolean
+	/** True while the stored session is being validated against GET /auth/me on startup. */
+	isSessionLoading: boolean
 	login: (payload: LoginPayload) => Promise<void>
 	register: (payload: RegisterPayload) => Promise<void>
 	updateProfile: (changes: UpdateProfilePayload) => Promise<void>

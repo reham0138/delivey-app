@@ -2,7 +2,7 @@ import { useCallback, useEffect, useState } from 'react'
 import type { Order } from '@/shared/types'
 import { orderService, type PaginatedResponse } from '@/shared/services/order.service'
 
-export function useOrders(customerId: number, page = 1, limit = 6, filters?: { status?: string; search?: string; from?: string; to?: string }) {
+export function useOrders(customerId: string, page = 1, limit = 6, filters?: { status?: string; search?: string; from?: string; to?: string }) {
   const status = filters?.status ?? 'all'
   const search = filters?.search ?? ''
   const from = filters?.from ?? ''
@@ -19,7 +19,7 @@ export function useOrders(customerId: number, page = 1, limit = 6, filters?: { s
   useEffect(() => { void load() }, [load])
   return { ...result, loading, error, retry: load }
 }
-export function useOrder(orderId: number, customerId: number) {
+export function useOrder(orderId: string, customerId: string) {
   const [order, setOrder] = useState<Order | null>(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)

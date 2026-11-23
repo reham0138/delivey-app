@@ -9,14 +9,12 @@ export type PaymentMethod = "cash" | "card";
 export type CancellationActor = "customer" | "restaurant" | "admin";
 
 interface BaseUser {
-  id: number;
+  id: string;
   name: string;
   email: string;
   phone: string;
   status: AccountStatus;
   createdAt: string;
-  /** Demo fixture only. Never use for real authentication or production credentials. */
-  mockPassword?: string;
 }
 
 export interface AdminUser extends BaseUser {
@@ -26,7 +24,7 @@ export interface AdminUser extends BaseUser {
 }
 export interface RestaurantOwnerUser extends BaseUser {
   role: "restaurant";
-  restaurantId: number;
+  restaurantId: string;
   address?: never;
 }
 export interface CustomerUser extends BaseUser {
@@ -37,7 +35,7 @@ export interface CustomerUser extends BaseUser {
 export type User = AdminUser | RestaurantOwnerUser | CustomerUser;
 
 export interface Restaurant {
-  id: number;
+  id: string;
   name: string;
   cuisine: string;
   rating: number;
@@ -47,7 +45,7 @@ export interface Restaurant {
   isOpen: boolean;
   address: string;
   image: string;
-  ownerId: number;
+  ownerId: string;
   phone: string;
   isActive: boolean;
   createdAt: string;
@@ -78,8 +76,8 @@ export interface Nutrition {
   fat: number;
 }
 export interface MenuItem {
-  id: number;
-  restaurantId: number;
+  id: string;
+  restaurantId: string;
   name: string;
   description: string;
   price: number;
@@ -95,14 +93,14 @@ export interface MenuItem {
   isPopular: boolean;
 }
 export interface Category {
-  id: number;
+  id: string;
   name: string;
   isActive: boolean;
   itemsCount: number;
 }
 
 export interface OrderItem {
-  menuItemId: number;
+  menuItemId: string;
   name: string;
   quantity: number;
   /** Price snapshot saved when the order was placed. */
@@ -113,11 +111,11 @@ export interface OrderStatusHistoryEntry {
   at: string;
 }
 export interface Order {
-  id: number;
-  customerId: number;
+  id: string;
+  customerId: string;
   customerName: string;
   phone: string;
-  restaurantId: number;
+  restaurantId: string;
   status: OrderStatus;
   items: OrderItem[];
   subtotal: number;
@@ -143,12 +141,12 @@ export interface Order {
 }
 
 export interface Review {
-  id: number;
-  menuItemId: number;
-  restaurantId: number;
-  customerId: number;
+  id: string;
+  menuItemId: string;
+  restaurantId: string;
+  customerId: string;
   customerName: string;
-  orderId: number;
+  orderId: string;
   rating: number;
   comment: string | null;
   createdAt: string;
@@ -163,7 +161,7 @@ export interface DailyOrderRevenue {
   revenue: number;
 }
 export interface TopRestaurant {
-  restaurantId: number;
+  restaurantId: string;
   name: string;
   orders: number;
   revenue: number;
@@ -187,7 +185,7 @@ export interface AdminStats {
   topRestaurants: TopRestaurant[];
 }
 export interface RestaurantStats {
-  restaurantId: number;
+  restaurantId: string;
   totalOrders: number;
   ordersByStatus: OrdersByStatus;
   revenue: number;

@@ -2,7 +2,7 @@ import { useCallback } from 'react'
 import { useFetch } from '@/shared/hooks/useFetch'
 import { dashboardService } from '@/shared/services/dashboard.service'
 
-export function useRestaurantOverview(ownerId: number) {
+export function useRestaurantOverview(ownerId: string) {
   const fetcher = useCallback(() => dashboardService.getRestaurantOverview(ownerId), [ownerId])
   return useFetch(fetcher)
 }

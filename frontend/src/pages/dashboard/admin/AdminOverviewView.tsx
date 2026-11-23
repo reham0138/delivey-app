@@ -40,7 +40,7 @@ export function AdminOverviewView({ overview }: { overview: AdminOverview }) {
   const [metric, setMetric] = useState<Metric>("orders");
   const { stats, orders, restaurants } = overview;
 
-  const restaurantNames = new Map<number, string>(
+  const restaurantNames = new Map<string, string>(
     restaurants.map((restaurant) => [restaurant.id, restaurant.name] as const),
   );
   const totalUsers =
