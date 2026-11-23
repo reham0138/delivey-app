@@ -56,6 +56,6 @@ export class AuthController {
   @Get('me')
   @ApiBearerAuth('bearer')
   me(@CurrentUser() user: AuthUser) {
-    return user
+    return this.authService.withRestaurantId(user)
   }
 }
