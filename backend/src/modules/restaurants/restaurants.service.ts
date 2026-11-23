@@ -111,21 +111,28 @@ export class RestaurantsService {
       query.sort === 'rating'
         ? { rating: -1 as const, name: 1 as const }
         : { [SORT_FIELDS[query.sort]]: 1 as const }
-    const [total, rows] = await Promise.all([
-      this.restaurantModel.countDocuments(filter),
-      this.restaurantModel.aggregate<RestaurantRow>([
-        { $match: filter },
-        {
-          $addFields: {
-            rating: {
-              $cond: [
-                { $gt: ['$ratingCount', 0] },
-                { $round: [{ $divide: ['$ratingSum', '$ratingCount'] }, 1] },
-                0,
-              ],
-            },
+    const basePipeline: PipelineStage[] = [
+      { $match: filter },
+      {
+        $addFields: {
+          rating: {
+            $cond: [
+              { $gt: ['$ratingCount', 0] },
+              { $round: [{ $divide: ['$ratingSum', '$ratingCount'] }, 1] },
+              0,
+            ],
           },
         },
+      },
+      ...(query.minRating === undefined ? [] : [{ $match: { rating: { $gte: query.minRating } } }]),
+    ]
+    const [countRows, rows] = await Promise.all([
+      this.restaurantModel.aggregate<{ total: number }>([
+        ...basePipeline,
+        { $count: 'total' },
+      ]),
+      this.restaurantModel.aggregate<RestaurantRow>([
+        ...basePipeline,
         { $sort: sort },
         { $skip: (query.page - 1) * query.limit },
         { $limit: query.limit },
@@ -152,7 +159,7 @@ export class RestaurantsService {
       ]),
     ])
 
-    return paginate(rows.map(mapRestaurant), total, query)
+    return paginate(rows.map(mapRestaurant), countRows[0]?.total ?? 0, query)
   }
 
   async findOne(id: string): Promise<RestaurantResponse> {

@@ -10,46 +10,34 @@ import { Spinner } from '../shared/components/Spinner'
 import { Button } from '../shared/components/Button'
 import { Pagination } from '../shared/components/Pagination'
 import { useCart } from '../shared/hooks/useCart'
+import { useCategories } from '../shared/hooks/useCategories'
 import { useLanguage } from '../shared/hooks/useLanguage'
 import { menuItemService } from '../shared/services/menuItem.service'
 import { restaurantService } from '../shared/services/restaurant.service'
 import { searchMealsSemantically } from '../shared/services/semanticSearch.service'
 import { getArabicTranslation } from '../shared/contexts/LanguageContext'
-
-interface MenuItem {
-  id: string
-  restaurantId: string
-  name: string
-  description: string
-  price: number
-  category: string
-  image?: string | null
-  isAvailable: boolean
-  preparationTimeMinutes: number
-  rating: number
-  reviewsCount: number
-  isPopular: boolean
-}
-
-interface Restaurant {
-  id: string
-  name: string
-  isOpen: boolean
-  isActive: boolean
-}
+import type { MenuItem, PaginatedResponse, Restaurant } from '../shared/types'
 
 const ITEMS_PER_PAGE = 8
+type MealSort = 'popular' | 'rating' | 'price' | 'name'
 
 export default function Meals() {
   const { t } = useLanguage()
   const [meals, setMeals] = useState<MenuItem[]>([])
+  const [meta, setMeta] = useState<PaginatedResponse<MenuItem>['meta']>()
   const [restaurants, setRestaurants] = useState<Restaurant[]>([])
   const [searchTerm, setSearchTerm] = useState('')
   const [selectedRestaurant, setSelectedRestaurant] = useState('all')
+  const [selectedCategory, setSelectedCategory] = useState('all')
+  const [sortBy, setSortBy] = useState<MealSort>('popular')
   const [currentPage, setCurrentPage] = useState(1)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
-  // mealIds is null when the semantic search API could not be reached
+  const [restaurantsError, setRestaurantsError] = useState('')
+  const [cartMessage, setCartMessage] = useState('')
+  const categories = useCategories()
+  const trimmedSearch = searchTerm.trim()
+  const searchKey = `${currentPage}:${selectedRestaurant}:${selectedCategory}:${sortBy}:${trimmedSearch}`
   const [semanticSearch, setSemanticSearch] = useState<{
     key: string
     mealIds: string[] | null
@@ -65,13 +53,17 @@ export default function Meals() {
     try {
       setLoading(true)
       setError('')
-      const [mealsData, restaurantsData] = await Promise.all([
-        menuItemService.getAll(),
-        restaurantService.getAll(),
-      ])
-
-      setMeals(mealsData)
-      setRestaurants(restaurantsData)
+      const result = await menuItemService.getAll({
+        page: currentPage,
+        limit: ITEMS_PER_PAGE,
+        search: trimmedSearch || undefined,
+        restaurantId: selectedRestaurant === 'all' ? undefined : selectedRestaurant,
+        category: selectedCategory === 'all' ? undefined : selectedCategory,
+        openOnly: true,
+        sort: sortBy === 'price' ? 'price_asc' : sortBy,
+      })
+      setMeals(result.data)
+      setMeta(result.meta)
     } catch (err) {
       setError(
         err instanceof Error ? err.message : t('Something went wrong.')
@@ -79,57 +71,42 @@ export default function Meals() {
     } finally {
       setLoading(false)
     }
+  }, [currentPage, trimmedSearch, selectedRestaurant, selectedCategory, sortBy, t])
+
+  useEffect(() => {
+    void fetchMeals()
+  }, [fetchMeals])
+
+  const fetchRestaurants = useCallback(async () => {
+    try {
+      setRestaurantsError('')
+      const result = await restaurantService.getAll({
+        page: 1,
+        limit: 50,
+        isOpen: true,
+        sort: 'name',
+      })
+      setRestaurants(result.data)
+    } catch (err) {
+      setRestaurantsError(err instanceof Error ? err.message : t('Something went wrong.'))
+    }
   }, [t])
 
   useEffect(() => {
-    fetchMeals()
-  }, [fetchMeals])
-
-  const availableMeals = useMemo(() => {
-    const availableRestaurantIds = new Set(
-      restaurants
-        .filter((restaurant) => restaurant.isActive && restaurant.isOpen)
-        .map((restaurant) => restaurant.id)
-    )
-
-    return meals.filter(
-      (meal) =>
-        meal.isAvailable &&
-        availableRestaurantIds.has(meal.restaurantId)
-    )
-  }, [meals, restaurants])
-
-  const availableRestaurants = useMemo(() => {
-    const restaurantIds = new Set(
-      availableMeals.map((meal) => meal.restaurantId)
-    )
-
-    return restaurants.filter((restaurant) =>
-      restaurantIds.has(restaurant.id)
-    )
-  }, [availableMeals, restaurants])
-
-  const trimmedSearch = searchTerm.trim()
-  const searchKey = `${selectedRestaurant}:${trimmedSearch}`
-
-  const restaurantMeals = useMemo(
-    () =>
-      availableMeals.filter(
-        (meal) =>
-          selectedRestaurant === 'all' ||
-          String(meal.restaurantId) === String(selectedRestaurant)
-      ),
-    [availableMeals, selectedRestaurant]
-  )
+    void fetchRestaurants()
+  }, [fetchRestaurants])
 
   useEffect(() => {
-    if (!trimmedSearch) return
+    if (!trimmedSearch || meals.length === 0) {
+      setSemanticSearch({ key: searchKey, mealIds: [] })
+      return
+    }
 
     const controller = new AbortController()
 
     const timer = window.setTimeout(async () => {
       try {
-        const searchItems = restaurantMeals.map((meal) => ({
+        const searchItems = meals.map((meal) => ({
           ...meal,
           localizedName: getArabicTranslation(meal.name),
           localizedCategory: getArabicTranslation(meal.category),
@@ -157,54 +134,30 @@ export default function Meals() {
       controller.abort()
       window.clearTimeout(timer)
     }
-  }, [trimmedSearch, searchKey, restaurantMeals])
+  }, [trimmedSearch, searchKey, meals])
 
   const hasSemanticResponse =
     trimmedSearch !== '' && semanticSearch.key === searchKey
   const isSearching = trimmedSearch !== '' && !hasSemanticResponse
-  const semanticSearchFailed =
-    hasSemanticResponse && semanticSearch.mealIds === null
+  const semanticSearchFailed = hasSemanticResponse && semanticSearch.mealIds === null
 
-  // Name matches come first; semantic matches follow once the API responds
-  const filteredMeals = useMemo(() => {
-    if (!trimmedSearch) return restaurantMeals
-
-    const term = trimmedSearch.toLowerCase()
-    const nameMatches = restaurantMeals.filter(
-      (meal) =>
-        meal.name.toLowerCase().includes(term) ||
-        getArabicTranslation(meal.name)?.includes(trimmedSearch)
-    )
-
-    if (semanticSearch.key !== searchKey || !semanticSearch.mealIds) {
-      return nameMatches
+  const displayedMeals = useMemo(() => {
+    if (!trimmedSearch || semanticSearch.key !== searchKey || !semanticSearch.mealIds) {
+      return meals
     }
 
-    const nameMatchIds = new Set(nameMatches.map((meal) => String(meal.id)))
-    const mealsById = new Map(restaurantMeals.map((meal) => [meal.id, meal]))
-
-    const semanticMatches = semanticSearch.mealIds
-      .filter((id) => !nameMatchIds.has(String(id)))
+    const mealsById = new Map(meals.map((meal) => [String(meal.id), meal]))
+    const orderedIds = semanticSearch.mealIds.map(String)
+    const ordered = orderedIds
       .map((id) => mealsById.get(id))
       .filter((meal): meal is MenuItem => meal !== undefined)
+    const included = new Set(ordered.map((meal) => String(meal.id)))
+    return [...ordered, ...meals.filter((meal) => !included.has(String(meal.id)))]
+  }, [meals, trimmedSearch, searchKey, semanticSearch])
 
-    return [...nameMatches, ...semanticMatches]
-  }, [restaurantMeals, trimmedSearch, searchKey, semanticSearch])
-
-  // Reset to the first page whenever filters change
   useEffect(() => {
     setCurrentPage(1)
-  }, [searchTerm, selectedRestaurant])
-
-  // Calculate pagination values
-  const totalPages = Math.ceil(filteredMeals.length / ITEMS_PER_PAGE)
-
-  const paginatedMeals = useMemo(() => {
-    const startIndex = (currentPage - 1) * ITEMS_PER_PAGE
-    const endIndex = startIndex + ITEMS_PER_PAGE
-
-    return filteredMeals.slice(startIndex, endIndex)
-  }, [filteredMeals, currentPage])
+  }, [searchTerm, selectedRestaurant, selectedCategory, sortBy])
 
   const getRestaurantName = (restaurantId: string) => {
     return (
@@ -215,7 +168,13 @@ export default function Meals() {
 
   const handleAddToCart = (meal: MenuItem) => {
     const restaurantName = getRestaurantName(meal.restaurantId)
+    const restaurant = restaurants.find((item) => item.id === meal.restaurantId)
+    if (!meal.isAvailable || !restaurant?.isActive || !restaurant.isOpen) {
+      setCartMessage(t('This meal is currently unavailable.'))
+      return
+    }
 
+    setCartMessage('')
     addToCart({
       menuItemId: meal.id,
       restaurantId: meal.restaurantId,
@@ -231,6 +190,8 @@ export default function Meals() {
   const clearFilters = () => {
     setSearchTerm('')
     setSelectedRestaurant('all')
+    setSelectedCategory('all')
+    setSortBy('popular')
     setCurrentPage(1)
   }
 
@@ -242,15 +203,15 @@ export default function Meals() {
     )
   }
 
-  if (error) {
+  if (error || restaurantsError || categories.error) {
     return (
       <div className="min-h-[60vh] bg-surface-cream px-4 py-12">
         <div className="mx-auto max-w-7xl">
           <EmptyState
             title={t('Unable to load meals')}
-            description={t(error)}
+            description={t(error || restaurantsError || categories.error)}
             action={
-              <Button onClick={fetchMeals}>
+              <Button onClick={() => void Promise.all([fetchMeals(), fetchRestaurants(), categories.refetch()])}>
                 {t('Try again')}
               </Button>
             }
@@ -289,10 +250,10 @@ export default function Meals() {
 
 
 
-        <section className="grid gap-4 rounded-xl border border-border-subtle bg-surface-white p-4 sm:grid-cols-2">
+        <section className="grid gap-4 rounded-xl border border-border-subtle bg-surface-white p-4 sm:grid-cols-2 lg:grid-cols-4">
           <Input
-          label={t('Search meals')}
-          placeholder={t('Search by name, ingredient, or craving...')}
+            label={t('Search meals')}
+            placeholder={t('Search by name, ingredient, or craving...')}
             value={searchTerm}
             onChange={(event) => setSearchTerm(event.target.value)}
           />
@@ -304,11 +265,31 @@ export default function Meals() {
           >
             <option value="all">{t('All restaurants')}</option>
 
-            {availableRestaurants.map((restaurant) => (
+            {restaurants.map((restaurant) => (
               <option key={restaurant.id} value={restaurant.id}>
                 {t(restaurant.name)}
               </option>
             ))}
+          </Select>
+          <Select
+            label={t('Meal category')}
+            value={selectedCategory}
+            onChange={(event) => setSelectedCategory(event.target.value)}
+          >
+            <option value="all">{t('All categories')}</option>
+            {categories.data.map((category) => (
+              <option key={category.id} value={category.name}>{t(category.name)}</option>
+            ))}
+          </Select>
+          <Select
+            label={t('Sort meals')}
+            value={sortBy}
+            onChange={(event) => setSortBy(event.target.value as MealSort)}
+          >
+            <option value="popular">{t('Popular first')}</option>
+            <option value="rating">{t('Top rated')}</option>
+            <option value="price">{t('Price: low to high')}</option>
+            <option value="name">{t('Name (A–Z)')}</option>
           </Select>
 
           {semanticSearchFailed && (
@@ -327,14 +308,18 @@ export default function Meals() {
             <span className="text-sm text-text-slate">
               {isSearching
                 ? t('Searching...')
-                : `${filteredMeals.length} ${t('meals found')}`}
+                : `${meta?.total ?? 0} ${t('meals found')}`}
             </span>
           </div>
 
-          {filteredMeals.length > 0 ? (
+          {cartMessage && (
+            <p role="alert" className="text-sm text-brand-red">{cartMessage}</p>
+          )}
+
+          {displayedMeals.length > 0 ? (
             <>
               <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-                {paginatedMeals.map((meal) => (
+                {displayedMeals.map((meal) => (
                   <MealCard
                     key={meal.id}
                     name={meal.name}
@@ -353,15 +338,19 @@ export default function Meals() {
                 ))}
               </div>
 
-              <Pagination currentPage={currentPage} totalPages={totalPages} onPageChange={setCurrentPage} />
+              <Pagination
+                currentPage={currentPage}
+                totalPages={meta?.total_pages ?? 1}
+                onPageChange={setCurrentPage}
+              />
 
               <p className="text-center text-sm text-text-slate">
                 {t('Showing')}{' '}
                 {(currentPage - 1) * ITEMS_PER_PAGE + 1}
                 {' - '}
-                {Math.min(currentPage * ITEMS_PER_PAGE, filteredMeals.length)}
+                {Math.min(currentPage * ITEMS_PER_PAGE, meta?.total ?? 0)}
                 {' '}{t('of')}{' '}
-                {filteredMeals.length} {t('meals found')}
+                {meta?.total ?? 0} {t('meals found')}
               </p>
             </>
           ) : (

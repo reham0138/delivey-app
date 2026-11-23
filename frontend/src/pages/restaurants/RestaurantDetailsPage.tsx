@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react'
+import { useEffect, useState } from 'react'
 import { ArrowLeft, Clock3, MapPin, Store } from 'lucide-react'
 import { Link, useParams } from 'react-router-dom'
 
@@ -13,6 +13,7 @@ import { ReviewList } from '../../shared/components/ReviewList'
 import { Select } from '../../shared/components/Select'
 import { Spinner } from '../../shared/components/Spinner'
 import { useCart } from '../../shared/hooks/useCart'
+import { useCategories } from '../../shared/hooks/useCategories'
 import { useRestaurantReviews } from '../../shared/hooks/useRestaurantReviews'
 import { useRestaurant } from '../../shared/hooks/useRestaurants'
 import type { MenuItem } from '../../shared/types'
@@ -26,7 +27,19 @@ export default function RestaurantDetailsPage() {
 const { t } = useLanguage()
   const { id } = useParams()
   const restaurantId = id && /^[A-Za-z0-9_-]+$/.test(id) ? id : null
-  const { data, loading, error, refetch } = useRestaurant(restaurantId)
+const [searchTerm, setSearchTerm] = useState('')
+const [selectedCategory, setSelectedCategory] = useState('all')
+const [sortBy, setSortBy] = useState<MealSort>('popular')
+const [currentPage, setCurrentPage] = useState(1)
+const query = {
+  page: currentPage,
+  limit: ITEMS_PER_PAGE,
+  search: searchTerm.trim() || undefined,
+  category: selectedCategory === 'all' ? undefined : selectedCategory,
+  sort: sortBy === 'price' ? 'price_asc' : sortBy,
+} as const
+const { data, loading, error, refetch } = useRestaurant(restaurantId, query)
+const categoriesResult = useCategories()
   const {
     reviews,
     isLoading: reviewsLoading,
@@ -34,48 +47,23 @@ const { t } = useLanguage()
     reload: reloadReviews,
   } = useRestaurantReviews(restaurantId)
   const { addToCart, showCartPrompt } = useCart()
-  const [searchTerm, setSearchTerm] = useState('')
-  const [selectedCategory, setSelectedCategory] = useState('all')
-  const [sortBy, setSortBy] = useState<MealSort>('popular')
-  const [currentPage, setCurrentPage] = useState(1)
   const [cartMessage, setCartMessage] = useState('')
 
   const restaurant = data.restaurant
-  const categories = useMemo(
-    () => [...new Set(data.meals.map((meal) => meal.category))].sort(),
-    [data.meals],
-  )
-
-  const filteredMeals = useMemo(() => {
-    const query = searchTerm.trim().toLocaleLowerCase()
-
-    return data.meals
-      .filter((meal) => {
-        const matchesName = meal.name.toLocaleLowerCase().includes(query)
-        const matchesCategory =
-          selectedCategory === 'all' || meal.category === selectedCategory
-        return matchesName && matchesCategory
-      })
-      .sort((first, second) => {
-        if (sortBy === 'rating') return second.rating - first.rating
-        if (sortBy === 'price') return first.price - second.price
-        if (sortBy === 'name') return first.name.localeCompare(second.name)
-        return Number(second.isPopular) - Number(first.isPopular)
-      })
-  }, [data.meals, searchTerm, selectedCategory, sortBy])
 
   useEffect(() => {
     setCurrentPage(1)
   }, [searchTerm, selectedCategory, sortBy])
 
-  const totalPages = Math.ceil(filteredMeals.length / ITEMS_PER_PAGE)
-  const paginatedMeals = filteredMeals.slice(
-    (currentPage - 1) * ITEMS_PER_PAGE,
-    currentPage * ITEMS_PER_PAGE,
-  )
+  const meals = data.meals
 
   const handleAddToCart = (meal: MenuItem) => {
     setCartMessage('')
+
+    if (!meal.isAvailable) {
+      setCartMessage(t('This meal is currently unavailable.'))
+      return
+    }
 
     if (!restaurant?.isOpen) {
       setCartMessage(t('This restaurant is currently closed. Please try again later.'))
@@ -208,7 +196,7 @@ const { t } = useLanguage()
               <h2 className="text-2xl font-bold text-text-main">{t('Menu')}</h2>
               <p className="mt-1 text-sm text-text-slate">{t('Explore what {name} has to offer.', { name: t(restaurant.name) })}</p>
             </div>
-            <span className="text-sm text-text-slate">{filteredMeals.length} {t('meals found')}</span>
+            <span className="text-sm text-text-slate">{data.meta?.total ?? 0} {t('meals found')}</span>
           </div>
 
           {cartMessage && (
@@ -234,7 +222,9 @@ const { t } = useLanguage()
               onChange={(event) => setSelectedCategory(event.target.value)}
             >
               <option value="all">{t('All categories')}</option>
-              {categories.map((category) => <option key={category} value={category}>{t(category)}</option>)}
+              {categoriesResult.data.map((category) => (
+                <option key={category.id} value={category.name}>{t(category.name)}</option>
+              ))}
             </Select>
             <Select
               label={t('Sort meals')}
@@ -246,12 +236,20 @@ const { t } = useLanguage()
               <option value="price">{t('Price: low to high')}</option>
               <option value="name">{t('Name (A–Z)')}</option>
             </Select>
+            {categoriesResult.error && (
+              <p role="alert" className="text-sm text-brand-red sm:col-span-3">
+                {t('Unable to load meal categories.')}
+                <Button variant="outline" size="sm" onClick={() => void categoriesResult.refetch()}>
+                  {t('Try again')}
+                </Button>
+              </p>
+            )}
           </div>
 
-          {filteredMeals.length > 0 ? (
+          {meals.length > 0 ? (
             <>
               <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-                {paginatedMeals.map((meal) => (
+                {meals.map((meal) => (
                   <MealCard
                     key={meal.id}
                     name={meal.name}
@@ -269,13 +267,17 @@ const { t } = useLanguage()
                   />
                 ))}
               </div>
-              <Pagination currentPage={currentPage} totalPages={totalPages} onPageChange={setCurrentPage} />
+              <Pagination
+                currentPage={currentPage}
+                totalPages={data.meta?.total_pages ?? 1}
+                onPageChange={setCurrentPage}
+              />
             </>
           ) : (
             <EmptyState
-              title={t(data.meals.length === 0 ? 'No meals yet' : 'No meals found')}
-              description={t(data.meals.length === 0 ? 'This restaurant has not added any meals to its menu yet.' : 'Try changing your search or category filter.')}
-              action={data.meals.length === 0 ? undefined : <Button variant="outline" onClick={clearFilters}>{t('Clear filters')}</Button>}
+              title={t((data.meta?.total ?? 0) === 0 && !searchTerm && selectedCategory === 'all' ? 'No meals yet' : 'No meals found')}
+              description={t((data.meta?.total ?? 0) === 0 && !searchTerm && selectedCategory === 'all' ? 'This restaurant has not added any meals to its menu yet.' : 'Try changing your search or category filter.')}
+              action={(data.meta?.total ?? 0) === 0 && !searchTerm && selectedCategory === 'all' ? undefined : <Button variant="outline" onClick={clearFilters}>{t('Clear filters')}</Button>}
             />
           )}
         </section>

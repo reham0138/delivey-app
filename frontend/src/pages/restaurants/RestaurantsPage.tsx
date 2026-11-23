@@ -17,55 +17,35 @@ type RestaurantSort = 'rating' | 'delivery' | 'name'
 
 export default function RestaurantsPage() {
   const { t } = useLanguage()
-  const { data: restaurants, loading, error, refetch } = useRestaurants()
   const [searchTerm, setSearchTerm] = useState('')
   const [selectedCuisine, setSelectedCuisine] = useState('all')
   const [minimumRating, setMinimumRating] = useState('all')
   const [openOnly, setOpenOnly] = useState(false)
   const [sortBy, setSortBy] = useState<RestaurantSort>('rating')
   const [currentPage, setCurrentPage] = useState(1)
-
+  const query = {
+    page: currentPage,
+    limit: ITEMS_PER_PAGE,
+    search: searchTerm.trim() || undefined,
+    cuisine: selectedCuisine === 'all' ? undefined : selectedCuisine,
+    minRating: minimumRating === 'all' ? undefined : Number(minimumRating),
+    isOpen: openOnly ? true : undefined,
+    sort: sortBy === 'delivery' ? 'deliveryTime' : sortBy,
+  } as const
+  const { data: restaurants, loading, error, refetch, meta } = useRestaurants(undefined, query)
+  const {
+    data: cuisineRestaurants,
+    error: cuisineError,
+    refetch: refetchCuisines,
+  } = useRestaurants(undefined, { page: 1, limit: 50, sort: 'name' })
   const cuisines = useMemo(
-    () => [...new Set(restaurants.map((restaurant) => restaurant.cuisine))].sort(),
-    [restaurants],
+    () => [...new Set(cuisineRestaurants.map((restaurant) => restaurant.cuisine))].sort(),
+    [cuisineRestaurants],
   )
-
-  const filteredRestaurants = useMemo(() => {
-    const query = searchTerm.trim().toLocaleLowerCase()
-
-    return restaurants
-      .filter((restaurant) => {
-        const matchesSearch =
-          restaurant.name.toLocaleLowerCase().includes(query) ||
-          restaurant.cuisine.toLocaleLowerCase().includes(query)
-        const matchesCuisine =
-          selectedCuisine === 'all' || restaurant.cuisine === selectedCuisine
-        const matchesRating =
-          minimumRating === 'all' || restaurant.rating >= Number(minimumRating)
-        const matchesOpen = !openOnly || restaurant.isOpen
-
-        return matchesSearch && matchesCuisine && matchesRating && matchesOpen
-      })
-      .sort((first, second) => {
-        if (sortBy === 'delivery') {
-          return first.deliveryTimeMinutes - second.deliveryTimeMinutes
-        }
-        if (sortBy === 'name') {
-          return first.name.localeCompare(second.name)
-        }
-        return second.rating - first.rating
-      })
-  }, [restaurants, searchTerm, selectedCuisine, minimumRating, openOnly, sortBy])
 
   useEffect(() => {
     setCurrentPage(1)
   }, [searchTerm, selectedCuisine, minimumRating, openOnly, sortBy])
-
-  const totalPages = Math.ceil(filteredRestaurants.length / ITEMS_PER_PAGE)
-  const paginatedRestaurants = filteredRestaurants.slice(
-    (currentPage - 1) * ITEMS_PER_PAGE,
-    currentPage * ITEMS_PER_PAGE,
-  )
 
   const clearFilters = () => {
     setSearchTerm('')
@@ -84,14 +64,18 @@ export default function RestaurantsPage() {
     )
   }
 
-  if (error) {
+  if (error || cuisineError) {
     return (
       <main className="min-h-[60vh] bg-surface-cream px-4 py-12">
         <div className="mx-auto max-w-7xl">
           <EmptyState
             title={t('Unable to load restaurants')}
-            description={t(error)}
-            action={<Button onClick={() => void refetch()}>{t('Try again')}</Button>}
+            description={t(error || cuisineError)}
+            action={
+              <Button onClick={() => void Promise.all([refetch(), refetchCuisines()])}>
+                {t('Try again')}
+              </Button>
+            }
           />
         </div>
       </main>
@@ -116,7 +100,7 @@ export default function RestaurantsPage() {
             </div>
           </div>
           <span className="text-sm font-medium text-text-slate">
-            {filteredRestaurants.length} {t('restaurants found')}
+            {meta?.total ?? 0} {t('restaurants found')}
           </span>
         </section>
 
@@ -168,20 +152,24 @@ export default function RestaurantsPage() {
           </label>
         </section>
 
-        {filteredRestaurants.length > 0 ? (
+        {restaurants.length > 0 ? (
           <>
             <section
               aria-label={t("Restaurants")}
               className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4"
             >
-              {paginatedRestaurants.map((restaurant) => (
+              {restaurants.map((restaurant) => (
                 <RestaurantCard key={restaurant.id} restaurant={restaurant} />
               ))}
             </section>
 
-            <Pagination currentPage={currentPage} totalPages={totalPages} onPageChange={setCurrentPage} />
+            <Pagination
+              currentPage={currentPage}
+              totalPages={meta?.total_pages ?? 1}
+              onPageChange={setCurrentPage}
+            />
             <p className="text-center text-sm text-text-slate">
-              {t('Showing')} {(currentPage - 1) * ITEMS_PER_PAGE + 1}–{Math.min(currentPage * ITEMS_PER_PAGE, filteredRestaurants.length)} {t('of')} {filteredRestaurants.length} {t('restaurants found')}
+              {t('Showing')} {(currentPage - 1) * ITEMS_PER_PAGE + 1}–{Math.min(currentPage * ITEMS_PER_PAGE, meta?.total ?? 0)} {t('of')} {meta?.total ?? 0} {t('restaurants found')}
             </p>
           </>
         ) : (

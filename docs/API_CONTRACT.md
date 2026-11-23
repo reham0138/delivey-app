@@ -309,10 +309,10 @@ Rules
 | Method | Path | Query | Success |
 |---|---|---|---|
 | GET | `/categories` | `page`, `limit` | 200 list of Category (active only) |
-| GET | `/restaurants` | `search` (name or cuisine), `cuisine`, `isOpen`, `sort` (`rating`, `deliveryTime`, `deliveryFee`, `name`; default `rating`), `page`, `limit` | 200 list of Restaurant (active only) |
+| GET | `/restaurants` | `search` (name or cuisine), `cuisine`, `isOpen`, `minRating` (0–5), `sort` (`rating`, `deliveryTime`, `deliveryFee`, `name`; default `rating`), `page`, `limit` | 200 list of Restaurant (active only) |
 | GET | `/restaurants/:id` | none | 200 Restaurant (404 if inactive) |
-| GET | `/restaurants/:id/menu-items` | `category`, `search`, `includeUnavailable`, `page`, `limit` | 200 list of MenuItem |
-| GET | `/menu-items` | `search`, `category`, `restaurantId`, `minPrice`, `maxPrice`, `isPopular`, `openOnly`, `includeUnavailable`, `sort` (`rating`, `price_asc`, `price_desc`, `name`; default `rating`), `page`, `limit` | 200 list of MenuItem |
+| GET | `/restaurants/:id/menu-items` | `category`, `search`, `includeUnavailable`, `sort` (`popular`, `rating`, `price_asc`, `name`; default `rating`), `page`, `limit` | 200 list of MenuItem |
+| GET | `/menu-items` | `search`, `category`, `restaurantId`, `minPrice`, `maxPrice`, `isPopular`, `openOnly`, `includeUnavailable`, `sort` (`popular`, `rating`, `price_asc`, `price_desc`, `name`; default `rating`), `page`, `limit` | 200 list of MenuItem |
 | GET | `/menu-items/:id` | none | 200 MenuItem (works even when `isAvailable` is false) |
 | GET | `/restaurants/:id/reviews` | `page`, `limit` | 200 list of Review |
 | GET | `/menu-items/:id/reviews` | `page`, `limit` | 200 list of Review |
