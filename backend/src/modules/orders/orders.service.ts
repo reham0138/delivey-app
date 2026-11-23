@@ -219,7 +219,7 @@ export class OrdersService {
     const totals = calculateOrderTotals({
       subtotal,
       deliveryFee: restaurant.deliveryFee,
-      tip: dto.tip,
+      tip: dto.tip ?? 0,
       promoCode: dto.promoCode,
     })
     return { restaurant, items, totals }

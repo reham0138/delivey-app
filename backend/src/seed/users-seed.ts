@@ -5,6 +5,9 @@ import * as bcrypt from 'bcryptjs'
 import { Types } from 'mongoose'
 import type { Model } from 'mongoose'
 import { AccountStatus, Role } from '../common/enums'
+// Registers the global schema defaults (timestamps, id virtual) before the
+// user schema is evaluated, so bulkWrite keeps createdAt/updatedAt.
+import '../database/mongoose.plugin'
 import { User } from '../modules/users/schemas/user.schema'
 
 interface FixtureUser {

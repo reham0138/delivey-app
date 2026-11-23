@@ -1,4 +1,13 @@
-import { Body, Controller, Get, Param, Post, Query } from '@nestjs/common'
+import {
+  Body,
+  Controller,
+  Get,
+  HttpCode,
+  HttpStatus,
+  Param,
+  Post,
+  Query,
+} from '@nestjs/common'
 import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger'
 import { CurrentUser } from '../../common/decorators/current-user.decorator'
 import { Public } from '../../common/decorators/public.decorator'
@@ -53,6 +62,7 @@ export class ReviewsController {
   }
 
   @Post('restaurant/reviews/:id/report')
+  @HttpCode(HttpStatus.OK)
   @Roles(Role.Restaurant)
   @ApiOperation({ summary: 'Report a review on the owner restaurant' })
   reportForRestaurant(
@@ -78,6 +88,7 @@ export class ReviewsController {
   }
 
   @Post('admin/reviews/:id/dismiss-report')
+  @HttpCode(HttpStatus.OK)
   @Roles(Role.Admin)
   @ApiOperation({ summary: 'Dismiss a review report' })
   dismissReport(@Param('id') id: string) {

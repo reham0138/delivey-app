@@ -4,6 +4,9 @@ import { createHash } from 'crypto'
 import { Types } from 'mongoose'
 import type { Model } from 'mongoose'
 import { CancellationActor, OrderStatus, PaymentMethod, PaymentStatus } from '../common/enums'
+// Registers the global schema defaults (timestamps, id virtual) before any
+// schema module below is evaluated, so bulkWrite keeps createdAt/updatedAt.
+import '../database/mongoose.plugin'
 import { MenuItem } from '../modules/menu-items/schemas/menu-item.schema'
 import { Order } from '../modules/orders/schemas/order.schema'
 import { calculateOrderTotals, roundMoney } from '../modules/orders/order-rules'

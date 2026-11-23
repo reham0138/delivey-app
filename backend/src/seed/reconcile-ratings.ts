@@ -1,5 +1,8 @@
 import 'dotenv/config'
 import mongoose from 'mongoose'
+// Registers the global schema defaults (timestamps, id virtual) before any
+// schema module below is evaluated.
+import '../database/mongoose.plugin'
 import { MenuItem, MenuItemSchema } from '../modules/menu-items/schemas/menu-item.schema'
 import { Restaurant, RestaurantSchema } from '../modules/restaurants/schemas/restaurant.schema'
 import { Review, ReviewSchema } from '../modules/reviews/schemas/review.schema'

@@ -1,4 +1,5 @@
 import { Type } from 'class-transformer'
+import { ApiPropertyOptional } from '@nestjs/swagger'
 import {
   ArrayMaxSize,
   ArrayMinSize,
@@ -61,9 +62,11 @@ export class CreateOrderDto {
   @IsString()
   promoCode?: string | null
 
+  @ApiPropertyOptional({ minimum: 0, default: 0 })
+  @IsOptional()
   @IsNumber()
   @Min(0)
-  tip: number
+  tip?: number
 
   @IsOptional()
   @IsISO8601()
