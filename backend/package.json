@@ -18,6 +18,8 @@
     "seed:admin": "ts-node src/seed/seed-admin.ts",
     "seed:catalog": "ts-node src/seed/seed-catalog.ts",
     "seed:orders-reviews": "ts-node src/seed/seed-orders-reviews.ts",
+    "seed": "ts-node src/seed/seed-all.ts",
+    "seed:users": "ts-node src/seed/seed-users.ts",
     "ratings:reconcile": "ts-node src/seed/reconcile-ratings.ts"
   },
   "dependencies": {
