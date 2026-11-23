@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import { ArrowDown, ArrowLeft, ArrowRight, Clock3, MapPin, Utensils } from 'lucide-react'
 import { Button } from '../shared/components/Button'
 import { useNavigate } from 'react-router-dom'
+import { useCategories } from '../shared/hooks/useCategories'
 import { useLanguage } from '../shared/hooks/useLanguage'
 
 const slides = [
@@ -31,10 +32,9 @@ const slides = [
   },
 ]
 
-const categories = ['Burgers', 'Pizza', 'Shawarma', 'Sushi', 'Grill', 'Desserts', 'Coffee', 'Healthy']
-
 export default function HomePage() {
   const { t } = useLanguage()
+  const { data: categories, loading: categoriesLoading, error: categoriesError, refetch } = useCategories()
   const [activeSlide, setActiveSlide] = useState(0)
   const navigate = useNavigate()
   const currentSlide = slides[activeSlide]
@@ -140,11 +140,24 @@ export default function HomePage() {
             <h2 className="mt-2 text-2xl font-bold sm:text-3xl">{t('A world of flavour awaits.')}</h2>
           </div>
           <div className="flex max-w-3xl flex-wrap gap-2">
-            {categories.map((category) => (
-              <span key={category} className="rounded-full border border-border-subtle bg-surface-cream px-4 py-2 text-sm font-medium text-text-main">
-                {t(category)}
-              </span>
-            ))}
+            {categoriesLoading ? (
+              <p className="text-sm text-text-slate">{t('Loading categories...')}</p>
+            ) : categoriesError ? (
+              <div role="alert" className="flex flex-wrap items-center gap-3">
+                <p className="text-sm text-brand-red">{t('Unable to load categories.')}</p>
+                <Button variant="outline" size="sm" onClick={() => void refetch()}>
+                  {t('Try again')}
+                </Button>
+              </div>
+            ) : categories.length > 0 ? (
+              categories.map((category) => (
+                <span key={category.id} className="rounded-full border border-border-subtle bg-surface-cream px-4 py-2 text-sm font-medium text-text-main">
+                  {t(category.name)}
+                </span>
+              ))
+            ) : (
+              <p className="text-sm text-text-slate">{t('No categories available.')}</p>
+            )}
           </div>
         </div>
       </section>

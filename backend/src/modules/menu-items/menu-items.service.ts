@@ -96,7 +96,7 @@ export class MenuItemsService {
     }
     if (query.includeUnavailable !== 'true') match.isAvailable = true
     const base = this.publicPipeline(match, query.search, query.category)
-    return this.runPublicList(base, query)
+    return this.runPublicList(base, query, query.sort)
   }
 
   async findAll(query: ListMenuItemsQueryDto) {
@@ -263,6 +263,8 @@ export class MenuItemsService {
     const sortStage: Record<string, 1 | -1> =
       sort === 'rating'
         ? { rating: -1, name: 1 }
+        : sort === 'popular'
+          ? { isPopular: -1, rating: -1, name: 1 }
         : sort === 'price_asc'
           ? { price: 1, name: 1 }
           : sort === 'price_desc'

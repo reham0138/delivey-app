@@ -1,15 +1,25 @@
-import type { MenuItem } from '@/shared/types'
-import { normalizeMockIds } from '@/shared/utils/normalizeMockIds'
+import type { MenuItem, PaginatedResponse } from '@/shared/types'
+import { apiRequest } from '@/shared/api/client'
 
 const STORAGE_KEY = 'crown-anchor-menu-item-availability'
 const MENU_ITEMS_URL = '/mock/menu-items.json'
 
 type AvailabilityOverrides = Record<string, boolean>
 
+export interface MenuItemListQuery {
+  page: number
+  limit: number
+  search?: string
+  restaurantId?: string
+  category?: string
+  openOnly?: boolean
+  sort: 'popular' | 'rating' | 'price_asc' | 'price_desc' | 'name'
+}
+
 async function fetchMenuItems(): Promise<MenuItem[]> {
   const response = await fetch(MENU_ITEMS_URL)
   if (!response.ok) throw new Error(`Unable to load meals (HTTP ${response.status}).`)
-  return Promise.resolve(normalizeMockIds((await response.json()) as MenuItem[]))
+  return (await response.json()) as MenuItem[]
 }
 
 function readAvailabilityOverrides(): AvailabilityOverrides {
@@ -46,14 +56,36 @@ function saveAvailabilityOverrides(overrides: AvailabilityOverrides): void {
   }
 }
 
+async function getAll(): Promise<MenuItem[]>
+async function getAll(query: MenuItemListQuery): Promise<PaginatedResponse<MenuItem>>
+async function getAll(query?: MenuItemListQuery): Promise<MenuItem[] | PaginatedResponse<MenuItem>> {
+  if (query) {
+    return apiRequest<PaginatedResponse<MenuItem>>('/menu-items', {
+      query: {
+        page: query.page,
+        limit: query.limit,
+        search: query.search,
+        restaurantId: query.restaurantId,
+        category: query.category,
+        openOnly: query.openOnly,
+        sort: query.sort,
+      },
+    })
+  }
+
+  const items = await fetchMenuItems()
+  const overrides = readAvailabilityOverrides()
+  return items.map((item) => ({
+    ...item,
+    isAvailable: overrides[String(item.id)] ?? item.isAvailable,
+  }))
+}
+
 export const menuItemService = {
-  async getAll(): Promise<MenuItem[]> {
-    const items = await fetchMenuItems()
-    const overrides = readAvailabilityOverrides()
-    return items.map((item) => ({
-      ...item,
-      isAvailable: overrides[String(item.id)] ?? item.isAvailable,
-    }))
+  getAll,
+
+  async getById(id: string): Promise<MenuItem> {
+    return apiRequest<MenuItem>(`/menu-items/${encodeURIComponent(id)}`)
   },
 
   async setAvailability(id: string, isAvailable: boolean): Promise<void> {
