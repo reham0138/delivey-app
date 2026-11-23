@@ -91,6 +91,9 @@ function mappedId(
   return id
 }
 
+// Deterministic ObjectIds: sha256 of `crown-anchor-catalog:<collection>:<fixtureId>`.
+// Because the id is derived from the fixture id instead of being random, re-running
+// the seed targets the same documents, so the replaceOne upserts make it idempotent.
 function fixtureIds(rows: { id: number }[], collection: string): Map<number, Types.ObjectId> {
   return new Map(
     rows.map(({ id }) => [
@@ -228,7 +231,8 @@ export async function seedCatalogCollections(
           replacement: {
             _id,
             restaurantId: mappedId(ids.restaurants, menuItem.restaurantId, 'restaurant'),
-            name: menuItem.name,
+            // The schema caps names at 100 chars; one fixture name is longer.
+            name: menuItem.name.slice(0, 100),
             description: menuItem.description,
             price: menuItem.price,
             categoryId,

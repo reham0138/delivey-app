@@ -127,7 +127,9 @@ export class MenuItemsService {
     const itemId = this.objectId(id, 'Menu item not found')
     const rows = await this.menuItemModel.aggregate<MenuItemRow>([
       ...this.publicPipeline({ _id: itemId, isActive: true }, undefined, undefined),
+      ...this.ratingStage(),
       { $limit: 1 },
+      ...this.menuProjection(),
     ])
     if (!rows[0]) throw new AppException(404, ErrorCode.NotFound, 'Menu item not found')
     return mapMenuItem(rows[0])
@@ -405,18 +407,19 @@ export class MenuItemsService {
   ): Promise<MenuItemResponse> {
     const rows = await this.menuItemModel.aggregate<MenuItemRow>([
       ...this.publicPipeline({ _id: itemId, restaurantId, isActive: true }, undefined, undefined),
+      ...this.ratingStage(),
       { $limit: 1 },
+      ...this.menuProjection(),
     ])
     if (!rows[0]) throw new AppException(404, ErrorCode.NotFound, 'Menu item not found')
     return mapMenuItem(rows[0])
   }
 
   private async ownerRestaurantId(user: AuthUser): Promise<Types.ObjectId> {
-    const filter: Record<string, unknown> = { ownerId: user.id }
-    if (user.restaurantId && Types.ObjectId.isValid(user.restaurantId)) {
-      filter._id = new Types.ObjectId(user.restaurantId)
-    }
-    const restaurant = await this.restaurantModel.findOne(filter).select('_id').exec()
+    const restaurant = await this.restaurantModel
+      .findOne({ ownerId: user.id })
+      .select('_id')
+      .exec()
     if (!restaurant) throw new AppException(404, ErrorCode.NotFound, 'Restaurant not found')
     return restaurant._id
   }

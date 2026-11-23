@@ -1,9 +1,9 @@
 import { readFileSync } from 'fs'
 import { resolve } from 'path'
-import { Types } from 'mongoose'
+import mongoose, { Types } from 'mongoose'
 import type { Model } from 'mongoose'
 import { Category } from '../modules/categories/schemas/category.schema'
-import { MenuItem } from '../modules/menu-items/schemas/menu-item.schema'
+import { MenuItem, MenuItemSchema } from '../modules/menu-items/schemas/menu-item.schema'
 import { Restaurant } from '../modules/restaurants/schemas/restaurant.schema'
 import { CatalogModels, seedCatalogCollections } from './catalog-seed'
 
@@ -154,5 +154,36 @@ describe('seedCatalogCollections', () => {
     expect(categoryBulkWrite).not.toHaveBeenCalled()
     expect(restaurantBulkWrite).not.toHaveBeenCalled()
     expect(menuItemBulkWrite).not.toHaveBeenCalled()
+  })
+
+  it('maps every real fixture meal to a document that passes schema validation', async () => {
+    const categories = readFixture<FixtureCategory>('categories.json')
+    const restaurants = readFixture<FixtureRestaurant>('restaurants.json')
+    const menuItems = readFixture<FixtureMenuItem>('menu-items.json')
+    const users = readFixture<FixtureWithId>('users.json')
+    const userIds = fixtureIds(users)
+    const menuItemBulkWrite = jest.fn().mockResolvedValue({ upsertedCount: menuItems.length })
+    const models: CatalogModels = {
+      categories: {
+        bulkWrite: jest.fn().mockResolvedValue({ upsertedCount: categories.length }),
+      } as unknown as Model<Category>,
+      restaurants: {
+        bulkWrite: jest.fn().mockResolvedValue({ upsertedCount: restaurants.length }),
+      } as unknown as Model<Restaurant>,
+      menuItems: { bulkWrite: menuItemBulkWrite } as unknown as Model<MenuItem>,
+    }
+
+    await seedCatalogCollections(models, userIds)
+
+    const operations = menuItemBulkWrite.mock.calls[0][0] as Array<{
+      replaceOne: { replacement: Record<string, unknown> }
+    }>
+    expect(operations).toHaveLength(menuItems.length)
+
+    const MenuItemModel = mongoose.model('CatalogSeedMenuItem', MenuItemSchema)
+    for (const operation of operations) {
+      const doc = new MenuItemModel(operation.replaceOne.replacement)
+      expect(doc.validateSync()).toBeUndefined()
+    }
   })
 })

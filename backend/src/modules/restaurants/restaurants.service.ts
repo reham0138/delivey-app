@@ -309,12 +309,8 @@ export class RestaurantsService {
   }
 
   private async findOwnerRestaurant(user: AuthUser): Promise<RestaurantDocument> {
-    const filter: Record<string, unknown> = { ownerId: user.id }
-    if (user.restaurantId && Types.ObjectId.isValid(user.restaurantId)) {
-      filter._id = new Types.ObjectId(user.restaurantId)
-    }
     const restaurant = await this.restaurantModel
-      .findOne(filter)
+      .findOne({ ownerId: user.id })
       .select('+ratingSum +ratingCount')
       .exec()
     if (!restaurant) throw new AppException(404, ErrorCode.NotFound, 'Restaurant not found')
