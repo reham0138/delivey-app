@@ -1,19 +1,8 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose'
 import { HydratedDocument, SchemaTypes, Types } from 'mongoose'
+import { CancellationActor, OrderStatus, PaymentMethod, PaymentStatus } from '../../../common/enums'
 
 export type OrderDocument = HydratedDocument<Order>
-
-export type OrderStatus =
-  | 'pending'
-  | 'preparing'
-  | 'ready'
-  | 'on_the_way'
-  | 'delivered'
-  | 'cancelled'
-
-export type PaymentMethod = 'cash' | 'card'
-export type PaymentStatus = 'pending' | 'simulated' | 'paid'
-export type CancellationActor = 'customer' | 'restaurant' | 'admin'
 
 @Schema({ _id: false })
 export class OrderItemSnapshot {
@@ -37,7 +26,7 @@ export class OrderStatusHistoryEntry {
   @Prop({
     type: String,
     required: true,
-    enum: ['pending', 'preparing', 'ready', 'on_the_way', 'delivered', 'cancelled'],
+    enum: OrderStatus,
   })
   status: OrderStatus
 
@@ -45,8 +34,7 @@ export class OrderStatusHistoryEntry {
   at: Date
 }
 
-export const OrderStatusHistoryEntrySchema =
-  SchemaFactory.createForClass(OrderStatusHistoryEntry)
+export const OrderStatusHistoryEntrySchema = SchemaFactory.createForClass(OrderStatusHistoryEntry)
 
 @Schema()
 export class Order {
@@ -65,8 +53,8 @@ export class Order {
   @Prop({
     type: String,
     required: true,
-    enum: ['pending', 'preparing', 'ready', 'on_the_way', 'delivered', 'cancelled'],
-    default: 'pending',
+    enum: OrderStatus,
+    default: OrderStatus.Pending,
   })
   status: OrderStatus
 
@@ -100,14 +88,14 @@ export class Order {
   @Prop({
     type: String,
     required: true,
-    enum: ['cash', 'card'],
+    enum: PaymentMethod,
   })
   paymentMethod: PaymentMethod
 
   @Prop({
     type: String,
     required: true,
-    enum: ['pending', 'simulated', 'paid'],
+    enum: PaymentStatus,
   })
   paymentStatus: PaymentStatus
 
@@ -128,7 +116,7 @@ export class Order {
 
   @Prop({
     type: String,
-    enum: ['customer', 'restaurant', 'admin'],
+    enum: CancellationActor,
     default: null,
   })
   cancelledBy: CancellationActor | null

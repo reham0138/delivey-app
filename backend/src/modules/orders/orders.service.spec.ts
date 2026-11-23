@@ -2,7 +2,7 @@ import 'reflect-metadata'
 import { plainToInstance } from 'class-transformer'
 import { validateSync } from 'class-validator'
 import { Types } from 'mongoose'
-import { Role } from '../../common/enums'
+import { OrderStatus, Role } from '../../common/enums'
 import { ErrorCode } from '../../common/errors/error-codes.enum'
 import { CreateOrderDto } from './dto/create-order.dto'
 import { OrdersService } from './orders.service'
@@ -36,32 +36,28 @@ describe('OrdersService', () => {
     menuItems?: MenuItemFixture[],
     restaurant?: RestaurantFixture,
   ) {
-    const resolvedMenuItems: MenuItemFixture[] =
-      menuItems ??
-      [
-        {
-          _id: menuItemId,
-          restaurantId,
-          name: 'Burger',
-          price: 12.345,
-          isActive: true,
-          isAvailable: true,
-        },
-      ]
+    const resolvedMenuItems: MenuItemFixture[] = menuItems ?? [
+      {
+        _id: menuItemId,
+        restaurantId,
+        name: 'Burger',
+        price: 12.345,
+        isActive: true,
+        isAvailable: true,
+      },
+    ]
     const menuItemExec = jest
       .fn<() => Promise<MenuItemFixture[]>>()
       .mockResolvedValue(resolvedMenuItems)
 
-    const resolvedRestaurant: RestaurantFixture =
-      restaurant ??
-      {
-        _id: restaurantId,
-        isActive: true,
-        isOpen: true,
-        deliveryFee: 4.99,
-        minOrder: 10,
-        deliveryTimeMinutes: 30,
-      }
+    const resolvedRestaurant: RestaurantFixture = restaurant ?? {
+      _id: restaurantId,
+      isActive: true,
+      isOpen: true,
+      deliveryFee: 4.99,
+      minOrder: 10,
+      deliveryTimeMinutes: 30,
+    }
     const restaurantExec = jest
       .fn<() => Promise<RestaurantFixture>>()
       .mockResolvedValue(resolvedRestaurant)
@@ -92,26 +88,22 @@ describe('OrdersService', () => {
         exec: restaurantExec,
       }),
     }
-    return new OrdersService(
-      orderModel as never,
-      menuItemModel as never,
-      restaurantModel as never,
-    )
+    return new OrdersService(orderModel as never, menuItemModel as never, restaurantModel as never)
   }
 
   function validPayload(): CreateOrderDto {
     const payload: CreateOrderDto = plainToInstance<CreateOrderDto, Record<string, unknown>>(
       CreateOrderDto,
       {
-      restaurantId: String(restaurantId),
-      items: [{ menuItemId: String(menuItemId), quantity: 2 }],
-      deliveryAddress: '1 Main St',
-      phone: '123456',
-      paymentMethod: 'cash',
-      notes: null,
-      promoCode: 'WELCOME10',
-      tip: 3.335,
-      scheduledFor: null,
+        restaurantId: String(restaurantId),
+        items: [{ menuItemId: String(menuItemId), quantity: 2 }],
+        deliveryAddress: '1 Main St',
+        phone: '123456',
+        paymentMethod: 'cash',
+        notes: null,
+        promoCode: 'WELCOME10',
+        tip: 3.335,
+        scheduledFor: null,
       },
     )
     return payload
@@ -253,9 +245,7 @@ describe('OrdersService', () => {
         sort: jest.fn().mockReturnThis(),
         skip: jest.fn().mockReturnThis(),
         limit: jest.fn().mockReturnThis(),
-        exec: jest.fn<() => Promise<(typeof orderDocument)[]>>().mockResolvedValue([
-          orderDocument,
-        ]),
+        exec: jest.fn<() => Promise<(typeof orderDocument)[]>>().mockResolvedValue([orderDocument]),
       }),
       countDocuments: jest.fn().mockReturnValue({
         exec: jest.fn<() => Promise<number>>().mockResolvedValue(1),
@@ -263,11 +253,13 @@ describe('OrdersService', () => {
     }
     const restaurantModel = {
       findOne: jest.fn().mockReturnValue({
-        exec: jest.fn<() => Promise<{ _id: Types.ObjectId; isActive: boolean; isOpen: boolean }>>().mockResolvedValue({
-          _id: restaurantId,
-          isActive: true,
-          isOpen: true,
-        }),
+        exec: jest
+          .fn<() => Promise<{ _id: Types.ObjectId; isActive: boolean; isOpen: boolean }>>()
+          .mockResolvedValue({
+            _id: restaurantId,
+            isActive: true,
+            isOpen: true,
+          }),
       }),
     }
     const service = new OrdersService(orderModel as never, {} as never, restaurantModel as never)
@@ -324,7 +316,7 @@ describe('OrdersService', () => {
     const result = await service.updateStatusForRestaurant(
       String(ownerId),
       String(orderDocument._id),
-      'delivered',
+      OrderStatus.Delivered,
     )
 
     expect(orderDocument.paymentStatus).toBe('paid')

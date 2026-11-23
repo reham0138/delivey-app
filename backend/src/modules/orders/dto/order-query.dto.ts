@@ -1,5 +1,14 @@
 import { Transform } from 'class-transformer'
-import { IsEnum, IsISO8601, IsInt, IsMongoId, IsOptional, IsString, Max, Min } from 'class-validator'
+import {
+  IsEnum,
+  IsISO8601,
+  IsInt,
+  IsMongoId,
+  IsOptional,
+  IsString,
+  Max,
+  Min,
+} from 'class-validator'
 import { OrderStatus } from '../../../common/enums'
 
 export class OrderQueryDto {

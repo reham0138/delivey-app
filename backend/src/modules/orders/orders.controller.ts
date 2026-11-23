@@ -41,11 +41,7 @@ export class OrdersController {
 
   @Post('orders/:id/cancel')
   @Roles(Role.Customer)
-  cancelOwn(
-    @CurrentUser() user: AuthUser,
-    @Param('id') id: string,
-    @Body() dto: CancelOrderDto,
-  ) {
+  cancelOwn(@CurrentUser() user: AuthUser, @Param('id') id: string, @Body() dto: CancelOrderDto) {
     return this.ordersService.cancelForCustomer(user.id, id, dto.reason)
   }
 
