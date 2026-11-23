@@ -10,11 +10,19 @@ import { AuthService } from './auth.service'
 import { JwtAuthGuard } from './guards/jwt-auth.guard'
 import { RolesGuard } from './guards/roles.guard'
 import { Session, SessionSchema } from './schemas/session.schema'
+import { Restaurant, RestaurantSchema } from '../restaurants/schemas/restaurant.schema'
+import { User, UserSchema } from '../users/schemas/user.schema'
 
 @Module({
   imports: [
     UsersModule,
-    MongooseModule.forFeature([{ name: Session.name, schema: SessionSchema }]),
+    // Restaurant/User models are registered directly (not via their modules)
+    // so auth never imports RestaurantsModule — no circular dependency.
+    MongooseModule.forFeature([
+      { name: Session.name, schema: SessionSchema },
+      { name: Restaurant.name, schema: RestaurantSchema },
+      { name: User.name, schema: UserSchema },
+    ]),
     JwtModule.registerAsync({
       inject: [ConfigService],
       useFactory: (config: ConfigService) => ({

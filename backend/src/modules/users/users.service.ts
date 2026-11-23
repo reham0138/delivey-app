@@ -20,8 +20,6 @@ export class UsersService {
       email: user.email,
       ...(user.phone ? { phone: user.phone } : {}),
       role: user.role,
-      // TODO(restaurant-on-register): populate restaurantId once the
-      // Restaurant schema/module exists (contract 3.1, role restaurant only).
     }
   }
 

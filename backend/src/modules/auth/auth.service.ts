@@ -5,12 +5,16 @@ import { ConfigService } from '@nestjs/config'
 import { InjectModel } from '@nestjs/mongoose'
 import { Model, Types } from 'mongoose'
 import * as bcrypt from 'bcryptjs'
-import { AccountStatus } from '../../common/enums'
+import { AccountStatus, Role } from '../../common/enums'
 import { AppException } from '../../common/errors'
 import { ErrorCode } from '../../common/errors/error-codes.enum'
 import type { AuthUser } from '../../common/interfaces/auth-user.interface'
 import { UsersService } from '../users/users.service'
-import { UserDocument } from '../users/schemas/user.schema'
+import { User, UserDocument } from '../users/schemas/user.schema'
+import {
+  Restaurant,
+  RestaurantDocument,
+} from '../restaurants/schemas/restaurant.schema'
 import { Session, SessionDocument } from './schemas/session.schema'
 import { LoginDto, LogoutDto, RefreshDto, RegisterDto } from './dto/auth.dto'
 
@@ -29,6 +33,9 @@ export class AuthService {
     private readonly jwtService: JwtService,
     private readonly config: ConfigService,
     @InjectModel(Session.name) private readonly sessionModel: Model<SessionDocument>,
+    @InjectModel(Restaurant.name)
+    private readonly restaurantModel: Model<RestaurantDocument>,
+    @InjectModel(User.name) private readonly userModel: Model<UserDocument>,
   ) {}
 
   async register(dto: RegisterDto): Promise<AuthResponse> {
@@ -44,11 +51,17 @@ export class AuthService {
       phone: dto.phone,
       role: dto.role,
     })
-    // TODO(restaurant-on-register): contract section 4 requires creating a
-    // Restaurant (isActive:false, isOpen:false, name=user.name, empty fields)
-    // when role === 'restaurant'. The Restaurant schema is owned by another
-    // module and does not exist yet — wire it here when it lands.
-    return this.issueAuthResponse(user)
+    let restaurantId: string | undefined
+    if (dto.role === Role.Restaurant) {
+      try {
+        restaurantId = await this.ensureOwnerRestaurant(user)
+      } catch (error) {
+        // Failed registration: no orphan account or session may remain.
+        await this.cleanupFailedRegistration(user)
+        throw error
+      }
+    }
+    return this.issueAuthResponse(user, restaurantId)
   }
 
   async login(dto: LoginDto): Promise<AuthResponse> {
@@ -103,7 +116,61 @@ export class AuthService {
     return {
       access_token: await this.signAccessToken(user),
       refresh_token: newRefreshToken,
-      user: this.usersService.toAuthUser(user),
+      user: await this.withRestaurantId(this.usersService.toAuthUser(user)),
+    }
+  }
+
+  // Contract 3.1: restaurant owners get restaurantId in auth responses when
+  // their restaurant exists; everyone else never does. Read-only lookup —
+  // nothing is created here (old owner accounts may have none).
+  async withRestaurantId(authUser: AuthUser): Promise<AuthUser> {
+    if (authUser.role !== Role.Restaurant) return authUser
+    const restaurant = await this.restaurantModel
+      .findOne({ ownerId: new Types.ObjectId(authUser.id) })
+      .select('_id')
+      .lean()
+    if (!restaurant) return authUser
+    return { ...authUser, restaurantId: String(restaurant._id) }
+  }
+
+  // Creates the owner's restaurant on registration (contract section 4):
+  // isActive false, isOpen false, name = user name, empty profile fields.
+  // Schema defaults fill the rest via Mongoose's setDefaultsOnInsert. The
+  // upsert is idempotent through the unique ownerId index; a duplicate-key
+  // race resolves to the already-created restaurant.
+  private async ensureOwnerRestaurant(user: UserDocument): Promise<string> {
+    const ownerId = user._id as Types.ObjectId
+    try {
+      const restaurant = await this.restaurantModel.findOneAndUpdate(
+        { ownerId },
+        {
+          $setOnInsert: {
+            ownerId,
+            name: user.name,
+            phone: user.phone ?? '',
+          },
+        },
+        { upsert: true, new: true },
+      )
+      return String(restaurant!._id)
+    } catch (error) {
+      if ((error as { code?: number }).code === 11000) {
+        const existing = await this.restaurantModel
+          .findOne({ ownerId })
+          .select('_id')
+          .lean()
+        if (existing) return String(existing._id)
+      }
+      throw error
+    }
+  }
+
+  private async cleanupFailedRegistration(user: UserDocument): Promise<void> {
+    try {
+      await this.sessionModel.deleteMany({ userId: user._id })
+      await this.userModel.deleteOne({ _id: user._id })
+    } catch {
+      // Cleanup is best-effort; the original registration error is rethrown.
     }
   }
 
@@ -134,7 +201,10 @@ export class AuthService {
     }
   }
 
-  private async issueAuthResponse(user: UserDocument): Promise<AuthResponse> {
+  private async issueAuthResponse(
+    user: UserDocument,
+    restaurantId?: string,
+  ): Promise<AuthResponse> {
     const refreshToken = this.newRefreshToken()
     const familyId = randomUUID()
     await this.sessionModel.create({
@@ -143,10 +213,14 @@ export class AuthService {
       tokenHash: this.hashToken(refreshToken),
       expiresAt: this.refreshExpiry(),
     })
+    const authUser = this.usersService.toAuthUser(user)
+    const enriched = restaurantId
+      ? { ...authUser, restaurantId }
+      : await this.withRestaurantId(authUser)
     return {
       access_token: await this.signAccessToken(user),
       refresh_token: refreshToken,
-      user: this.usersService.toAuthUser(user),
+      user: enriched,
     }
   }
 
