@@ -3,6 +3,9 @@ import { resolve } from 'path'
 import { createHash } from 'crypto'
 import { Types } from 'mongoose'
 import type { Model } from 'mongoose'
+// Registers the global schema defaults (timestamps, id virtual) before any
+// schema module below is evaluated, so bulkWrite keeps createdAt/updatedAt.
+import '../database/mongoose.plugin'
 import { Category } from '../modules/categories/schemas/category.schema'
 import { MenuItem } from '../modules/menu-items/schemas/menu-item.schema'
 import { Restaurant } from '../modules/restaurants/schemas/restaurant.schema'

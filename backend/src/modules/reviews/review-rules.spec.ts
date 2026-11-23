@@ -1,5 +1,6 @@
 import { HttpStatus } from '@nestjs/common'
 import { describe, expect, it } from '@jest/globals'
+import { OrderStatus } from '../../common/enums'
 import { AppException } from '../../common/errors/app.exception'
 import { ErrorCode } from '../../common/errors/error-codes.enum'
 import { assertReviewEligible, isReviewEligible } from './review-rules'
@@ -7,7 +8,7 @@ import { assertReviewEligible, isReviewEligible } from './review-rules'
 describe('review rules', () => {
   const order = {
     customerId: 'customer-1',
-    status: 'delivered' as const,
+    status: OrderStatus.Delivered,
     items: [{ menuItemId: 'meal-1' }, { menuItemId: 'meal-2' }],
   }
 
@@ -17,12 +18,10 @@ describe('review rules', () => {
   })
 
   it('rejects an order that is not delivered', () => {
-    const notDelivered = { ...order, status: 'ready' as const }
+    const notDelivered = { ...order, status: OrderStatus.Ready }
 
     expect(isReviewEligible(notDelivered, 'customer-1', 'meal-1')).toBe(false)
-    expect(() => assertReviewEligible(notDelivered, 'customer-1', 'meal-1')).toThrow(
-      AppException,
-    )
+    expect(() => assertReviewEligible(notDelivered, 'customer-1', 'meal-1')).toThrow(AppException)
   })
 
   it('rejects an order owned by another customer', () => {
@@ -43,4 +42,3 @@ describe('review rules', () => {
     }
   })
 })
-

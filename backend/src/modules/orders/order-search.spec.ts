@@ -1,7 +1,7 @@
 import 'reflect-metadata'
 import type { FilterQuery } from 'mongoose'
 import { OrdersService } from './orders.service'
-import type { OrderDocument } from './order.schema'
+import type { OrderDocument } from './schemas/order.schema'
 import { escapeRegex } from './utils/escape-regex'
 
 describe('escapeRegex', () => {

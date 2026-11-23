@@ -1,13 +1,9 @@
 import { HttpStatus } from '@nestjs/common'
 import { describe, expect, it } from '@jest/globals'
+import { CancellationActor, OrderStatus, PaymentMethod, PaymentStatus } from '../../common/enums'
 import { AppException } from '../../common/errors/app.exception'
 import { ErrorCode } from '../../common/errors/error-codes.enum'
-import {
-  applyStatusTransition,
-  calculateOrderTotals,
-  cancelOrder,
-  roundMoney,
-} from './order-rules'
+import { applyStatusTransition, calculateOrderTotals, cancelOrder, roundMoney } from './order-rules'
 
 describe('order rules', () => {
   describe('calculateOrderTotals', () => {
@@ -80,16 +76,16 @@ describe('order rules', () => {
     it('moves one step forward and appends history', () => {
       expect(
         applyStatusTransition(
-          'pending',
-          'preparing',
-          [{ status: 'pending', at: '2026-01-01T00:00:00.000Z' }],
+          OrderStatus.Pending,
+          OrderStatus.Preparing,
+          [{ status: OrderStatus.Pending, at: '2026-01-01T00:00:00.000Z' }],
           '2026-01-01T00:05:00.000Z',
         ),
       ).toEqual({
-        status: 'preparing',
+        status: OrderStatus.Preparing,
         statusHistory: [
-          { status: 'pending', at: '2026-01-01T00:00:00.000Z' },
-          { status: 'preparing', at: '2026-01-01T00:05:00.000Z' },
+          { status: OrderStatus.Pending, at: '2026-01-01T00:00:00.000Z' },
+          { status: OrderStatus.Preparing, at: '2026-01-01T00:05:00.000Z' },
         ],
         paymentStatus: undefined,
       })
@@ -97,10 +93,20 @@ describe('order rules', () => {
 
     it('rejects a skipped status', () => {
       expect(() =>
-        applyStatusTransition('pending', 'ready', [], '2026-01-01T00:05:00.000Z'),
+        applyStatusTransition(
+          OrderStatus.Pending,
+          OrderStatus.Ready,
+          [],
+          '2026-01-01T00:05:00.000Z',
+        ),
       ).toThrow(AppException)
       try {
-        applyStatusTransition('pending', 'ready', [], '2026-01-01T00:05:00.000Z')
+        applyStatusTransition(
+          OrderStatus.Pending,
+          OrderStatus.Ready,
+          [],
+          '2026-01-01T00:05:00.000Z',
+        )
       } catch (error) {
         expect((error as AppException).code).toBe(ErrorCode.InvalidStatusTransition)
       }
@@ -109,38 +115,51 @@ describe('order rules', () => {
     it('marks a delivered cash order paid', () => {
       expect(
         applyStatusTransition(
-          'on_the_way',
-          'delivered',
+          OrderStatus.OnTheWay,
+          OrderStatus.Delivered,
           [],
           '2026-01-01T00:05:00.000Z',
-          'cash',
-          'pending',
+          PaymentMethod.Cash,
+          PaymentStatus.Pending,
         ).paymentStatus,
-      ).toBe('paid')
+      ).toBe(PaymentStatus.Paid)
     })
   })
 
   describe('cancellation', () => {
     it('allows customer cancellation only while pending or preparing', () => {
-      expect(cancelOrder('pending', 'customer', [], '2026-01-01T00:05:00.000Z')).toMatchObject({
-        status: 'cancelled',
-        cancelledBy: 'customer',
+      expect(
+        cancelOrder(
+          OrderStatus.Pending,
+          CancellationActor.Customer,
+          [],
+          '2026-01-01T00:05:00.000Z',
+        ),
+      ).toMatchObject({
+        status: OrderStatus.Cancelled,
+        cancelledBy: CancellationActor.Customer,
         cancellationReason: null,
       })
       expect(() =>
-        cancelOrder('ready', 'customer', [], '2026-01-01T00:05:00.000Z'),
+        cancelOrder(OrderStatus.Ready, CancellationActor.Customer, [], '2026-01-01T00:05:00.000Z'),
       ).toThrow(AppException)
     })
 
     it('requires restaurant and admin cancellation reasons', () => {
       expect(() =>
-        cancelOrder('preparing', 'restaurant', [], '2026-01-01T00:05:00.000Z', '   '),
+        cancelOrder(
+          OrderStatus.Preparing,
+          CancellationActor.Restaurant,
+          [],
+          '2026-01-01T00:05:00.000Z',
+          '   ',
+        ),
       ).toThrow(AppException)
 
       expect(
         cancelOrder(
-          'ready',
-          'admin',
+          OrderStatus.Ready,
+          CancellationActor.Admin,
           [],
           '2026-01-01T00:05:00.000Z',
           '  Duplicate order  ',
@@ -150,10 +169,22 @@ describe('order rules', () => {
 
     it('does not allow cancellation of delivered or cancelled orders', () => {
       expect(() =>
-        cancelOrder('delivered', 'admin', [], '2026-01-01T00:05:00.000Z', 'Reason'),
+        cancelOrder(
+          OrderStatus.Delivered,
+          CancellationActor.Admin,
+          [],
+          '2026-01-01T00:05:00.000Z',
+          'Reason',
+        ),
       ).toThrow(AppException)
       expect(() =>
-        cancelOrder('cancelled', 'restaurant', [], '2026-01-01T00:05:00.000Z', 'Reason'),
+        cancelOrder(
+          OrderStatus.Cancelled,
+          CancellationActor.Restaurant,
+          [],
+          '2026-01-01T00:05:00.000Z',
+          'Reason',
+        ),
       ).toThrow(AppException)
     })
   })

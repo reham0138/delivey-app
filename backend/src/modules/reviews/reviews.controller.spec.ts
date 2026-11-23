@@ -7,12 +7,9 @@ describe('ReviewsController public routes', () => {
   const reflector = new Reflector()
   const proto = ReviewsController.prototype as unknown as Record<string, unknown>
 
-  it.each(['findPublicForMenuItem', 'findPublicForRestaurant'])(
-    '%s is @Public',
-    (handler) => {
-      expect(reflector.get(IS_PUBLIC_KEY, proto[handler] as never)).toBe(true)
-    },
-  )
+  it.each(['findPublicForMenuItem', 'findPublicForRestaurant'])('%s is @Public', (handler) => {
+    expect(reflector.get(IS_PUBLIC_KEY, proto[handler] as never)).toBe(true)
+  })
 
   it.each([
     'create',

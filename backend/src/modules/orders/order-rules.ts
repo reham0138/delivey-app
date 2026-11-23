@@ -1,16 +1,7 @@
 import { HttpStatus } from '@nestjs/common'
+import { CancellationActor, OrderStatus, PaymentMethod, PaymentStatus } from '../../common/enums'
 import { AppException } from '../../common/errors/app.exception'
 import { ErrorCode } from '../../common/errors/error-codes.enum'
-
-export type OrderStatus =
-  | 'pending'
-  | 'preparing'
-  | 'ready'
-  | 'on_the_way'
-  | 'delivered'
-  | 'cancelled'
-
-export type CancellationActor = 'customer' | 'restaurant' | 'admin'
 
 export interface StatusHistoryEntry {
   status: OrderStatus
@@ -37,11 +28,11 @@ export interface OrderTotals {
 export interface StatusTransitionResult {
   status: OrderStatus
   statusHistory: StatusHistoryEntry[]
-  paymentStatus?: 'pending' | 'simulated' | 'paid'
+  paymentStatus?: PaymentStatus
 }
 
 export interface CancellationResult {
-  status: 'cancelled'
+  status: OrderStatus.Cancelled
   cancelledBy: CancellationActor
   cancellationReason: string | null
   statusHistory: StatusHistoryEntry[]
@@ -89,10 +80,10 @@ export function calculateOrderTotals(input: OrderTotalsInput): OrderTotals {
 
 export function getNextOrderStatus(status: OrderStatus): OrderStatus | null {
   const nextStatuses: Partial<Record<OrderStatus, OrderStatus>> = {
-    pending: 'preparing',
-    preparing: 'ready',
-    ready: 'on_the_way',
-    on_the_way: 'delivered',
+    [OrderStatus.Pending]: OrderStatus.Preparing,
+    [OrderStatus.Preparing]: OrderStatus.Ready,
+    [OrderStatus.Ready]: OrderStatus.OnTheWay,
+    [OrderStatus.OnTheWay]: OrderStatus.Delivered,
   }
   return nextStatuses[status] ?? null
 }
@@ -102,8 +93,8 @@ export function applyStatusTransition(
   nextStatus: OrderStatus,
   statusHistory: StatusHistoryEntry[],
   at: string,
-  paymentMethod?: 'cash' | 'card',
-  paymentStatus?: 'pending' | 'simulated' | 'paid',
+  paymentMethod?: PaymentMethod,
+  paymentStatus?: PaymentStatus,
 ): StatusTransitionResult {
   if (getNextOrderStatus(currentStatus) !== nextStatus) {
     throw new AppException(
@@ -114,8 +105,8 @@ export function applyStatusTransition(
   }
 
   const updatedPaymentStatus =
-    nextStatus === 'delivered' && paymentMethod === 'cash'
-      ? 'paid'
+    nextStatus === OrderStatus.Delivered && paymentMethod === PaymentMethod.Cash
+      ? PaymentStatus.Paid
       : paymentStatus
 
   return {
@@ -126,13 +117,13 @@ export function applyStatusTransition(
 }
 
 export function canCancelOrder(status: OrderStatus, actor: CancellationActor): boolean {
-  if (status === 'delivered' || status === 'cancelled') {
+  if (status === OrderStatus.Delivered || status === OrderStatus.Cancelled) {
     return false
   }
-  if (actor === 'admin') {
+  if (actor === CancellationActor.Admin) {
     return true
   }
-  return status === 'pending' || status === 'preparing'
+  return status === OrderStatus.Pending || status === OrderStatus.Preparing
 }
 
 export function cancelOrder(
@@ -151,7 +142,7 @@ export function cancelOrder(
   }
 
   const trimmedReason = reason?.trim() || null
-  if (actor !== 'customer' && !trimmedReason) {
+  if (actor !== CancellationActor.Customer && !trimmedReason) {
     throw new AppException(
       HttpStatus.BAD_REQUEST,
       ErrorCode.ValidationError,
@@ -161,9 +152,9 @@ export function cancelOrder(
   }
 
   return {
-    status: 'cancelled',
+    status: OrderStatus.Cancelled,
     cancelledBy: actor,
     cancellationReason: trimmedReason,
-    statusHistory: [...statusHistory, { status: 'cancelled', at }],
+    statusHistory: [...statusHistory, { status: OrderStatus.Cancelled, at }],
   }
 }

@@ -16,7 +16,9 @@
     "test:watch": "jest --watch",
     "test:cov": "jest --coverage",
     "seed:admin": "ts-node src/seed/seed-admin.ts",
-    "seed:catalog": "ts-node src/seed/seed-catalog.ts"
+    "seed:catalog": "ts-node src/seed/seed-catalog.ts",
+    "seed:orders-reviews": "ts-node src/seed/seed-orders-reviews.ts",
+    "ratings:reconcile": "ts-node src/seed/reconcile-ratings.ts"
   },
   "dependencies": {
     "@nestjs/common": "^11.0.0",

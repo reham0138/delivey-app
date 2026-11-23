@@ -6,12 +6,13 @@ import { ErrorCode } from '../../common/errors/error-codes.enum'
 import type { AuthUser } from '../../common/interfaces/auth-user.interface'
 import { paginate } from '../../common/utils/pagination.util'
 import { MenuItem } from '../menu-items/schemas/menu-item.schema'
-import { Order, OrderDocument } from '../orders/order.schema'
+import { Order, OrderDocument } from '../orders/schemas/order.schema'
 import { Restaurant } from '../restaurants/schemas/restaurant.schema'
+import { AdminReviewQueryDto } from './dto/admin-review-query.dto'
 import { CreateReviewDto } from './dto/create-review.dto'
 import { ReviewQueryDto } from './dto/review-query.dto'
 import { assertReviewEligible } from './review-rules'
-import { Review, ReviewDocument } from './review.schema'
+import { Review, ReviewDocument } from './schemas/review.schema'
 
 @Injectable()
 export class ReviewsService {
@@ -138,7 +139,6 @@ export class ReviewsService {
     const restaurant = await this.findOwnedRestaurant(user)
     const filter: FilterQuery<ReviewDocument> = { restaurantId: restaurant._id }
     if (query.reported !== undefined) filter.isReported = query.reported
-    if (query.isHidden !== undefined) filter.isHidden = query.isHidden
     return this.findReviewPage(filter, query)
   }
 
@@ -163,7 +163,7 @@ export class ReviewsService {
     return this.mapReview(review)
   }
 
-  async findForAdmin(query: ReviewQueryDto) {
+  async findForAdmin(query: AdminReviewQueryDto) {
     const filter: FilterQuery<ReviewDocument> = {}
     if (query.reported !== undefined) filter.isReported = query.reported
     if (query.isHidden !== undefined) filter.isHidden = query.isHidden
@@ -232,14 +232,10 @@ export class ReviewsService {
   }
 
   private async findOwnedRestaurant(user: AuthUser): Promise<Restaurant & { _id: Types.ObjectId }> {
-    let restaurant
-    if (user.restaurantId && Types.ObjectId.isValid(user.restaurantId)) {
-      restaurant = await this.restaurantModel.findById(user.restaurantId).exec()
-    } else if (Types.ObjectId.isValid(user.id)) {
-      restaurant = await this.restaurantModel
-        .findOne({ ownerId: new Types.ObjectId(user.id) })
-        .exec()
-    }
+    if (!Types.ObjectId.isValid(user.id)) throw this.notFound()
+    const restaurant = await this.restaurantModel
+      .findOne({ ownerId: new Types.ObjectId(user.id) })
+      .exec()
     if (!restaurant) throw this.notFound()
     return restaurant as Restaurant & { _id: Types.ObjectId }
   }
@@ -255,9 +251,10 @@ export class ReviewsService {
       rating: review.rating,
       comment: review.comment ?? null,
       createdAt:
-        review.createdAt instanceof Date ? review.createdAt.toISOString() : String(review.createdAt),
-      updatedAt:
-        review.updatedAt instanceof Date ? review.updatedAt.toISOString() : null,
+        review.createdAt instanceof Date
+          ? review.createdAt.toISOString()
+          : String(review.createdAt),
+      updatedAt: null,
       isReported: review.isReported,
       reportReason: review.reportReason ?? null,
       ...(includeHidden ? { isHidden: review.isHidden } : {}),

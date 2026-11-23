@@ -1,7 +1,13 @@
 import { HttpStatus, Injectable } from '@nestjs/common'
 import { InjectModel } from '@nestjs/mongoose'
 import { FilterQuery, Model, Types } from 'mongoose'
-import { PaymentMethod, Role } from '../../common/enums'
+import {
+  CancellationActor,
+  OrderStatus,
+  PaymentMethod,
+  PaymentStatus,
+  Role,
+} from '../../common/enums'
 import { AppException } from '../../common/errors/app.exception'
 import { ErrorCode } from '../../common/errors/error-codes.enum'
 import type { AuthUser } from '../../common/interfaces/auth-user.interface'
@@ -10,7 +16,7 @@ import { MenuItem } from '../menu-items/schemas/menu-item.schema'
 import { Restaurant } from '../restaurants/schemas/restaurant.schema'
 import { CreateOrderDto } from './dto/create-order.dto'
 import { AdminOrderQueryDto, OrderQueryDto } from './dto/order-query.dto'
-import { Order, OrderDocument } from './order.schema'
+import { Order, OrderDocument } from './schemas/order.schema'
 import { applyStatusTransition, calculateOrderTotals, cancelOrder } from './order-rules'
 import { escapeRegex } from './utils/escape-regex'
 
@@ -42,20 +48,20 @@ export class OrdersService {
       customerName: user.name,
       phone: dto.phone.trim(),
       restaurantId: prepared.restaurant._id,
-      status: 'pending',
+      status: OrderStatus.Pending,
       items: prepared.items,
       ...prepared.totals,
       deliveryAddress: dto.deliveryAddress.trim(),
       paymentMethod: dto.paymentMethod,
-      paymentStatus: dto.paymentMethod === PaymentMethod.Cash ? 'pending' : 'simulated',
+      paymentStatus:
+        dto.paymentMethod === PaymentMethod.Cash ? PaymentStatus.Pending : PaymentStatus.Simulated,
       notes: dto.notes?.trim() || null,
       promoCode: dto.promoCode?.trim().toUpperCase() || null,
       scheduledFor,
       estimatedDeliveryAt: new Date(
-        (scheduledFor ?? now).getTime() +
-          prepared.restaurant.deliveryTimeMinutes * 60 * 1000,
+        (scheduledFor ?? now).getTime() + prepared.restaurant.deliveryTimeMinutes * 60 * 1000,
       ),
-      statusHistory: [{ status: 'pending', at: now }],
+      statusHistory: [{ status: OrderStatus.Pending, at: now }],
       cancelledBy: null,
       cancellationReason: null,
     })
@@ -65,41 +71,10 @@ export class OrdersService {
 
   async findOwn(customerId: string, query: OrderQueryDto) {
     if (!Types.ObjectId.isValid(customerId)) throw this.notFound()
-    const filter: FilterQuery<OrderDocument> = { customerId: new Types.ObjectId(customerId) }
+    const filter = this.buildOrderListFilter(query)
+    filter.customerId = new Types.ObjectId(customerId)
 
-    if (query.status) filter.status = query.status
-    if (query.search?.trim()) {
-      const search = escapeRegex(query.search.trim())
-      const orderIdTail = escapeRegex(query.search.trim().replace(/^#/, '').slice(-6))
-      filter.$or = [
-        { 'items.name': { $regex: search, $options: 'i' } },
-        {
-          $expr: {
-            $regexMatch: {
-              input: { $toString: '$_id' },
-              regex: `${orderIdTail}$`,
-              options: 'i',
-            },
-          },
-        },
-      ]
-    }
-    if (query.from || query.to) {
-      filter.createdAt = {}
-      if (query.from) filter.createdAt.$gte = new Date(query.from)
-      if (query.to) filter.createdAt.$lte = new Date(query.to)
-    }
-
-    const [orders, total] = await Promise.all([
-      this.orderModel
-        .find(filter)
-        .sort({ createdAt: -1 })
-        .skip((query.page - 1) * query.limit)
-        .limit(query.limit)
-        .exec(),
-      this.orderModel.countDocuments(filter).exec(),
-    ])
-    return paginate(orders.map((order) => this.mapOrder(order)), total, query)
+    return this.findOrderPage(filter, query)
   }
 
   async findForRestaurant(ownerId: string, query: OrderQueryDto) {
@@ -136,7 +111,7 @@ export class OrdersService {
 
   async cancelForCustomer(customerId: string, orderId: string, reason?: string) {
     const order = await this.findOwnOrder(customerId, orderId)
-    return this.cancelOrder(order, 'customer', reason)
+    return this.applyCancellation(order, CancellationActor.Customer, reason)
   }
 
   async updateStatusForRestaurant(ownerId: string, orderId: string, status: Order['status']) {
@@ -171,12 +146,12 @@ export class OrdersService {
     const restaurant = await this.findOwnedRestaurant(ownerId)
     const order = await this.findOrderById(orderId)
     if (String(order.restaurantId) !== String(restaurant._id)) throw this.notFound()
-    return this.cancelOrder(order, 'restaurant', reason)
+    return this.applyCancellation(order, CancellationActor.Restaurant, reason)
   }
 
   async cancelForAdmin(orderId: string, reason?: string) {
     const order = await this.findOrderById(orderId)
-    return this.cancelOrder(order, 'admin', reason)
+    return this.applyCancellation(order, CancellationActor.Admin, reason)
   }
 
   private async prepareOrder(dto: CreateOrderDto) {
@@ -220,10 +195,7 @@ export class OrdersService {
       }
     })
 
-    const subtotal = items.reduce(
-      (sum, item) => sum + item.unitPrice * item.quantity,
-      0,
-    )
+    const subtotal = items.reduce((sum, item) => sum + item.unitPrice * item.quantity, 0)
     if (subtotal < restaurant.minOrder) {
       throw new AppException(
         HttpStatus.BAD_REQUEST,
@@ -247,7 +219,7 @@ export class OrdersService {
     const totals = calculateOrderTotals({
       subtotal,
       deliveryFee: restaurant.deliveryFee,
-      tip: dto.tip,
+      tip: dto.tip ?? 0,
       promoCode: dto.promoCode,
     })
     return { restaurant, items, totals }
@@ -282,10 +254,7 @@ export class OrdersService {
     return filter
   }
 
-  private async findOrderPage(
-    filter: FilterQuery<OrderDocument>,
-    query: OrderQueryDto,
-  ) {
+  private async findOrderPage(filter: FilterQuery<OrderDocument>, query: OrderQueryDto) {
     const [orders, total] = await Promise.all([
       this.orderModel
         .find(filter)
@@ -295,7 +264,11 @@ export class OrdersService {
         .exec(),
       this.orderModel.countDocuments(filter).exec(),
     ])
-    return paginate(orders.map((order) => this.mapOrder(order)), total, query)
+    return paginate(
+      orders.map((order) => this.mapOrder(order)),
+      total,
+      query,
+    )
   }
 
   private async findOwnOrder(customerId: string, orderId: string): Promise<OrderDocument> {
@@ -316,7 +289,9 @@ export class OrdersService {
     return order
   }
 
-  private async findOwnedRestaurant(ownerId: string): Promise<Restaurant & { _id: Types.ObjectId }> {
+  private async findOwnedRestaurant(
+    ownerId: string,
+  ): Promise<Restaurant & { _id: Types.ObjectId }> {
     if (!Types.ObjectId.isValid(ownerId)) throw this.notFound()
     const restaurant = await this.restaurantModel
       .findOne({ ownerId: new Types.ObjectId(ownerId) })
@@ -325,11 +300,7 @@ export class OrdersService {
     return restaurant as Restaurant & { _id: Types.ObjectId }
   }
 
-  private async cancelOrder(
-    order: OrderDocument,
-    actor: 'customer' | 'restaurant' | 'admin',
-    reason?: string,
-  ) {
+  private async applyCancellation(order: OrderDocument, actor: CancellationActor, reason?: string) {
     const result = cancelOrder(
       order.status,
       actor,
@@ -373,7 +344,9 @@ export class OrdersService {
       'estimatedDeliveryAt',
     ]
     const record = payload as Record<string, unknown>
-    const supplied = forbidden.filter((field) => Object.prototype.hasOwnProperty.call(record, field))
+    const supplied = forbidden.filter((field) =>
+      Object.prototype.hasOwnProperty.call(record, field),
+    )
     if (record.items && Array.isArray(record.items)) {
       for (const item of record.items) {
         if (!item || typeof item !== 'object') continue

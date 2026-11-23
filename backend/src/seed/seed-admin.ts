@@ -2,6 +2,9 @@ import 'dotenv/config'
 import mongoose from 'mongoose'
 import * as bcrypt from 'bcryptjs'
 import { Role, AccountStatus } from '../common/enums'
+// Registers the global schema defaults (timestamps, id virtual) before the
+// user schema is evaluated, so create() persists createdAt/updatedAt.
+import '../database/mongoose.plugin'
 import { User, UserSchema } from '../modules/users/schemas/user.schema'
 
 // Idempotent admin seed: `npm run seed:admin`.

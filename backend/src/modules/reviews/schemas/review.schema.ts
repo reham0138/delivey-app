@@ -36,7 +36,7 @@ export class Review {
   isHidden: boolean
 
   createdAt: Date
-  updatedAt: Date
+  updatedAt?: Date
 }
 
 export const ReviewSchema = SchemaFactory.createForClass(Review)

@@ -1,7 +1,7 @@
 import { HttpStatus } from '@nestjs/common'
 import { AppException } from '../../common/errors/app.exception'
 import { ErrorCode } from '../../common/errors/error-codes.enum'
-import type { OrderStatus } from '../orders/order-rules'
+import { OrderStatus } from '../../common/enums'
 
 export interface ReviewEligibleOrder {
   customerId: string
@@ -15,7 +15,7 @@ export function isReviewEligible(
   menuItemId: string,
 ): boolean {
   return (
-    order.status === 'delivered' &&
+    order.status === OrderStatus.Delivered &&
     order.customerId === customerId &&
     order.items.some((item) => item.menuItemId === menuItemId)
   )

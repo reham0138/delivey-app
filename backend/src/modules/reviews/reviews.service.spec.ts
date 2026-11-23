@@ -139,7 +139,9 @@ describe('ReviewsService', () => {
       exec: jest.fn<() => Promise<typeof duplicateOrder>>().mockResolvedValue(duplicateOrder),
     })
     const duplicateService = new ReviewsService(
-      { findOne: jest.fn<() => Promise<typeof reviewFixture>>().mockResolvedValue(reviewFixture) } as never,
+      {
+        findOne: jest.fn<() => Promise<typeof reviewFixture>>().mockResolvedValue(reviewFixture),
+      } as never,
       orderModel as never,
       menuItemModel as never,
       {} as never,
