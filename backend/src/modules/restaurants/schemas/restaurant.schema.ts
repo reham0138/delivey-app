@@ -47,7 +47,7 @@ export class Restaurant {
   @Prop({ type: String, trim: true, maxlength: 2048, default: '' })
   image!: string
 
-  @Prop({ type: String, trim: true, maxlength: 2048, default: '' })
+  @Prop({ type: String, trim: true, maxlength: 2048, default: null })
   cover!: string | null
 
   @Prop({ type: String, trim: true, default: '' })

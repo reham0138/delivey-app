@@ -3,6 +3,7 @@ import { ErrorCode } from '../../common/errors/error-codes.enum'
 import type { Model } from 'mongoose'
 import { CategoryDocument } from './schemas/category.schema'
 import { MenuItem } from '../menu-items/schemas/menu-item.schema'
+import { Restaurant } from '../restaurants/schemas/restaurant.schema'
 import { CategoriesService } from './categories.service'
 
 describe('CategoriesService admin operations', () => {
@@ -29,9 +30,11 @@ describe('CategoriesService admin operations', () => {
         ]),
     }
     const menuItemModel = { collection: { name: 'menuitems' } }
+    const restaurantModel = { collection: { name: 'restaurants' } }
     const service = new CategoriesService(
       categoryModel as unknown as Model<CategoryDocument>,
       menuItemModel as unknown as Model<MenuItem>,
+      restaurantModel as unknown as Model<Restaurant>,
     )
     const query = { page: 1, limit: 100 }
 
@@ -46,6 +49,18 @@ describe('CategoriesService admin operations', () => {
       isActive: false,
       itemsCount: 0,
     })
+
+    const itemLookup = categoryModel.aggregate.mock.calls[0][0].find(
+      (stage: { $lookup?: { from: string } }) => stage.$lookup?.from === 'menuitems',
+    )
+    expect(itemLookup.$lookup.pipeline).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({
+          $lookup: expect.objectContaining({ from: 'restaurants' }),
+        }),
+        { $match: { activeRestaurant: { $ne: [] } } },
+      ]),
+    )
   })
 
   it('maps case-insensitive duplicate-name errors to CATEGORY_NAME_TAKEN', async () => {
@@ -54,9 +69,11 @@ describe('CategoriesService admin operations', () => {
       create: jest.fn().mockRejectedValue(duplicateError),
     }
     const menuItemModel = { collection: { name: 'menuitems' } }
+    const restaurantModel = { collection: { name: 'restaurants' } }
     const service = new CategoriesService(
       categoryModel as unknown as Model<CategoryDocument>,
       menuItemModel as unknown as Model<MenuItem>,
+      restaurantModel as unknown as Model<Restaurant>,
     )
 
     const error = await service.create({ name: 'burgers' }).then(

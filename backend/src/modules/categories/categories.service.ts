@@ -7,6 +7,7 @@ import { ErrorCode } from '../../common/errors/error-codes.enum'
 import { paginate } from '../../common/utils/pagination.util'
 import { Category, CategoryDocument } from './schemas/category.schema'
 import { MenuItem } from '../menu-items/schemas/menu-item.schema'
+import { Restaurant } from '../restaurants/schemas/restaurant.schema'
 import { ListCategoriesQueryDto } from './dto/list-categories-query.dto'
 import { CreateCategoryDto, UpdateCategoryDto } from './dto/category.dto'
 
@@ -33,6 +34,7 @@ export class CategoriesService {
   constructor(
     @InjectModel(Category.name) private readonly categoryModel: Model<CategoryDocument>,
     @InjectModel(MenuItem.name) private readonly menuItemModel: Model<MenuItem>,
+    @InjectModel(Restaurant.name) private readonly restaurantModel: Model<Restaurant>,
   ) {}
 
   async findAll(query: ListCategoriesQueryDto) {
@@ -128,6 +130,24 @@ export class CategoriesService {
                 isActive: true,
               },
             },
+            {
+              $lookup: {
+                from: this.restaurantModel.collection.name,
+                let: { restaurantId: '$restaurantId' },
+                pipeline: [
+                  {
+                    $match: {
+                      $expr: {
+                        $and: [{ $eq: ['$_id', '$$restaurantId'] }, { $eq: ['$isActive', true] }],
+                      },
+                    },
+                  },
+                  { $limit: 1 },
+                ],
+                as: 'activeRestaurant',
+              },
+            },
+            { $match: { activeRestaurant: { $ne: [] } } },
             { $count: 'count' },
           ],
           as: 'itemCounts',

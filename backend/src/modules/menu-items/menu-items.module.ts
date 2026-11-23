@@ -16,6 +16,6 @@ import { Category, CategorySchema } from '../categories/schemas/category.schema'
   ],
   controllers: [MenuItemsController],
   providers: [MenuItemsService],
-  exports: [MenuItemsService],
+  exports: [MenuItemsService, MongooseModule],
 })
 export class MenuItemsModule {}
