@@ -1,11 +1,13 @@
 export type Role = "customer" | "restaurant" | "admin";
 
 export interface User {
-  id: number;
+  id: string;
   name: string;
   email: string;
   phone?: string;
   role: Role;
+  /** Present for restaurant owners once the backend links the account to a restaurant. */
+  restaurantId?: string;
 }
 
 export interface UpdateProfilePayload {
@@ -28,5 +30,6 @@ export interface RegisterPayload {
   name: string;
   email: string;
   password: string;
+  phone?: string;
   role: "customer" | "restaurant";
 }

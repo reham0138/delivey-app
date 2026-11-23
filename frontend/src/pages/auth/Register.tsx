@@ -7,6 +7,7 @@ import { useAuth } from '@/shared/hooks/useAuth'
 import { getHomePathForRole } from '@/shared/utils/authRedirect'
 import { registerSchema, type RegisterFormValues } from '@/shared/utils/validation'
 import { useLanguage } from '@/shared/hooks/useLanguage'
+import { authErrorKey } from '@/shared/api/auth'
 
 export default function Register() {
 	const { isAuthenticated, role, register: registerAccount } = useAuth()
@@ -36,7 +37,7 @@ export default function Register() {
 			})
 		} catch (error) {
 			setError('root.serverError', {
-				message: error instanceof Error ? t(error.message) : t('Something went wrong. Please try again.'),
+				message: t(authErrorKey(error)),
 			})
 		}
 	}

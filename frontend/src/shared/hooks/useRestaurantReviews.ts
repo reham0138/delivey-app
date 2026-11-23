@@ -3,13 +3,13 @@ import { useCallback, useEffect, useState } from 'react'
 import { reviewService } from '../services/review.service'
 import type { Review } from '../types'
 
-export function useRestaurantReviews(restaurantId: number | null) {
+export function useRestaurantReviews(restaurantId: string | null) {
   const [reviews, setReviews] = useState<Review[]>([])
   const [isLoading, setIsLoading] = useState(true)
   const [error, setError] = useState('')
 
   const reload = useCallback(async () => {
-    if (restaurantId === null || !Number.isInteger(restaurantId) || restaurantId < 1) {
+    if (restaurantId === null || !/^[A-Za-z0-9_-]+$/.test(restaurantId)) {
       setReviews([])
       setIsLoading(false)
       setError('')

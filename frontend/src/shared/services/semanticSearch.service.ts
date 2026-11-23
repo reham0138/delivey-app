@@ -18,7 +18,7 @@ interface SemanticSearchResponse<T> {
  * search API, so meals edited in localStorage are searched as well.
  * Meals may include localizedName / localizedCategory for Arabic queries.
  */
-export async function searchMealsSemantically<T extends { id: number }>(
+export async function searchMealsSemantically<T extends { id: string }>(
   query: string,
   meals: T[],
   signal?: AbortSignal

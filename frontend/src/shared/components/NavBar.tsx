@@ -179,20 +179,20 @@ export default function NavBar() {
                 {t('Restaurants')}
               </NavLink>
 
-              {isAuthenticated && (
+              {isAuthenticated && user?.role === 'customer' && (
                 <NavLink to="/checkout" onClick={closeSidebar} className={linkClassName}>
                   <ShoppingCart aria-hidden="true" size={19} />
                   {t('Checkout')}
                 </NavLink>
               )}
 
-              {isAuthenticated && (
+              {isAuthenticated && user?.role === 'customer' && (
                 <NavLink to="/orders" onClick={closeSidebar} className={linkClassName}>
                   <ClipboardList aria-hidden="true" size={19} />
                   {t('My orders')}
                 </NavLink>
               )}
-              {isAuthenticated && (
+              {isAuthenticated && user?.role !== 'admin' && (
                 <NavLink to="/profile" onClick={closeSidebar} className={linkClassName}>
                   <UserRound aria-hidden="true" size={19} />
                   {t('Profile')}

@@ -1,4 +1,5 @@
 import type { Order, Review } from '@/shared/types'
+import { normalizeMockIds } from '@/shared/utils/normalizeMockIds'
 const STORAGE_KEY = 'crown-anchor-reviews'
 async function getAll(): Promise<Review[]> {
   try {
@@ -7,7 +8,7 @@ async function getAll(): Promise<Review[]> {
   } catch { /* load the fixture if local storage is unavailable or malformed */ }
   const response = await fetch('/mock/reviews.json')
   if (!response.ok) throw new Error('Could not load reviews.')
-  const reviews = await response.json() as Review[]
+  const reviews = normalizeMockIds(await response.json() as Review[])
   try { localStorage.setItem(STORAGE_KEY, JSON.stringify(reviews)) } catch { /* keep the current session usable */ }
   return reviews
 }
@@ -16,19 +17,19 @@ export const reviewService = {
     return (await getAll()).sort((first, second) => second.createdAt.localeCompare(first.createdAt))
   },
 
-  async deleteReview(id: number): Promise<void> {
+  async deleteReview(id: string): Promise<void> {
     const reviews = await getAll()
     const remaining = reviews.filter(review => review.id !== id)
     if (remaining.length === reviews.length) throw new Error('Review not found.')
     localStorage.setItem(STORAGE_KEY, JSON.stringify(remaining))
   },
 
-  async getCustomerMealReview(customerId: number, menuItemId: number): Promise<Review | null> {
+  async getCustomerMealReview(customerId: string, menuItemId: string): Promise<Review | null> {
     return (await getAll()).find(review => review.customerId === customerId && review.menuItemId === menuItemId) ?? null
   },
   // TODO: replace with API call when the backend is ready
   async getByRestaurantId(
-    restaurantId: number,
+    restaurantId: string,
     { includeReported = false }: { includeReported?: boolean } = {},
   ): Promise<Review[]> {
     return (await getAll())
@@ -36,19 +37,19 @@ export const reviewService = {
       .sort((first, second) => second.createdAt.localeCompare(first.createdAt))
   },
   async getByMealId(
-    menuItemId: number,
+    menuItemId: string,
     { includeReported = false }: { includeReported?: boolean } = {},
   ): Promise<Review[]> {
     return (await getAll())
       .filter(review => review.menuItemId === menuItemId && (includeReported || !review.isReported))
       .sort((first, second) => second.createdAt.localeCompare(first.createdAt))
   },
-  async createReview(order: Order, customerName: string, menuItemId: number, rating: number, comment: string): Promise<Review> {
+  async createReview(order: Order, customerName: string, menuItemId: string, rating: number, comment: string): Promise<Review> {
     if (order.status !== 'delivered' || order.items.every(item => item.menuItemId !== menuItemId)) throw new Error('Reviews are available only for meals in delivered orders.')
     const reviews = await getAll()
     if (reviews.some(review => review.customerId === order.customerId && review.menuItemId === menuItemId)) throw new Error('You have already reviewed this meal.')
     const review: Review = {
-      id: Math.max(0, ...reviews.map(item => item.id)) + 1,
+      id: String(Math.max(0, ...reviews.map(item => Number(item.id) || 0)) + 1),
       menuItemId, restaurantId: order.restaurantId, customerId: order.customerId,
       customerName, orderId: order.id, rating, comment: comment.trim() || null,
       createdAt: new Date().toISOString(), updatedAt: null, isReported: false, reportReason: null,

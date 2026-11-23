@@ -25,7 +25,7 @@ type MealSort = 'popular' | 'rating' | 'price' | 'name'
 export default function RestaurantDetailsPage() {
 const { t } = useLanguage()
   const { id } = useParams()
-  const restaurantId = id && /^\d+$/.test(id) ? Number(id) : null
+  const restaurantId = id && /^[A-Za-z0-9_-]+$/.test(id) ? id : null
   const { data, loading, error, refetch } = useRestaurant(restaurantId)
   const {
     reviews,

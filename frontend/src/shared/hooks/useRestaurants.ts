@@ -10,7 +10,7 @@ interface AsyncState<T> {
   refetch: () => Promise<void>
 }
 
-export function useRestaurants(ownerId?: number): AsyncState<Restaurant[]> {
+export function useRestaurants(ownerId?: string): AsyncState<Restaurant[]> {
   const [restaurants, setRestaurants] = useState<Restaurant[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
@@ -45,7 +45,7 @@ interface RestaurantDetails {
   meals: MenuItem[]
 }
 
-export function useRestaurant(id: number | null): AsyncState<RestaurantDetails> {
+export function useRestaurant(id: string | null): AsyncState<RestaurantDetails> {
   const [data, setData] = useState<RestaurantDetails>({
     restaurant: null,
     meals: [],
@@ -54,7 +54,7 @@ export function useRestaurant(id: number | null): AsyncState<RestaurantDetails> 
   const [error, setError] = useState('')
 
   const refetch = useCallback(async () => {
-    if (id === null || !Number.isInteger(id) || id < 1) {
+    if (id === null || !/^[A-Za-z0-9_-]+$/.test(id)) {
       setData({ restaurant: null, meals: [] })
       setLoading(false)
       setError('')
@@ -85,7 +85,7 @@ interface MealDetails {
   restaurant: Restaurant | null
 }
 
-export function useMeal(id: number | null): AsyncState<MealDetails> {
+export function useMeal(id: string | null): AsyncState<MealDetails> {
   const [data, setData] = useState<MealDetails>({
     meal: null,
     restaurant: null,
@@ -94,7 +94,7 @@ export function useMeal(id: number | null): AsyncState<MealDetails> {
   const [error, setError] = useState('')
 
   const refetch = useCallback(async () => {
-    if (id === null || !Number.isInteger(id) || id < 1) {
+    if (id === null || !/^[A-Za-z0-9_-]+$/.test(id)) {
       setData({ meal: null, restaurant: null })
       setLoading(false)
       setError('')

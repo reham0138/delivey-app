@@ -48,7 +48,7 @@ function sum<T>(items: T[], pick: (item: T) => number): number {
 function topItems(orders: Order[], limit: number): TopMenuItem[] {
   // Ties are broken by whichever item was ordered first (lowest order id), so the result
   // does not depend on how the caller happened to sort the list.
-  const oldestFirst = [...orders].sort((a, b) => a.id - b.id)
+  const oldestFirst = [...orders].sort((a, b) => a.id.localeCompare(b.id))
   const units = new Map<string, number>()
   for (const order of oldestFirst) {
     if (order.status === 'cancelled') continue
@@ -63,7 +63,7 @@ function topItems(orders: Order[], limit: number): TopMenuItem[] {
 }
 
 export function computeRestaurantStats(
-  restaurantId: number,
+  restaurantId: string,
   orders: Order[],
   reviews: Review[],
 ): RestaurantStats {

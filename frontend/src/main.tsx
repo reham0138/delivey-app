@@ -6,6 +6,9 @@ import './App.css'
 import App from './App'
 import { CartProvider } from './shared/contexts/CartContext'
 import { LanguageProvider } from './shared/contexts/LanguageContext'
+import { ensureStorageVersion } from './shared/services/storageVersion'
+
+ensureStorageVersion()
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>

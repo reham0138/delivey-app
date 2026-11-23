@@ -1,20 +1,20 @@
-import { listRegisteredUsers } from '@/shared/api/auth'
 import { menuItemService } from '@/shared/services/menuItem.service'
 import { orderService } from '@/shared/services/order.service'
 import { reviewService } from '@/shared/services/review.service'
 import { adminState } from '@/shared/services/adminState.service'
 import type { AccountStatus, MenuItem, Order, Restaurant, Review, User, UserRole } from '@/shared/types'
+import { normalizeMockIds } from '@/shared/utils/normalizeMockIds'
 
 // Replace the bodies with Axios calls when the backend is ready. Keep the signatures and return types.
 
 async function fetchJson<T>(url: string): Promise<T> {
   const response = await fetch(url)
   if (!response.ok) throw new Error(`Unable to load admin data (HTTP ${response.status}).`)
-  return response.json() as Promise<T>
+  return Promise.resolve(normalizeMockIds((await response.json()) as T))
 }
 
 export interface AdminUserRow {
-  id: number
+  id: string
   name: string
   email: string
   phone: string
@@ -40,7 +40,7 @@ export interface AdminMealRow extends MenuItem {
 }
 
 export const adminService = {
-  /** Demo accounts from users.json plus accounts created with the sign-up form. */
+  /** Demo accounts from users.json. Registered accounts live on the backend (admin service is still mock-driven). */
   async listUsers(): Promise<AdminUserRow[]> {
     const fixtures = await fetchJson<User[]>('/mock/users.json')
     const demoRows: AdminUserRow[] = fixtures.map((user) => ({
@@ -53,20 +53,7 @@ export const adminService = {
       createdAt: user.createdAt,
       source: 'demo',
     }))
-    const knownEmails = new Set(demoRows.map((row) => row.email.toLowerCase()))
-    const registeredRows: AdminUserRow[] = listRegisteredUsers()
-      .filter((user) => !knownEmails.has(user.email.toLowerCase()))
-      .map((user) => ({
-        id: user.id,
-        name: user.name,
-        email: user.email,
-        phone: user.phone ?? '',
-        role: user.role,
-        status: adminState.getUserStatus(user.email, 'active'),
-        createdAt: null,
-        source: 'registered',
-      }))
-    return [...demoRows, ...registeredRows]
+    return demoRows
   },
 
   async listRestaurants(): Promise<Restaurant[]> {
@@ -77,7 +64,7 @@ export const adminService = {
     }))
   },
 
-  async setRestaurantIsActive(id: number, isActive: boolean): Promise<void> {
+  async setRestaurantIsActive(id: string, isActive: boolean): Promise<void> {
     const restaurant = (await this.listRestaurants()).find((item) => item.id === id)
     if (!restaurant) throw new Error('Restaurant not found.')
     adminState.setRestaurantIsActive(id, isActive)
@@ -98,7 +85,7 @@ export const adminService = {
     }))
   },
 
-  async deleteReview(id: number): Promise<void> {
+  async deleteReview(id: string): Promise<void> {
     await reviewService.deleteReview(id)
   },
 
@@ -114,7 +101,7 @@ export const adminService = {
     }))
   },
 
-  async deleteOrder(id: number): Promise<void> {
+  async deleteOrder(id: string): Promise<void> {
     await orderService.deleteOrder(id)
   },
 
@@ -130,7 +117,7 @@ export const adminService = {
     }))
   },
 
-  async setMealAvailability(id: number, isAvailable: boolean): Promise<void> {
+  async setMealAvailability(id: string, isAvailable: boolean): Promise<void> {
     await menuItemService.setAvailability(id, isAvailable)
   },
 

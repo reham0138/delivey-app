@@ -11,7 +11,7 @@ const ORDER_FLOW: OrderStatus[] = ['pending', 'preparing', 'ready', 'on_the_way'
 
 interface MealOverrides {
   items: MenuItem[]
-  deletedIds: number[]
+  deletedIds: string[]
 }
 
 export type MealChanges = Pick<
@@ -36,7 +36,7 @@ function readMealOverrides(): MealOverrides {
     !Array.isArray(parsed.items) ||
     !('deletedIds' in parsed) ||
     !Array.isArray(parsed.deletedIds) ||
-    !parsed.deletedIds.every((id: unknown) => Number.isInteger(id))
+    !parsed.deletedIds.every((id: unknown) => typeof id === 'string')
   ) {
     throw new Error('Saved meal changes are invalid.')
   }
@@ -81,14 +81,14 @@ function saveOrders(orders: Order[]): void {
   }
 }
 
-async function getOwnedRestaurant(ownerId: number): Promise<Restaurant> {
+async function getOwnedRestaurant(ownerId: string): Promise<Restaurant> {
   const restaurant = await restaurantService.getOwnedByOwnerId(ownerId)
   if (!restaurant) throw new Error('No restaurant profile is associated with this account.')
   return restaurant
 }
 
 export const restaurantDashboardService = {
-  async load(ownerId: number): Promise<{
+  async load(ownerId: string): Promise<{
     restaurant: Restaurant | null
     meals: MenuItem[]
     orders: Order[]
@@ -109,16 +109,16 @@ export const restaurantDashboardService = {
     }
   },
 
-  async createMeal(ownerId: number, changes: MealChanges): Promise<MenuItem> {
+  async createMeal(ownerId: string, changes: MealChanges): Promise<MenuItem> {
     const restaurant = await getOwnedRestaurant(ownerId)
     const meals = await mealsWithOverrides()
     const overrides = readMealOverrides()
-    const id = Math.max(
+    const id = String(Math.max(
       0,
-      ...meals.map((meal) => meal.id),
-      ...overrides.items.map((meal) => meal.id),
-      ...overrides.deletedIds,
-    ) + 1
+      ...meals.map((meal) => Number(meal.id) || 0),
+      ...overrides.items.map((meal) => Number(meal.id) || 0),
+      ...overrides.deletedIds.map((deletedId) => Number(deletedId) || 0),
+     ) + 1)
     const meal: MenuItem = {
       id,
       restaurantId: restaurant.id,
@@ -134,7 +134,7 @@ export const restaurantDashboardService = {
     return meal
   },
 
-  async updateMeal(ownerId: number, mealId: number, changes: MealChanges): Promise<void> {
+  async updateMeal(ownerId: string, mealId: string, changes: MealChanges): Promise<void> {
     const restaurant = await getOwnedRestaurant(ownerId)
     const meals = await mealsWithOverrides()
     const meal = meals.find((item) => item.id === mealId && item.restaurantId === restaurant.id)
@@ -146,7 +146,7 @@ export const restaurantDashboardService = {
     })
   },
 
-  async deleteMeal(ownerId: number, mealId: number): Promise<void> {
+  async deleteMeal(ownerId: string, mealId: string): Promise<void> {
     const restaurant = await getOwnedRestaurant(ownerId)
     const meals = await mealsWithOverrides()
     if (!meals.some((meal) => meal.id === mealId && meal.restaurantId === restaurant.id)) {
@@ -159,7 +159,7 @@ export const restaurantDashboardService = {
     })
   },
 
-  async updateOrderStatus(ownerId: number, orderId: number, status: OrderStatus): Promise<void> {
+  async updateOrderStatus(ownerId: string, orderId: string, status: OrderStatus): Promise<void> {
     const restaurant = await getOwnedRestaurant(ownerId)
     const orders = await orderService.listAllOrders()
     const orderIndex = orders.findIndex((item) => item.id === orderId && item.restaurantId === restaurant.id)
@@ -179,7 +179,7 @@ export const restaurantDashboardService = {
     saveOrders(orders)
   },
 
-  async reportReview(ownerId: number, reviewId: number, reason: string): Promise<void> {
+  async reportReview(ownerId: string, reviewId: string, reason: string): Promise<void> {
     const restaurant = await getOwnedRestaurant(ownerId)
     const reviews = await reviewService.listAll()
     const reviewIndex = reviews.findIndex(

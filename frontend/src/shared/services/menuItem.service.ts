@@ -1,4 +1,5 @@
 import type { MenuItem } from '@/shared/types'
+import { normalizeMockIds } from '@/shared/utils/normalizeMockIds'
 
 const STORAGE_KEY = 'crown-anchor-menu-item-availability'
 const MENU_ITEMS_URL = '/mock/menu-items.json'
@@ -8,7 +9,7 @@ type AvailabilityOverrides = Record<string, boolean>
 async function fetchMenuItems(): Promise<MenuItem[]> {
   const response = await fetch(MENU_ITEMS_URL)
   if (!response.ok) throw new Error(`Unable to load meals (HTTP ${response.status}).`)
-  return response.json() as Promise<MenuItem[]>
+  return Promise.resolve(normalizeMockIds((await response.json()) as MenuItem[]))
 }
 
 function readAvailabilityOverrides(): AvailabilityOverrides {
@@ -55,7 +56,7 @@ export const menuItemService = {
     }))
   },
 
-  async setAvailability(id: number, isAvailable: boolean): Promise<void> {
+  async setAvailability(id: string, isAvailable: boolean): Promise<void> {
     const items = await fetchMenuItems()
     if (!items.some((item) => item.id === id)) throw new Error('Meal not found.')
     const overrides = readAvailabilityOverrides()

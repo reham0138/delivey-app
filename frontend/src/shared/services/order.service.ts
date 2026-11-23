@@ -1,5 +1,6 @@
 import type { CartItem } from '@/shared/types/cart'
 import type { Order, OrderStatus, PaymentMethod } from '@/shared/types'
+import { normalizeMockIds } from '@/shared/utils/normalizeMockIds'
 
 const STORAGE_KEY = 'crown-anchor-orders'
 const ADDRESS_KEY = 'crown-anchor-addresses'
@@ -9,7 +10,7 @@ const FLOW: OrderStatus[] = ['pending', 'preparing', 'ready', 'on_the_way', 'del
 
 export interface OrderAddress { id: string; label: string; address: string; phone: string }
 export interface CreateOrderInput {
-  customerId: number; customerName: string; phone: string; restaurantId: number
+  customerId: string; customerName: string; phone: string; restaurantId: string
   items: CartItem[]; deliveryAddress: string; paymentMethod: PaymentMethod; notes: string
   subtotal: number; deliveryFee: number; serviceFee: number; tax: number; discount: number
   tip: number; promoCode: string | null; scheduledFor: string | null; estimatedDeliveryAt: string
@@ -47,7 +48,7 @@ function advanceOrder(order: Order): Order {
 async function seedOrders(): Promise<Order[]> {
   const response = await fetch('/mock/orders.json')
   if (!response.ok) throw new Error('Could not load order history.')
-  return await response.json() as Order[]
+  return normalizeMockIds(await response.json() as Order[])
 }
 async function allOrders(): Promise<Order[]> {
   const stored = readOrders()
@@ -57,7 +58,7 @@ async function allOrders(): Promise<Order[]> {
   return seed.map(advanceOrder)
 }
 export const orderService = {
-  async listOrders(customerId: number, page = 1, limit = 6, filters?: { status?: string; search?: string; from?: string; to?: string }): Promise<PaginatedResponse<Order>> {
+  async listOrders(customerId: string, page = 1, limit = 6, filters?: { status?: string; search?: string; from?: string; to?: string }): Promise<PaginatedResponse<Order>> {
     const all = (await allOrders()).filter(order => order.customerId === customerId).sort((a,b) => b.createdAt.localeCompare(a.createdAt))
     const filtered = all.filter(order => (!filters?.status || filters.status === 'all' || order.status === filters.status) && (!filters?.search || (String(order.id) + ' ' + order.items.map(item => item.name).join(' ')).toLowerCase().includes(filters.search.toLowerCase())) && (!filters?.from || order.createdAt.slice(0,10) >= filters.from) && (!filters?.to || order.createdAt.slice(0,10) <= filters.to))
     const stored = readOrders() ?? []
@@ -68,20 +69,20 @@ export const orderService = {
   async listAllOrders(): Promise<Order[]> {
     return (await allOrders()).sort((first, second) => second.createdAt.localeCompare(first.createdAt))
   },
-  async deleteOrder(id: number): Promise<void> {
+  async deleteOrder(id: string): Promise<void> {
     const orders = await allOrders()
     const remaining = orders.filter(order => order.id !== id)
     if (remaining.length === orders.length) throw new Error('Order not found.')
     writeOrders(remaining)
   },
-  async getOrder(id: number, customerId: number): Promise<Order | null> {
+  async getOrder(id: string, customerId: string): Promise<Order | null> {
     return (await allOrders()).find(order => order.id === id && order.customerId === customerId) ?? null
   },
   async createOrder(input: CreateOrderInput): Promise<Order> {
     const orders = await allOrders()
     const createdAt = new Date().toISOString()
     const order: Order = {
-      id: Math.max(1000, ...orders.map(item => item.id)) + 1,
+      id: String(Math.max(1000, ...orders.map(item => Number(item.id) || 0)) + 1),
       customerId: input.customerId, customerName: input.customerName, phone: input.phone,
       restaurantId: input.restaurantId, status: 'pending',
       items: input.items.map(item => ({ menuItemId: item.menuItemId, name: item.name, quantity: item.quantity, unitPrice: item.price })),
@@ -95,7 +96,7 @@ export const orderService = {
     writeOrders([order, ...orders])
     return order
   },
-  async cancelOrder(id: number, customerId: number): Promise<Order> {
+  async cancelOrder(id: string, customerId: string): Promise<Order> {
     const orders = await allOrders()
     const index = orders.findIndex(order => order.id === id && order.customerId === customerId)
     if (index < 0) throw new Error('Order not found.')
