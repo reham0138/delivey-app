@@ -1,12 +1,31 @@
 import type { MenuItem, Restaurant, RestaurantProfileChanges } from '../types'
+import type { PaginatedResponse } from '../types'
 import { adminState } from './adminState.service'
 import { menuItemService } from './menuItem.service'
-import { normalizeMockIds } from '@/shared/utils/normalizeMockIds'
+import { ApiError, apiRequest } from '@/shared/api/client'
 
 const RESTAURANTS_URL = '/mock/restaurants.json'
 const PROFILE_OVERRIDES_KEY = 'crown-anchor-restaurant-profile-overrides'
 
 type ProfileOverrides = Record<string, Partial<RestaurantProfileChanges>>
+
+export interface RestaurantListQuery {
+  page: number
+  limit: number
+  search?: string
+  cuisine?: string
+  minRating?: number
+  isOpen?: boolean
+  sort: 'rating' | 'deliveryTime' | 'deliveryFee' | 'name'
+}
+
+export interface RestaurantMenuQuery {
+  page: number
+  limit: number
+  search?: string
+  category?: string
+  sort: 'popular' | 'rating' | 'price_asc' | 'name'
+}
 
 async function fetchJson<T>(url: string): Promise<T> {
   const response = await fetch(url)
@@ -15,7 +34,7 @@ async function fetchJson<T>(url: string): Promise<T> {
     throw new Error(`Unable to load restaurant data (HTTP ${response.status}).`)
   }
 
-  return Promise.resolve(normalizeMockIds((await response.json()) as T))
+  return (await response.json()) as T
 }
 
 interface RestaurantData {
@@ -105,10 +124,7 @@ function applyProfileChanges(
 }
 
 export const restaurantService = {
-  async getAll(): Promise<Restaurant[]> {
-    const { restaurants, menuItems } = await loadRestaurantData()
-    return withReviewCounts(restaurants, menuItems)
-  },
+  getAll,
 
   async getOwnedByOwnerId(ownerId: string): Promise<Restaurant | null> {
     const { restaurants, menuItems } = await loadRestaurantData()
@@ -144,34 +160,88 @@ export const restaurantService = {
     meal: MenuItem | null
     restaurant: Restaurant | null
   }> {
-    const { restaurants, menuItems } = await loadRestaurantData()
-    const meal = menuItems.find((item) => item.id === id) ?? null
-
-    if (!meal) {
-      return { meal: null, restaurant: null }
+    let meal: MenuItem
+    try {
+      meal = await menuItemService.getById(id)
+    } catch (error) {
+      if (error instanceof ApiError && error.statusCode === 404) {
+        return { meal: null, restaurant: null }
+      }
+      throw error
     }
 
-    const restaurant = withReviewCounts(restaurants, menuItems, true)
-      .find((item) => item.id === meal.restaurantId) ?? null
-
+    let restaurant: Restaurant | null
+    try {
+      restaurant = await apiRequest<Restaurant>(
+        `/restaurants/${encodeURIComponent(meal.restaurantId)}`,
+      )
+    } catch (error) {
+      if (error instanceof ApiError && error.statusCode === 404) {
+        return { meal, restaurant: null }
+      }
+      throw error
+    }
     return { meal, restaurant }
   },
 
-  async getById(id: string): Promise<{
+  async getById(id: string, query: RestaurantMenuQuery = { page: 1, limit: 50, sort: 'name' }): Promise<{
     restaurant: Restaurant | null
     meals: MenuItem[]
+    meta: PaginatedResponse<MenuItem>['meta']
   }> {
-    const { restaurants, menuItems } = await loadRestaurantData()
-    const restaurant = withReviewCounts(restaurants, menuItems)
-      .find((item) => item.id === id) ?? null
-
-    return {
-      restaurant,
-      meals: restaurant
-        ? menuItems.filter(
-            (item) => item.restaurantId === id && item.isAvailable,
-          )
-        : [],
+    try {
+      const [restaurant, menuPage] = await Promise.all([
+        apiRequest<Restaurant>(`/restaurants/${encodeURIComponent(id)}`),
+        apiRequest<PaginatedResponse<MenuItem>>(
+          `/restaurants/${encodeURIComponent(id)}/menu-items`,
+          {
+            query: {
+              page: query.page,
+              limit: query.limit,
+              search: query.search,
+              category: query.category,
+              sort: query.sort,
+            },
+          },
+        ),
+      ])
+      return {
+        restaurant,
+        meals: menuPage.data,
+        meta: menuPage.meta,
+      }
+    } catch (error) {
+      if (error instanceof ApiError && error.statusCode === 404) {
+        return {
+          restaurant: null,
+          meals: [],
+          meta: { total: 0, page: query.page, limit: query.limit, total_pages: 1 },
+        }
+      }
+      throw error
     }
   },
+}
+
+function getAll(): Promise<Restaurant[]>
+function getAll(query: RestaurantListQuery): Promise<PaginatedResponse<Restaurant>>
+async function getAll(
+  query?: RestaurantListQuery,
+): Promise<Restaurant[] | PaginatedResponse<Restaurant>> {
+  if (query) {
+    return apiRequest<PaginatedResponse<Restaurant>>('/restaurants', {
+      query: {
+        page: query.page,
+        limit: query.limit,
+        search: query.search,
+        cuisine: query.cuisine,
+        minRating: query.minRating,
+        isOpen: query.isOpen,
+        sort: query.sort,
+      },
+    })
+  }
+
+  const { restaurants, menuItems } = await loadRestaurantData()
+  return withReviewCounts(restaurants, menuItems)
 }

@@ -9,6 +9,7 @@ import {
   IsOptional,
   IsString,
   Matches,
+  Max,
   MaxLength,
   Min,
 } from 'class-validator'
@@ -31,6 +32,14 @@ export class ListRestaurantsQueryDto extends PaginationQueryDto {
   @IsOptional()
   @IsBooleanString()
   isOpen?: string
+
+  @ApiPropertyOptional({ minimum: 0, maximum: 5 })
+  @IsOptional()
+  @Type(() => Number)
+  @IsNumber({ maxDecimalPlaces: 1 })
+  @Min(0)
+  @Max(5)
+  minRating?: number
 
   @ApiPropertyOptional({
     enum: ['rating', 'deliveryTime', 'deliveryFee', 'name'],

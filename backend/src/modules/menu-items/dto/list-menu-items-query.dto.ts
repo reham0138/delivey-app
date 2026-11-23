@@ -10,6 +10,8 @@ import {
 import { ApiPropertyOptional } from '@nestjs/swagger'
 import { PaginationQueryDto } from '../../../common/dto/pagination-query.dto'
 
+type MenuItemSort = 'popular' | 'rating' | 'price_asc' | 'price_desc' | 'name'
+
 export class ListMenuItemsQueryDto extends PaginationQueryDto {
   @ApiPropertyOptional({ maxLength: 100 })
   @IsOptional()
@@ -53,10 +55,10 @@ export class ListMenuItemsQueryDto extends PaginationQueryDto {
   @IsBooleanString()
   includeUnavailable?: string
 
-  @ApiPropertyOptional({ enum: ['rating', 'price_asc', 'price_desc', 'name'], default: 'rating' })
+  @ApiPropertyOptional({ enum: ['popular', 'rating', 'price_asc', 'price_desc', 'name'], default: 'rating' })
   @IsOptional()
-  @IsIn(['rating', 'price_asc', 'price_desc', 'name'])
-  sort: 'rating' | 'price_asc' | 'price_desc' | 'name' = 'rating'
+  @IsIn(['popular', 'rating', 'price_asc', 'price_desc', 'name'])
+  sort: MenuItemSort = 'rating'
 }
 
 export class RestaurantMenuItemsQueryDto extends PaginationQueryDto {
@@ -76,6 +78,11 @@ export class RestaurantMenuItemsQueryDto extends PaginationQueryDto {
   @IsOptional()
   @IsBooleanString()
   includeUnavailable?: string
+
+  @ApiPropertyOptional({ enum: ['popular', 'rating', 'price_asc', 'name'], default: 'rating' })
+  @IsOptional()
+  @IsIn(['popular', 'rating', 'price_asc', 'name'])
+  sort: Exclude<MenuItemSort, 'price_desc'> = 'rating'
 }
 
 export class ListOwnerMenuItemsQueryDto extends PaginationQueryDto {
