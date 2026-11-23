@@ -7,15 +7,20 @@ import { UsersService } from '../../users/users.service'
 import { Role, AccountStatus } from '../../../common/enums'
 import { ErrorCode } from '../../../common/errors/error-codes.enum'
 import { AppException } from '../../../common/errors'
+import { RestaurantsController } from '../../restaurants/restaurants.controller'
 
-const makeContext = (authorization?: string) => {
+const makeContext = (
+  authorization?: string,
+  handler: object = () => undefined,
+  controller: object = Object,
+) => {
   const request: Record<string, unknown> = { headers: {} }
   if (authorization) request.headers = { authorization }
   return {
     request,
     context: {
-      getHandler: () => ({}),
-      getClass: () => ({}),
+      getHandler: () => handler,
+      getClass: () => controller,
       switchToHttp: () => ({ getRequest: () => request }),
     } as unknown as ExecutionContext,
   }
@@ -62,6 +67,21 @@ describe('JwtAuthGuard', () => {
   it('rejects missing tokens with UNAUTHORIZED', async () => {
     const { context } = makeContext()
     await expectGuardError(guard.canActivate(context), 401, ErrorCode.Unauthorized)
+  })
+
+  it('returns 401 for a route without @Public when no token is provided', async () => {
+    const protectedGuard = new JwtAuthGuard(
+      jwtService as unknown as JwtService,
+      new Reflector(),
+      usersService as unknown as UsersService,
+    )
+    const { context } = makeContext(
+      undefined,
+      RestaurantsController.prototype.findMine,
+      RestaurantsController,
+    )
+
+    await expectGuardError(protectedGuard.canActivate(context), 401, ErrorCode.Unauthorized)
   })
 
   it('rejects expired tokens with TOKEN_EXPIRED', async () => {

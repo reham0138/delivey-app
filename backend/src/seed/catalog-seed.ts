@@ -1,5 +1,6 @@
 import { readFileSync } from 'fs'
 import { resolve } from 'path'
+import { createHash } from 'crypto'
 import { Types } from 'mongoose'
 import type { Model } from 'mongoose'
 import { Category } from '../modules/categories/schemas/category.schema'
@@ -53,7 +54,15 @@ export interface CatalogFixtureIds {
   categories: ReadonlyMap<number, Types.ObjectId>
   restaurants: ReadonlyMap<number, Types.ObjectId>
   menuItems: ReadonlyMap<number, Types.ObjectId>
-  users: ReadonlyMap<number, Types.ObjectId>
+}
+
+export interface CatalogSeedResult {
+  ids: CatalogFixtureIds
+  created: {
+    categories: number
+    restaurants: number
+    menuItems: number
+  }
 }
 
 export interface CatalogModels {
@@ -82,6 +91,20 @@ function mappedId(
   return id
 }
 
+function fixtureIds(rows: { id: number }[], collection: string): Map<number, Types.ObjectId> {
+  return new Map(
+    rows.map(({ id }) => [
+      id,
+      new Types.ObjectId(
+        createHash('sha256')
+          .update(`crown-anchor-catalog:${collection}:${id}`)
+          .digest('hex')
+          .slice(0, 24),
+      ),
+    ]),
+  )
+}
+
 function normalizeName(name: string): string {
   return name.trim().toLocaleLowerCase('en')
 }
@@ -99,12 +122,28 @@ function getRating(totals: Map<number, RatingTotals>, fixtureId: number): Rating
 
 export async function seedCatalogCollections(
   models: CatalogModels,
-  ids: CatalogFixtureIds,
-): Promise<{ categories: number; restaurants: number; menuItems: number }> {
+  userIds?: ReadonlyMap<number, Types.ObjectId>,
+): Promise<CatalogSeedResult> {
   const categories = readFixture<FixtureCategory>('categories.json')
   const restaurants = readFixture<FixtureRestaurant>('restaurants.json')
   const menuItems = readFixture<FixtureMenuItem>('menu-items.json')
   const reviews = readFixture<FixtureReview>('reviews.json')
+
+  const ids: CatalogFixtureIds = {
+    categories: fixtureIds(categories, 'category'),
+    restaurants: new Map(),
+    menuItems: new Map(),
+  }
+  if (userIds) {
+    const missingUserIds = [...new Set(restaurants.map((restaurant) => restaurant.ownerId))].filter(
+      (id) => !userIds.has(id),
+    )
+    if (missingUserIds.length > 0) {
+      throw new Error(
+        `Missing user fixture IDs for restaurant owners: ${missingUserIds.join(', ')}`,
+      )
+    }
+  }
 
   const categoryIdsByName = new Map(
     categories.map((category) => [
@@ -119,90 +158,103 @@ export async function seedCatalogCollections(
     addRating(restaurantRatings, review.restaurantId, review.rating)
   }
 
-  await Promise.all([
-    models.categories.bulkWrite(
-      categories.map((category) => ({
+  const categoryResult = await models.categories.bulkWrite(
+    categories.map((category) => ({
+      replaceOne: {
+        filter: { _id: mappedId(ids.categories, category.id, 'category') },
+        replacement: {
+          _id: mappedId(ids.categories, category.id, 'category'),
+          name: category.name,
+          isActive: category.isActive,
+        },
+        upsert: true,
+      },
+    })),
+    { ordered: true },
+  )
+
+  if (!userIds) {
+    return {
+      ids,
+      created: { categories: categoryResult.upsertedCount, restaurants: 0, menuItems: 0 },
+    }
+  }
+
+  ids.restaurants = fixtureIds(restaurants, 'restaurant')
+  ids.menuItems = fixtureIds(menuItems, 'menu-item')
+
+  const restaurantResult = await models.restaurants.bulkWrite(
+    restaurants.map((restaurant) => {
+      const rating = getRating(restaurantRatings, restaurant.id)
+      const _id = mappedId(ids.restaurants, restaurant.id, 'restaurant')
+      return {
         replaceOne: {
-          filter: { _id: mappedId(ids.categories, category.id, 'category') },
+          filter: { _id },
           replacement: {
-            _id: mappedId(ids.categories, category.id, 'category'),
-            name: category.name,
-            isActive: category.isActive,
+            _id,
+            ownerId: mappedId(userIds, restaurant.ownerId, 'user'),
+            name: restaurant.name,
+            cuisine: restaurant.cuisine,
+            address: restaurant.address,
+            phone: restaurant.phone,
+            deliveryTimeMinutes: restaurant.deliveryTimeMinutes,
+            deliveryFee: restaurant.deliveryFee,
+            minOrder: restaurant.minOrder,
+            isOpen: restaurant.isOpen,
+            isActive: restaurant.isActive,
+            image: restaurant.image,
+            cover: null,
+            openingHours: '',
+            ratingSum: rating.ratingSum,
+            ratingCount: rating.ratingCount,
+            createdAt: new Date(restaurant.createdAt),
           },
           upsert: true,
         },
-      })),
-      { ordered: true },
-    ),
-    models.restaurants.bulkWrite(
-      restaurants.map((restaurant) => {
-        const rating = getRating(restaurantRatings, restaurant.id)
-        const _id = mappedId(ids.restaurants, restaurant.id, 'restaurant')
-        return {
-          replaceOne: {
-            filter: { _id },
-            replacement: {
-              _id,
-              ownerId: mappedId(ids.users, restaurant.ownerId, 'user'),
-              name: restaurant.name,
-              cuisine: restaurant.cuisine,
-              address: restaurant.address,
-              phone: restaurant.phone,
-              deliveryTimeMinutes: restaurant.deliveryTimeMinutes,
-              deliveryFee: restaurant.deliveryFee,
-              minOrder: restaurant.minOrder,
-              isOpen: restaurant.isOpen,
-              isActive: restaurant.isActive,
-              image: restaurant.image,
-              cover: '',
-              openingHours: '',
-              ratingSum: rating.ratingSum,
-              ratingCount: rating.ratingCount,
-              createdAt: new Date(restaurant.createdAt),
-            },
-            upsert: true,
+      }
+    }),
+    { ordered: true },
+  )
+
+  const menuItemResult = await models.menuItems.bulkWrite(
+    menuItems.map((menuItem) => {
+      const _id = mappedId(ids.menuItems, menuItem.id, 'menu item')
+      const categoryId = categoryIdsByName.get(normalizeName(menuItem.category))
+      if (!categoryId) throw new Error(`Missing category fixture "${menuItem.category}"`)
+      const rating = getRating(menuItemRatings, menuItem.id)
+      return {
+        replaceOne: {
+          filter: { _id },
+          replacement: {
+            _id,
+            restaurantId: mappedId(ids.restaurants, menuItem.restaurantId, 'restaurant'),
+            name: menuItem.name,
+            description: menuItem.description,
+            price: menuItem.price,
+            categoryId,
+            image: menuItem.image ?? null,
+            isAvailable: menuItem.isAvailable,
+            ingredients: menuItem.ingredients,
+            preparationTimeMinutes: menuItem.preparationTimeMinutes,
+            nutrition: menuItem.nutrition ?? null,
+            isPopular: menuItem.isPopular,
+            isActive: true,
+            ratingSum: rating.ratingSum,
+            ratingCount: rating.ratingCount,
           },
-        }
-      }),
-      { ordered: true },
-    ),
-    models.menuItems.bulkWrite(
-      menuItems.map((menuItem) => {
-        const _id = mappedId(ids.menuItems, menuItem.id, 'menu item')
-        const categoryId = categoryIdsByName.get(normalizeName(menuItem.category))
-        if (!categoryId) throw new Error(`Missing category fixture "${menuItem.category}"`)
-        const rating = getRating(menuItemRatings, menuItem.id)
-        return {
-          replaceOne: {
-            filter: { _id },
-            replacement: {
-              _id,
-              restaurantId: mappedId(ids.restaurants, menuItem.restaurantId, 'restaurant'),
-              name: menuItem.name,
-              description: menuItem.description,
-              price: menuItem.price,
-              categoryId,
-              image: menuItem.image ?? null,
-              isAvailable: menuItem.isAvailable,
-              ingredients: menuItem.ingredients,
-              preparationTimeMinutes: menuItem.preparationTimeMinutes,
-              nutrition: menuItem.nutrition ?? null,
-              isPopular: menuItem.isPopular,
-              isActive: true,
-              ratingSum: rating.ratingSum,
-              ratingCount: rating.ratingCount,
-            },
-            upsert: true,
-          },
-        }
-      }),
-      { ordered: true },
-    ),
-  ])
+          upsert: true,
+        },
+      }
+    }),
+    { ordered: true },
+  )
 
   return {
-    categories: categories.length,
-    restaurants: restaurants.length,
-    menuItems: menuItems.length,
+    ids,
+    created: {
+      categories: categoryResult.upsertedCount,
+      restaurants: restaurantResult.upsertedCount,
+      menuItems: menuItemResult.upsertedCount,
+    },
   }
 }

@@ -1,4 +1,5 @@
 import { Type } from 'class-transformer'
+import { ApiPropertyOptional } from '@nestjs/swagger'
 import {
   IsBoolean,
   IsBooleanString,
@@ -14,31 +15,40 @@ import {
 import { PaginationQueryDto } from '../../../common/dto/pagination-query.dto'
 
 export class ListRestaurantsQueryDto extends PaginationQueryDto {
+  @ApiPropertyOptional({ maxLength: 100 })
   @IsOptional()
   @IsString()
   @MaxLength(100)
   search?: string
 
+  @ApiPropertyOptional({ maxLength: 60 })
   @IsOptional()
   @IsString()
   @MaxLength(60)
   cuisine?: string
 
+  @ApiPropertyOptional({ enum: ['true', 'false'] })
   @IsOptional()
   @IsBooleanString()
   isOpen?: string
 
+  @ApiPropertyOptional({
+    enum: ['rating', 'deliveryTime', 'deliveryFee', 'name'],
+    default: 'rating',
+  })
   @IsOptional()
   @IsIn(['rating', 'deliveryTime', 'deliveryFee', 'name'])
   sort: 'rating' | 'deliveryTime' | 'deliveryFee' | 'name' = 'rating'
 }
 
 export class ListAdminRestaurantsQueryDto extends PaginationQueryDto {
+  @ApiPropertyOptional({ maxLength: 100 })
   @IsOptional()
   @IsString()
   @MaxLength(100)
   search?: string
 
+  @ApiPropertyOptional({ enum: ['true', 'false'] })
   @IsOptional()
   @IsBooleanString()
   isActive?: string

@@ -82,6 +82,7 @@ describe('catalog response and request contract', () => {
       ratingCount: 2,
     })
 
+    expect(restaurant.cover).toBeNull()
     expect(restaurant.toJSON()).not.toHaveProperty('ratingSum')
     expect(restaurant.toJSON()).not.toHaveProperty('ratingCount')
     expect(menuItem.toJSON()).not.toHaveProperty('categoryId')

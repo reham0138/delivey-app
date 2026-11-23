@@ -15,7 +15,8 @@
     "test": "jest",
     "test:watch": "jest --watch",
     "test:cov": "jest --coverage",
-    "seed:admin": "ts-node src/seed/seed-admin.ts"
+    "seed:admin": "ts-node src/seed/seed-admin.ts",
+    "seed:catalog": "ts-node src/seed/seed-catalog.ts"
   },
   "dependencies": {
     "@nestjs/common": "^11.0.0",
