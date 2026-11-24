@@ -408,7 +408,8 @@ export class MenuItemsService {
     restaurantId: Types.ObjectId,
   ): Promise<MenuItemResponse> {
     const rows = await this.menuItemModel.aggregate<MenuItemRow>([
-      ...this.publicPipeline({ _id: itemId, restaurantId, isActive: true }, undefined, undefined),
+      { $match: { _id: itemId, restaurantId, isActive: true } },
+      ...this.categoryLookup(undefined, false),
       ...this.ratingStage(),
       { $limit: 1 },
       ...this.menuProjection(),
