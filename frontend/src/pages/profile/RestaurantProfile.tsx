@@ -21,6 +21,7 @@ import type { Restaurant, RestaurantProfileChanges } from '@/shared/types'
 import { formatCurrency } from '@/shared/utils/format'
 import { restaurantProfileSchema, type RestaurantProfileFormValues } from '@/shared/utils/validation'
 import { restaurantService } from '@/shared/services/restaurant.service'
+import { uploadService } from '@/shared/services/upload.service'
 import { useLanguage } from '@/shared/hooks/useLanguage'
 
 interface RestaurantProfileProps {
@@ -112,8 +113,8 @@ function RestaurantProfileContent({
 			setImageError(t('Choose a JPG, JPEG, PNG, or WEBP image.'))
 			return
 		}
-		if (file.size > 3 * 1024 * 1024) {
-			setImageError(t('The image must be 3 MB or smaller.'))
+		if (file.size > 5 * 1024 * 1024) {
+			setImageError(t('The image must be 5 MB or smaller.'))
 			return
 		}
 
@@ -127,18 +128,18 @@ function RestaurantProfileContent({
 		setIsProcessingImage(true)
 
 		try {
-			const dataUrl = await encodeImageForStorage(file)
+			const imageUrl = await uploadService.upload(file)
 			if (imageRequestRef.current !== requestId) return
-			setSelectedImage(dataUrl)
+			setSelectedImage(imageUrl)
 			URL.revokeObjectURL(nextPreviewUrl)
 			previewUrlRef.current = null
 			setPreviewUrl(null)
-		} catch {
+		} catch (error) {
 			if (imageRequestRef.current !== requestId) return
 			URL.revokeObjectURL(nextPreviewUrl)
 			previewUrlRef.current = null
 			setPreviewUrl(null)
-			setImageError(t('This image could not be prepared for local storage. Try another image.'))
+			setImageError(error instanceof Error ? t(error.message) : t('Image upload failed. Please try again.'))
 		} finally {
 			if (imageRequestRef.current === requestId) setIsProcessingImage(false)
 		}
@@ -209,6 +210,11 @@ function RestaurantProfileContent({
 					{t('Your restaurant profile was saved.')}
 				</p>
 			)}
+			{!restaurant.isActive && (
+				<p role="status" className="mb-4 rounded-lg border border-brand-yellow/40 bg-brand-yellow/20 px-4 py-3 text-sm text-text-main">
+					<strong>{t('Pending approval')}</strong> {t('Your restaurant is awaiting admin approval.')}
+				</p>
+			)}
 
 			<div className="overflow-hidden rounded-2xl border border-border-subtle bg-surface-white shadow-sm">
 				<div className="relative isolate flex min-h-72 items-end overflow-hidden p-5 sm:min-h-96 sm:p-8 lg:min-h-[26rem]">
@@ -268,7 +274,7 @@ function RestaurantProfileContent({
 						<div className="space-y-3">
 							<div>
 								<h3 className="text-sm font-semibold text-text-main">{t('Restaurant cover image')}</h3>
-								<p id="restaurant-image-help" className="mt-1 text-sm text-text-slate">{t('JPG, JPEG, PNG, or WEBP. Maximum file size: 3 MB.')}</p>
+								<p id="restaurant-image-help" className="mt-1 text-sm text-text-slate">{t('JPG, JPEG, PNG, or WEBP. Maximum file size: 5 MB.')}</p>
 							</div>
 							<div className="grid gap-4 rounded-xl border border-border-subtle bg-surface-cream p-3 sm:grid-cols-[minmax(0,1.15fr)_minmax(14rem,0.85fr)] sm:items-center sm:p-4">
 								<div className="aspect-[16/9] overflow-hidden rounded-lg border border-border-subtle bg-surface-white">
@@ -300,7 +306,7 @@ function RestaurantProfileContent({
 										<ImagePlus aria-hidden="true" size={17} />
 										{selectedImage || previewUrl || restaurant.cover ? t('Replace image') : t('Choose image')}
 									</Button>
-									{isProcessingImage && <p role="status" className="text-sm text-text-slate">{t("Preparing image preview…")}</p>}
+									{isProcessingImage && <p role="status" className="text-sm text-text-slate">{t("Uploading image...")}</p>}
 									{imageError && <p role="alert" className="text-sm text-danger">{imageError}</p>}
 								</div>
 							</div>
@@ -355,31 +361,6 @@ function toFormValues(restaurant: Restaurant): RestaurantProfileFormValues {
 		deliveryFee: restaurant.deliveryFee,
 		minOrder: restaurant.minOrder,
 		openingHours: restaurant.openingHours ?? '',
-	}
-}
-
-async function encodeImageForStorage(file: File): Promise<string> {
-	const bitmap = await createImageBitmap(file)
-	try {
-		let maxDimension = 1800
-		for (let resizeAttempt = 0; resizeAttempt < 6; resizeAttempt += 1) {
-			const scale = Math.min(1, maxDimension / Math.max(bitmap.width, bitmap.height))
-			const canvas = document.createElement('canvas')
-			canvas.width = Math.max(1, Math.round(bitmap.width * scale))
-			canvas.height = Math.max(1, Math.round(bitmap.height * scale))
-			const context = canvas.getContext('2d')
-			if (!context) throw new Error('Image processing is unavailable.')
-			context.drawImage(bitmap, 0, 0, canvas.width, canvas.height)
-
-			for (const quality of [0.86, 0.74, 0.62, 0.5]) {
-				const dataUrl = canvas.toDataURL('image/webp', quality)
-				if (dataUrl.length <= 2_400_000) return dataUrl
-			}
-			maxDimension = Math.round(maxDimension * 0.75)
-		}
-		throw new Error('The image is too large to store locally.')
-	} finally {
-		bitmap.close()
 	}
 }
 

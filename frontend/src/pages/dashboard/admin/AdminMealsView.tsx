@@ -1,4 +1,3 @@
-import { useMemo, useState } from 'react'
 import { DataTable } from '@/pages/dashboard/components/DataTable'
 import type { Column } from '@/pages/dashboard/components/DataTable'
 import { ErrorBanner } from '@/pages/dashboard/components/ErrorBanner'
@@ -12,51 +11,29 @@ import { Select } from '@/shared/components/Select'
 import { useAdminAction } from '@/shared/hooks/useAdminAction'
 import { useLanguage } from '@/shared/hooks/useLanguage'
 import { adminService } from '@/shared/services/admin.service'
-import type { AdminMealRow } from '@/shared/services/admin.service'
+import type { AdminMealListQuery, AdminMealRow } from '@/shared/services/admin.service'
+import type { PaginatedResponse } from '@/shared/types'
 import { formatCurrency } from '@/shared/utils/format'
 
-const PAGE_SIZE = 8
 type AvailabilityFilter = 'all' | 'available' | 'unavailable'
-
-function matchesQuery(meal: AdminMealRow, query: string): boolean {
-  const needle = query.trim().toLowerCase()
-  return !needle || [meal.name, meal.restaurantName, meal.category].some((value) => value.toLowerCase().includes(needle))
-}
 
 interface AdminMealsViewProps {
   meals: AdminMealRow[]
+  meta: PaginatedResponse<AdminMealRow>['meta']
+  query: AdminMealListQuery
+  onQueryChange: (query: AdminMealListQuery) => void
   onChanged: () => void
 }
 
-export function AdminMealsView({ meals, onChanged }: AdminMealsViewProps) {
+export function AdminMealsView({ meals, meta, query, onQueryChange, onChanged }: AdminMealsViewProps) {
   const { t } = useLanguage()
-  const [query, setQuery] = useState('')
-  const [availability, setAvailability] = useState<AvailabilityFilter>('all')
-  const [page, setPage] = useState(1)
   const { run, busyKey, error, clearError } = useAdminAction(onChanged)
 
-  const filtered = useMemo(
-    () =>
-      meals.filter(
-        (meal) =>
-          (availability === 'all' || meal.isAvailable === (availability === 'available')) &&
-          matchesQuery(meal, query),
-      ),
-    [meals, availability, query],
-  )
-  const totalPages = Math.max(1, Math.ceil(filtered.length / PAGE_SIZE))
-  const currentPage = Math.min(page, totalPages)
-  const pageRows = filtered.slice((currentPage - 1) * PAGE_SIZE, currentPage * PAGE_SIZE)
-
-  const changeFilter = <T,>(setter: (value: T) => void) => (value: T) => {
-    setter(value)
-    setPage(1)
-  }
   const clearFilters = () => {
-    setQuery('')
-    setAvailability('all')
-    setPage(1)
+    onQueryChange({ page: 1, limit: query.limit })
   }
+  const availability: AvailabilityFilter =
+    query.isAvailable === undefined ? 'all' : query.isAvailable ? 'available' : 'unavailable'
   const changeAvailability = (meal: AdminMealRow) =>
     run(meal.id, () => adminService.setMealAvailability(meal.id, !meal.isAvailable))
 
@@ -106,13 +83,17 @@ export function AdminMealsView({ meals, onChanged }: AdminMealsViewProps) {
           className="min-w-60 flex-1"
           label={t('Search meals')}
           placeholder={t('Search by meal name, restaurant or category')}
-          value={query}
-          onChange={changeFilter(setQuery)}
+          value={query.search ?? ''}
+          onChange={(search) => onQueryChange({ ...query, search: search || undefined, page: 1 })}
         />
         <Select
           aria-label={t('Filter by availability')}
           value={availability}
-          onChange={(event) => changeFilter(setAvailability)(event.target.value as AvailabilityFilter)}
+          onChange={(event) => onQueryChange({
+            ...query,
+            isAvailable: event.target.value === 'all' ? undefined : event.target.value === 'available',
+            page: 1,
+          })}
         >
           <option value="all">{t('All availability')}</option>
           <option value="available">{t('Available')}</option>
@@ -121,12 +102,12 @@ export function AdminMealsView({ meals, onChanged }: AdminMealsViewProps) {
       </div>
 
       <p className="text-sm text-text-slate" aria-live="polite">
-        {t('Meals')}: {filtered.length}
+        {t('Meals')}: {meta.total}
       </p>
 
       {error && <ErrorBanner message={error} onDismiss={clearError} />}
 
-      {filtered.length === 0 ? (
+      {meals.length === 0 ? (
         <EmptyState
           title={t('No meals match your filters')}
           description={t('Try a different search or clear the filters.')}
@@ -134,8 +115,12 @@ export function AdminMealsView({ meals, onChanged }: AdminMealsViewProps) {
         />
       ) : (
         <>
-          <DataTable caption={t('Meals')} columns={columns} rows={pageRows} getRowKey={(meal) => meal.id} />
-          <Pagination currentPage={currentPage} totalPages={totalPages} onPageChange={setPage} />
+          <DataTable caption={t('Meals')} columns={columns} rows={meals} getRowKey={(meal) => meal.id} />
+          <Pagination
+            currentPage={query.page}
+            totalPages={meta.total_pages}
+            onPageChange={(page) => onQueryChange({ ...query, page })}
+          />
         </>
       )}
     </Card>

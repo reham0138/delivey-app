@@ -1,3 +1,4 @@
+import { useState } from 'react'
 import { AdminMealsView } from '@/pages/dashboard/admin/AdminMealsView'
 import { PageHeader } from '@/pages/dashboard/components/PageHeader'
 import { Button } from '@/shared/components/Button'
@@ -5,10 +6,12 @@ import { EmptyState } from '@/shared/components/EmptyState'
 import { Spinner } from '@/shared/components/Spinner'
 import { useAdminMeals } from '@/shared/hooks/useAdmin'
 import { useLanguage } from '@/shared/hooks/useLanguage'
+import type { AdminMealListQuery } from '@/shared/services/admin.service'
 
 export default function AdminMealsPage() {
   const { t } = useLanguage()
-  const { data, loading, error, retry, refresh } = useAdminMeals()
+  const [query, setQuery] = useState<AdminMealListQuery>({ page: 1, limit: 8 })
+  const { data, loading, error, retry, refresh } = useAdminMeals(query)
 
   return (
     <div className="space-y-6">
@@ -25,7 +28,13 @@ export default function AdminMealsPage() {
           action={<Button onClick={retry}>{t('Try again')}</Button>}
         />
       ) : (
-        <AdminMealsView meals={data} onChanged={refresh} />
+        <AdminMealsView
+          meals={data.data}
+          meta={data.meta}
+          query={query}
+          onQueryChange={setQuery}
+          onChanged={refresh}
+        />
       )}
     </div>
   )

@@ -5,6 +5,7 @@ import type { MenuItemDocument } from './schemas/menu-item.schema'
 import type { RestaurantDocument } from '../restaurants/schemas/restaurant.schema'
 import type { CategoryDocument } from '../categories/schemas/category.schema'
 import { RestaurantMenuItemsQueryDto } from './dto/list-menu-items-query.dto'
+import { ListAdminMenuItemsQueryDto } from './dto/list-menu-items-query.dto'
 import type { AuthUser } from '../../common/interfaces/auth-user.interface'
 import { Role } from '../../common/enums'
 import { CreateMenuItemDto, UpdateMenuItemDto } from './dto/menu-item.dto'
@@ -87,6 +88,41 @@ describe('MenuItemsService.findForRestaurant', () => {
         JSON.stringify(stage.$sort) === JSON.stringify({ isPopular: -1, rating: -1, name: 1 }),
       ),
     )).toBe(true)
+  })
+})
+
+describe('MenuItemsService.findAdmin search', () => {
+  it('includes category names in server-side meal search', async () => {
+    const pipelines: unknown[][] = []
+    const menuItemModel = {
+      aggregate: jest.fn((pipeline: unknown[]) => {
+        pipelines.push(pipeline)
+        return Promise.resolve([])
+      }),
+    } as unknown as Model<MenuItemDocument>
+    const service = new MenuItemsService(
+      menuItemModel,
+      { collection: { name: 'restaurants' } } as unknown as Model<RestaurantDocument>,
+      { collection: { name: 'categories' } } as unknown as Model<CategoryDocument>,
+    )
+    const query = Object.assign(new ListAdminMenuItemsQueryDto(), {
+      page: 1,
+      limit: 8,
+      search: 'Burger',
+    })
+
+    await service.findAdmin(query)
+
+    const searchStage = pipelines.flat().find(
+      (stage) =>
+        typeof stage === 'object' &&
+        stage !== null &&
+        '$match' in stage &&
+        typeof stage.$match === 'object' &&
+        stage.$match !== null &&
+        '$or' in stage.$match,
+    ) as { $match: { $or: Array<Record<string, unknown>> } } | undefined
+    expect(searchStage?.$match.$or).toContainEqual({ 'category.name': expect.any(RegExp) })
   })
 })
 

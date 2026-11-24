@@ -2,7 +2,8 @@ import { menuItemService } from '@/shared/services/menuItem.service'
 import { orderService } from '@/shared/services/order.service'
 import { reviewService } from '@/shared/services/review.service'
 import { adminState } from '@/shared/services/adminState.service'
-import type { AccountStatus, MenuItem, Order, Restaurant, Review, User, UserRole } from '@/shared/types'
+import { apiRequest } from '@/shared/api/client'
+import type { AccountStatus, MenuItem, Order, PaginatedResponse, Restaurant, Review, User, UserRole } from '@/shared/types'
 import { normalizeMockIds } from '@/shared/utils/normalizeMockIds'
 
 // Replace the bodies with Axios calls when the backend is ready. Keep the signatures and return types.
@@ -39,6 +40,54 @@ export interface AdminMealRow extends MenuItem {
   restaurantName: string
 }
 
+export interface AdminRestaurantListQuery {
+  page: number
+  limit: number
+  search?: string
+  isActive?: boolean
+}
+
+export interface AdminMealListQuery {
+  page: number
+  limit: number
+  search?: string
+  isAvailable?: boolean
+}
+
+async function listRestaurants(): Promise<Restaurant[]> {
+  return getAllPages<Restaurant>('/admin/restaurants')
+}
+
+async function listRestaurantsPage(
+  query: AdminRestaurantListQuery,
+): Promise<PaginatedResponse<Restaurant>> {
+  return apiRequest<PaginatedResponse<Restaurant>>('/admin/restaurants', {
+    query: {
+      page: query.page,
+      limit: query.limit,
+      search: query.search,
+      isActive: query.isActive,
+    },
+  })
+}
+
+async function listMeals(): Promise<AdminMealRow[]> {
+  return getAllPages<AdminMealRow>('/admin/menu-items')
+}
+
+async function listMealsPage(
+  query: AdminMealListQuery,
+): Promise<PaginatedResponse<AdminMealRow>> {
+  return apiRequest<PaginatedResponse<AdminMealRow>>('/admin/menu-items', {
+    query: {
+      page: query.page,
+      limit: query.limit,
+      search: query.search,
+      isAvailable: query.isAvailable,
+    },
+  })
+}
+
 export const adminService = {
   /** Demo accounts from users.json. Registered accounts live on the backend (admin service is still mock-driven). */
   async listUsers(): Promise<AdminUserRow[]> {
@@ -56,18 +105,14 @@ export const adminService = {
     return demoRows
   },
 
-  async listRestaurants(): Promise<Restaurant[]> {
-    const restaurants = await fetchJson<Restaurant[]>('/mock/restaurants.json')
-    return restaurants.map((restaurant) => ({
-      ...restaurant,
-      isActive: adminState.getRestaurantIsActive(restaurant.id, restaurant.isActive),
-    }))
-  },
+  listRestaurants,
+  listRestaurantsPage,
 
   async setRestaurantIsActive(id: string, isActive: boolean): Promise<void> {
-    const restaurant = (await this.listRestaurants()).find((item) => item.id === id)
-    if (!restaurant) throw new Error('Restaurant not found.')
-    adminState.setRestaurantIsActive(id, isActive)
+    await apiRequest(`/admin/restaurants/${encodeURIComponent(id)}/status`, {
+      method: 'PATCH',
+      body: { isActive },
+    })
   },
 
   async listReviews(): Promise<AdminReviewRow[]> {
@@ -105,17 +150,8 @@ export const adminService = {
     await orderService.deleteOrder(id)
   },
 
-  async listMeals(): Promise<AdminMealRow[]> {
-    const [meals, restaurants] = await Promise.all([
-      menuItemService.getAll(),
-      this.listRestaurants(),
-    ])
-    const restaurantsById = new Map(restaurants.map((restaurant) => [restaurant.id, restaurant.name]))
-    return meals.map((meal) => ({
-      ...meal,
-      restaurantName: restaurantsById.get(meal.restaurantId) ?? `Restaurant #${meal.restaurantId}`,
-    }))
-  },
+  listMeals,
+  listMealsPage,
 
   async setMealAvailability(id: string, isAvailable: boolean): Promise<void> {
     await menuItemService.setAvailability(id, isAvailable)
@@ -127,4 +163,18 @@ export const adminService = {
     if (user.role === 'admin') throw new Error('Admin accounts cannot be suspended.')
     adminState.setUserStatus(user.email, status)
   },
+}
+
+async function getAllPages<T>(path: string): Promise<T[]> {
+  const firstPage = await apiRequest<PaginatedResponse<T>>(path, {
+    query: { page: 1, limit: 50 },
+  })
+  const data = [...firstPage.data]
+  for (let page = 2; page <= firstPage.meta.total_pages; page += 1) {
+    const result = await apiRequest<PaginatedResponse<T>>(path, {
+      query: { page, limit: 50 },
+    })
+    data.push(...result.data)
+  }
+  return data
 }

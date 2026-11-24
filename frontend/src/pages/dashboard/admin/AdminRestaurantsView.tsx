@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react'
+import { useState } from 'react'
 import { ConfirmDialog } from '@/pages/dashboard/components/ConfirmDialog'
 import { DataTable } from '@/pages/dashboard/components/DataTable'
 import type { Column } from '@/pages/dashboard/components/DataTable'
@@ -13,51 +13,35 @@ import { Select } from '@/shared/components/Select'
 import { useAdminAction } from '@/shared/hooks/useAdminAction'
 import { useLanguage } from '@/shared/hooks/useLanguage'
 import { adminService } from '@/shared/services/admin.service'
-import type { Restaurant } from '@/shared/types'
+import type { AdminRestaurantListQuery } from '@/shared/services/admin.service'
+import type { PaginatedResponse, Restaurant } from '@/shared/types'
 
-const PAGE_SIZE = 8
 type ActiveFilter = 'all' | 'active' | 'inactive'
-
-function matchesQuery(restaurant: Restaurant, query: string): boolean {
-  const needle = query.trim().toLowerCase()
-  return !needle || [restaurant.name, restaurant.cuisine].some((value) => value.toLowerCase().includes(needle))
-}
 
 interface AdminRestaurantsViewProps {
   restaurants: Restaurant[]
+  meta: PaginatedResponse<Restaurant>['meta']
+  query: AdminRestaurantListQuery
+  onQueryChange: (query: AdminRestaurantListQuery) => void
   onChanged: () => void
 }
 
-export function AdminRestaurantsView({ restaurants, onChanged }: AdminRestaurantsViewProps) {
+export function AdminRestaurantsView({
+  restaurants,
+  meta,
+  query,
+  onQueryChange,
+  onChanged,
+}: AdminRestaurantsViewProps) {
   const { t } = useLanguage()
-  const [query, setQuery] = useState('')
-  const [status, setStatus] = useState<ActiveFilter>('all')
-  const [page, setPage] = useState(1)
   const [target, setTarget] = useState<Restaurant | null>(null)
   const { run, busyKey, error, clearError } = useAdminAction(onChanged)
 
-  const filtered = useMemo(
-    () =>
-      restaurants.filter(
-        (restaurant) =>
-          (status === 'all' || restaurant.isActive === (status === 'active')) &&
-          matchesQuery(restaurant, query),
-      ),
-    [restaurants, status, query],
-  )
-  const totalPages = Math.max(1, Math.ceil(filtered.length / PAGE_SIZE))
-  const currentPage = Math.min(page, totalPages)
-  const pageRows = filtered.slice((currentPage - 1) * PAGE_SIZE, currentPage * PAGE_SIZE)
-
-  const changeFilter = <T,>(setter: (value: T) => void) => (value: T) => {
-    setter(value)
-    setPage(1)
-  }
   const clearFilters = () => {
-    setQuery('')
-    setStatus('all')
-    setPage(1)
+    onQueryChange({ page: 1, limit: query.limit })
   }
+  const activeFilter: ActiveFilter =
+    query.isActive === undefined ? 'all' : query.isActive ? 'active' : 'inactive'
 
   const changeStatus = (restaurant: Restaurant, isActive: boolean) =>
     run(restaurant.id, () => adminService.setRestaurantIsActive(restaurant.id, isActive))
@@ -122,13 +106,17 @@ export function AdminRestaurantsView({ restaurants, onChanged }: AdminRestaurant
           className="min-w-60 flex-1"
           label={t('Search restaurants')}
           placeholder={t('Search by name or cuisine')}
-          value={query}
-          onChange={changeFilter(setQuery)}
+          value={query.search ?? ''}
+          onChange={(search) => onQueryChange({ ...query, search: search || undefined, page: 1 })}
         />
         <Select
           aria-label={t('Filter by status')}
-          value={status}
-          onChange={(event) => changeFilter(setStatus)(event.target.value as ActiveFilter)}
+          value={activeFilter}
+          onChange={(event) => onQueryChange({
+            ...query,
+            isActive: event.target.value === 'all' ? undefined : event.target.value === 'active',
+            page: 1,
+          })}
         >
           <option value="all">{t('All statuses')}</option>
           <option value="active">{t('Active')}</option>
@@ -137,12 +125,12 @@ export function AdminRestaurantsView({ restaurants, onChanged }: AdminRestaurant
       </div>
 
       <p className="text-sm text-text-slate" aria-live="polite">
-        {t('Restaurants')}: {filtered.length}
+        {t('Restaurants')}: {meta.total}
       </p>
 
       {error && <ErrorBanner message={error} onDismiss={clearError} />}
 
-      {filtered.length === 0 ? (
+      {restaurants.length === 0 ? (
         <EmptyState
           title={t('No restaurants match your filters')}
           description={t('Try a different search or clear the filters.')}
@@ -150,8 +138,12 @@ export function AdminRestaurantsView({ restaurants, onChanged }: AdminRestaurant
         />
       ) : (
         <>
-          <DataTable caption={t('Restaurants')} columns={columns} rows={pageRows} getRowKey={(restaurant) => restaurant.id} />
-          <Pagination currentPage={currentPage} totalPages={totalPages} onPageChange={setPage} />
+          <DataTable caption={t('Restaurants')} columns={columns} rows={restaurants} getRowKey={(restaurant) => restaurant.id} />
+          <Pagination
+            currentPage={query.page}
+            totalPages={meta.total_pages}
+            onPageChange={(page) => onQueryChange({ ...query, page })}
+          />
         </>
       )}
 
