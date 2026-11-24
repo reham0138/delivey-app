@@ -1,68 +1,30 @@
-import { menuItemService } from '@/shared/services/menuItem.service'
 import { orderService } from '@/shared/services/order.service'
 import { restaurantService } from '@/shared/services/restaurant.service'
 import { reviewService } from '@/shared/services/review.service'
-import type { MenuItem, Order, OrderStatus, Restaurant, Review } from '@/shared/types'
+import { apiRequest } from '@/shared/api/client'
+import type { MenuItem, Order, OrderStatus, PaginatedResponse, Restaurant, Review } from '@/shared/types'
 
-const MEAL_OVERRIDES_KEY = 'crown-anchor-restaurant-meal-overrides'
 const ORDERS_KEY = 'crown-anchor-orders'
 const REVIEWS_KEY = 'crown-anchor-reviews'
 const ORDER_FLOW: OrderStatus[] = ['pending', 'preparing', 'ready', 'on_the_way', 'delivered']
-
-interface MealOverrides {
-  items: MenuItem[]
-  deletedIds: string[]
-}
 
 export type MealChanges = Pick<
   MenuItem,
   'name' | 'description' | 'price' | 'category' | 'image' | 'ingredients' | 'preparationTimeMinutes' | 'isAvailable' | 'isPopular'
 >
 
-function readMealOverrides(): MealOverrides {
-  const stored = localStorage.getItem(MEAL_OVERRIDES_KEY)
-  if (!stored) return { items: [], deletedIds: [] }
-
-  let parsed: unknown
-  try {
-    parsed = JSON.parse(stored)
-  } catch {
-    throw new Error('Saved meal changes are invalid.')
+async function getOwnerMeals(): Promise<MenuItem[]> {
+  const firstPage = await apiRequest<PaginatedResponse<MenuItem>>('/restaurant/menu-items', {
+    query: { page: 1, limit: 50 },
+  })
+  const meals = [...firstPage.data]
+  for (let page = 2; page <= firstPage.meta.total_pages; page += 1) {
+    const result = await apiRequest<PaginatedResponse<MenuItem>>('/restaurant/menu-items', {
+      query: { page, limit: 50 },
+    })
+    meals.push(...result.data)
   }
-  if (
-    typeof parsed !== 'object' ||
-    parsed === null ||
-    !('items' in parsed) ||
-    !Array.isArray(parsed.items) ||
-    !('deletedIds' in parsed) ||
-    !Array.isArray(parsed.deletedIds) ||
-    !parsed.deletedIds.every((id: unknown) => typeof id === 'string')
-  ) {
-    throw new Error('Saved meal changes are invalid.')
-  }
-  return parsed as MealOverrides
-}
-
-function saveMealOverrides(overrides: MealOverrides): void {
-  try {
-    localStorage.setItem(MEAL_OVERRIDES_KEY, JSON.stringify(overrides))
-  } catch {
-    throw new Error('Meal changes could not be saved. Check available browser storage.')
-  }
-}
-
-async function mealsWithOverrides(): Promise<MenuItem[]> {
-  const [meals, overrides] = await Promise.all([
-    menuItemService.getAll(),
-    Promise.resolve(readMealOverrides()),
-  ])
-  const deletedIds = new Set(overrides.deletedIds)
-  const changedById = new Map(overrides.items.map((item) => [item.id, item]))
-  const merged = meals
-    .filter((meal) => !deletedIds.has(meal.id))
-    .map((meal) => changedById.get(meal.id) ?? meal)
-  const existingIds = new Set(merged.map((meal) => meal.id))
-  return [...merged, ...overrides.items.filter((meal) => !existingIds.has(meal.id) && !deletedIds.has(meal.id))]
+  return meals
 }
 
 function saveReviews(reviews: Review[]): void {
@@ -97,7 +59,7 @@ export const restaurantDashboardService = {
     const restaurant = await restaurantService.getOwnedByOwnerId(ownerId)
     if (!restaurant) return { restaurant: null, meals: [], orders: [], reviews: [] }
     const [allMeals, allOrders, reviews] = await Promise.all([
-      mealsWithOverrides(),
+      getOwnerMeals(),
       orderService.listAllOrders(),
       reviewService.getByRestaurantId(restaurant.id, { includeReported: true }),
     ])
@@ -110,52 +72,25 @@ export const restaurantDashboardService = {
   },
 
   async createMeal(ownerId: string, changes: MealChanges): Promise<MenuItem> {
-    const restaurant = await getOwnedRestaurant(ownerId)
-    const meals = await mealsWithOverrides()
-    const overrides = readMealOverrides()
-    const id = String(Math.max(
-      0,
-      ...meals.map((meal) => Number(meal.id) || 0),
-      ...overrides.items.map((meal) => Number(meal.id) || 0),
-      ...overrides.deletedIds.map((deletedId) => Number(deletedId) || 0),
-     ) + 1)
-    const meal: MenuItem = {
-      id,
-      restaurantId: restaurant.id,
-      ...changes,
-      nutrition: null,
-      rating: 0,
-      reviewsCount: 0,
-    }
-    saveMealOverrides({
-      items: [...overrides.items.filter((item) => item.id !== id), meal],
-      deletedIds: overrides.deletedIds.filter((deletedId) => deletedId !== id),
+    await getOwnedRestaurant(ownerId)
+    return apiRequest<MenuItem>('/restaurant/menu-items', {
+      method: 'POST',
+      body: changes,
     })
-    return meal
   },
 
   async updateMeal(ownerId: string, mealId: string, changes: MealChanges): Promise<void> {
-    const restaurant = await getOwnedRestaurant(ownerId)
-    const meals = await mealsWithOverrides()
-    const meal = meals.find((item) => item.id === mealId && item.restaurantId === restaurant.id)
-    if (!meal) throw new Error('Meal not found.')
-    const overrides = readMealOverrides()
-    saveMealOverrides({
-      items: [...overrides.items.filter((item) => item.id !== mealId), { ...meal, ...changes }],
-      deletedIds: overrides.deletedIds.filter((id) => id !== mealId),
+    await getOwnedRestaurant(ownerId)
+    await apiRequest<MenuItem>(`/restaurant/menu-items/${encodeURIComponent(mealId)}`, {
+      method: 'PATCH',
+      body: changes,
     })
   },
 
   async deleteMeal(ownerId: string, mealId: string): Promise<void> {
-    const restaurant = await getOwnedRestaurant(ownerId)
-    const meals = await mealsWithOverrides()
-    if (!meals.some((meal) => meal.id === mealId && meal.restaurantId === restaurant.id)) {
-      throw new Error('Meal not found.')
-    }
-    const overrides = readMealOverrides()
-    saveMealOverrides({
-      items: overrides.items.filter((meal) => meal.id !== mealId),
-      deletedIds: [...new Set([...overrides.deletedIds, mealId])],
+    await getOwnedRestaurant(ownerId)
+    await apiRequest<void>(`/restaurant/menu-items/${encodeURIComponent(mealId)}`, {
+      method: 'DELETE',
     })
   },
 

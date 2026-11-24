@@ -221,11 +221,19 @@ export class MenuItemsService {
       },
       { $unwind: '$restaurant' },
     ]
+    base.push(...this.categoryLookup(undefined, false))
     if (query.search) {
       const regex = new RegExp(escapeRegex(query.search.trim()), 'i')
-      base.push({ $match: { $or: [{ name: regex }, { 'restaurant.name': regex }] } })
+      base.push({
+        $match: {
+          $or: [
+            { name: regex },
+            { 'restaurant.name': regex },
+            { 'category.name': regex },
+          ],
+        },
+      })
     }
-    base.push(...this.categoryLookup(undefined, false))
     return this.runList(base, query, 'name', true)
   }
 
