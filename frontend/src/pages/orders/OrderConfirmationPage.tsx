@@ -9,6 +9,7 @@ import { useAuth } from '@/shared/hooks/useAuth'
 import { useOrder } from '@/shared/hooks/useOrders'
 import { useLanguage } from '@/shared/hooks/useLanguage'
 import { formatCurrency, formatTime } from '@/shared/utils/format'
+import { orderNumber } from '@/shared/utils/orderNumber'
 
 const money = (value: number) => formatCurrency(value)
 
@@ -54,7 +55,7 @@ export default function OrderConfirmationPage() {
         </p>
         <div className="my-6 flex flex-wrap items-center justify-center gap-3">
           <Badge status={order.status} />
-          <span className="text-sm text-text-slate">{t('Order #{id}', { id: order.id })}</span>
+          <span className="text-sm text-text-slate">{t('Order #{id}', { id: orderNumber(order.id) })}</span>
         </div>
         <div className="space-y-3 rounded-xl bg-surface-cream p-4 text-start">
           <div className="flex justify-between gap-3 text-sm">
@@ -85,7 +86,7 @@ export default function OrderConfirmationPage() {
               {relatedIds.map((relatedId) => (
                 <li key={relatedId}>
                   <Link className="text-sm font-semibold text-brand-red underline" to={`/orders/${relatedId}`}>
-                    {t('Track order #{id}', { id: relatedId })}
+                    {t('Track order #{id}', { id: orderNumber(relatedId) })}
                   </Link>
                 </li>
               ))}

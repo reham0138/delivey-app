@@ -148,7 +148,7 @@ export interface Order {
   promoCode?: string | null;
   scheduledFor?: string | null;
   estimatedDeliveryAt?: string;
-  paymentStatus?: 'pending' | 'simulated';
+  paymentStatus?: 'pending' | 'simulated' | 'paid';
   simulatedTracking?: boolean;
 }
 
