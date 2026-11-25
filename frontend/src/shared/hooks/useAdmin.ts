@@ -1,13 +1,15 @@
 import { useCallback } from 'react'
 import { useFetch } from '@/shared/hooks/useFetch'
 import { adminService } from '@/shared/services/admin.service'
+import { adminUsersService } from '@/shared/services/adminUsers.service'
 import type {
   AdminMealListQuery,
   AdminRestaurantListQuery,
 } from '@/shared/services/admin.service'
+import type { AdminUsersListQuery } from '@/shared/services/adminUsers.service'
 
-export function useAdminUsers() {
-  const fetcher = useCallback(() => adminService.listUsers(), [])
+export function useAdminUsers(query: AdminUsersListQuery) {
+  const fetcher = useCallback(() => adminUsersService.listUsers(query), [query])
   return useFetch(fetcher)
 }
 

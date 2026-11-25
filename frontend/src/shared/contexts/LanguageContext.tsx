@@ -734,6 +734,8 @@ Object.assign(translations, {
   'Too many requests. Please wait a moment and try again.': 'طلبات كثيرة جدًا. يرجى الانتظار قليلًا والمحاولة مرة أخرى.',
   'We could not place the order for {restaurant}: {message}': ({ restaurant, message }: Record<string, string | number>) => `تعذر إنشاء الطلب لدى ${restaurant}: ${message}`,
   'The promo code and driver tip are applied to each restaurant order separately.': 'يتم تطبيق رمز الخصم وإكرامية السائق على طلب كل مطعم على حدة.',
+  'This user no longer exists.': 'هذا المستخدم لم يعد موجودًا.',
+  'This account cannot be modified.': 'لا يمكن تعديل هذا الحساب.',
 })
 
 export function getArabicTranslation(text: string): string | undefined {

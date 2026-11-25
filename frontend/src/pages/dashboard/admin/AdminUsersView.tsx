@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react'
+import { useState } from 'react'
 import { ConfirmDialog } from '@/pages/dashboard/components/ConfirmDialog'
 import { DataTable } from '@/pages/dashboard/components/DataTable'
 import type { Column } from '@/pages/dashboard/components/DataTable'
@@ -10,64 +10,47 @@ import { Card } from '@/shared/components/Card'
 import { EmptyState } from '@/shared/components/EmptyState'
 import { Pagination } from '@/shared/components/Pagination'
 import { Select } from '@/shared/components/Select'
+import { ApiError } from '@/shared/api/client'
 import { useAdminAction } from '@/shared/hooks/useAdminAction'
 import { useLanguage } from '@/shared/hooks/useLanguage'
-import { adminService } from '@/shared/services/admin.service'
-import type { AdminUserRow } from '@/shared/services/admin.service'
-import type { AccountStatus, UserRole } from '@/shared/types'
+import { adminUsersService } from '@/shared/services/adminUsers.service'
+import type { AdminUserRow, AdminUsersListQuery } from '@/shared/services/adminUsers.service'
+import type { AccountStatus, PaginatedResponse, UserRole } from '@/shared/types'
 import { formatDate } from '@/shared/utils/formatDate'
 
-const PAGE_SIZE = 8
 const ROLE_LABELS: Record<UserRole, string> = { admin: 'Admin', restaurant: 'Restaurant owner', customer: 'Customer' }
-
-function matchesQuery(user: AdminUserRow, query: string): boolean {
-  const needle = query.trim().toLowerCase()
-  return !needle || [user.name, user.email, user.phone].some((value) => value.toLowerCase().includes(needle))
-}
 
 interface AdminUsersViewProps {
   users: AdminUserRow[]
+  meta: PaginatedResponse<AdminUserRow>['meta']
+  query: AdminUsersListQuery
+  onQueryChange: (query: AdminUsersListQuery) => void
   /** Called after every change so the list reloads. */
   onChanged: () => void
 }
 
-export function AdminUsersView({ users, onChanged }: AdminUsersViewProps) {
+export function AdminUsersView({ users, meta, query, onQueryChange, onChanged }: AdminUsersViewProps) {
   const { t } = useLanguage()
-  const [query, setQuery] = useState('')
-  const [role, setRole] = useState<UserRole | 'all'>('all')
-  const [status, setStatus] = useState<AccountStatus | 'all'>('all')
-  const [page, setPage] = useState(1)
   const [target, setTarget] = useState<AdminUserRow | null>(null)
   const { run, busyKey, error, clearError } = useAdminAction(onChanged)
 
-  const filtered = useMemo(
-    () =>
-      users.filter(
-        (user) =>
-          (role === 'all' || user.role === role) &&
-          (status === 'all' || user.status === status) &&
-          matchesQuery(user, query),
-      ),
-    [users, role, status, query],
-  )
-  const totalPages = Math.max(1, Math.ceil(filtered.length / PAGE_SIZE))
-  const currentPage = Math.min(page, totalPages) // the list can shrink after a change
-  const pageRows = filtered.slice((currentPage - 1) * PAGE_SIZE, currentPage * PAGE_SIZE)
+  const roleFilter = query.role ?? 'all'
+  const statusFilter = query.status ?? 'all'
 
-  // Changing a filter always goes back to page 1.
-  const changeFilter = <T,>(setter: (value: T) => void) => (value: T) => {
-    setter(value)
-    setPage(1)
-  }
   const clearFilters = () => {
-    setQuery('')
-    setRole('all')
-    setStatus('all')
-    setPage(1)
+    onQueryChange({ page: 1, limit: query.limit })
   }
 
   const changeStatus = (user: AdminUserRow, next: AccountStatus) =>
-    run(user.email, () => adminService.setUserStatus(user.email, next))
+    run(user.id, () =>
+      adminUsersService.setUserStatus(user.id, next).catch((failure: unknown) => {
+        if (failure instanceof ApiError) {
+          if (failure.code === 'NOT_FOUND') throw new Error(t('This user no longer exists.'))
+          if (failure.code === 'FORBIDDEN') throw new Error(t('This account cannot be modified.'))
+        }
+        throw failure
+      }),
+    )
 
   const confirmSuspend = async () => {
     if (!target) return
@@ -101,7 +84,7 @@ export function AdminUsersView({ users, onChanged }: AdminUsersViewProps) {
       key: 'joined',
       header: t('Joined'),
       className: 'text-text-slate',
-      cell: (user) => (user.createdAt ? formatDate(user.createdAt) : '—'),
+      cell: (user) => formatDate(user.createdAt),
     },
     {
       key: 'actions',
@@ -110,7 +93,7 @@ export function AdminUsersView({ users, onChanged }: AdminUsersViewProps) {
         if (user.role === 'admin') return <span className="text-xs text-text-slate">{t('Protected account')}</span>
         if (user.status === 'active') {
           return (
-            <Button size="sm" variant="outline" disabled={busyKey === user.email} onClick={() => setTarget(user)}>
+            <Button size="sm" variant="outline" disabled={busyKey === user.id} onClick={() => setTarget(user)}>
               {t('Suspend')}
             </Button>
           )
@@ -119,7 +102,7 @@ export function AdminUsersView({ users, onChanged }: AdminUsersViewProps) {
           <Button
             size="sm"
             variant="secondary"
-            loading={busyKey === user.email}
+            loading={busyKey === user.id}
             onClick={() => void changeStatus(user, 'active')}
           >
             {t('Reactivate')}
@@ -136,13 +119,19 @@ export function AdminUsersView({ users, onChanged }: AdminUsersViewProps) {
           className="min-w-60 flex-1"
           label={t('Search users')}
           placeholder={t('Search by name, email or phone')}
-          value={query}
-          onChange={changeFilter(setQuery)}
+          value={query.search ?? ''}
+          onChange={(search) => onQueryChange({ ...query, search: search || undefined, page: 1 })}
         />
         <Select
           aria-label={t('Filter by role')}
-          value={role}
-          onChange={(event) => changeFilter(setRole)(event.target.value as UserRole | 'all')}
+          value={roleFilter}
+          onChange={(event) =>
+            onQueryChange({
+              ...query,
+              role: event.target.value === 'all' ? undefined : (event.target.value as UserRole),
+              page: 1,
+            })
+          }
         >
           <option value="all">{t('All roles')}</option>
           <option value="admin">{t('Admin')}</option>
@@ -151,8 +140,14 @@ export function AdminUsersView({ users, onChanged }: AdminUsersViewProps) {
         </Select>
         <Select
           aria-label={t('Filter by status')}
-          value={status}
-          onChange={(event) => changeFilter(setStatus)(event.target.value as AccountStatus | 'all')}
+          value={statusFilter}
+          onChange={(event) =>
+            onQueryChange({
+              ...query,
+              status: event.target.value === 'all' ? undefined : (event.target.value as AccountStatus),
+              page: 1,
+            })
+          }
         >
           <option value="all">{t('All statuses')}</option>
           <option value="active">{t('Active')}</option>
@@ -161,12 +156,12 @@ export function AdminUsersView({ users, onChanged }: AdminUsersViewProps) {
       </div>
 
       <p className="text-sm text-text-slate" aria-live="polite">
-        {t('Users')}: {filtered.length}
+        {t('Users')}: {meta.total}
       </p>
 
       {error && <ErrorBanner message={error} onDismiss={clearError} />}
 
-      {filtered.length === 0 ? (
+      {users.length === 0 ? (
         <EmptyState
           title={t('No users match your filters')}
           description={t('Try a different search or clear the filters.')}
@@ -174,8 +169,12 @@ export function AdminUsersView({ users, onChanged }: AdminUsersViewProps) {
         />
       ) : (
         <>
-          <DataTable caption={t('Users')} columns={columns} rows={pageRows} getRowKey={(user) => user.email} />
-          <Pagination currentPage={currentPage} totalPages={totalPages} onPageChange={setPage} />
+          <DataTable caption={t('Users')} columns={columns} rows={users} getRowKey={(user) => user.id} />
+          <Pagination
+            currentPage={query.page}
+            totalPages={meta.total_pages}
+            onPageChange={(page) => onQueryChange({ ...query, page })}
+          />
         </>
       )}
 
@@ -184,7 +183,7 @@ export function AdminUsersView({ users, onChanged }: AdminUsersViewProps) {
         title={t('Suspend this account?')}
         message={t('{name} will not be able to log in until you reactivate the account.', { name: target?.name ?? '' })}
         confirmLabel={t('Suspend')}
-        busy={target !== null && busyKey === target.email}
+        busy={target !== null && busyKey === target.id}
         destructive
         onConfirm={() => void confirmSuspend()}
         onClose={() => setTarget(null)}
