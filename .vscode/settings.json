@@ -1,0 +1,5 @@
+{
+  "devin.defaultModel": "swe-2-flash-medium",
+  "devin.defaultThoughtLevel": "medium",
+  "devin.defaultSpeed": "standard"
+}

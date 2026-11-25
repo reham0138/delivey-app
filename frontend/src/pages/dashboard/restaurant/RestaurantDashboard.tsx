@@ -94,13 +94,18 @@ export default function RestaurantDashboard() {
   const reportReview = (review: Review, reason: string) => {
     if (!user) return Promise.resolve(false)
     return runAction(() =>
-      restaurantDashboardService.reportReview(user.id, review.id, reason),
+      restaurantDashboardService.reportReview(review.id, reason),
     )
   }
 
   const updateOrder = (orderId: string, status: OrderStatus) => {
     if (!user) return
-    void runAction(() => restaurantDashboardService.updateOrderStatus(user.id, orderId, status))
+    void runAction(() => restaurantDashboardService.updateOrderStatus(orderId, status))
+  }
+
+  const cancelOrder = (orderId: string, reason: string) => {
+    if (!user) return Promise.resolve(false)
+    return runAction(() => restaurantDashboardService.cancelOrder(orderId, reason))
   }
 
   if (loading) return <Spinner label={t('Loading restaurant dashboard...')} />
@@ -189,6 +194,7 @@ export default function RestaurantDashboard() {
             mealById={mealById}
             busy={busy}
             onUpdateOrder={updateOrder}
+            onCancelOrder={cancelOrder}
           />
         </div>
         <div hidden={tab !== 'reviews'}>
