@@ -738,6 +738,22 @@ Object.assign(translations, {
   'This account cannot be modified.': 'لا يمكن تعديل هذا الحساب.',
 })
 
+Object.assign(translations, {
+  'Cancel order': 'إلغاء الطلب',
+  'Cancellation reason': 'سبب الإلغاء',
+  'Enter a reason for cancelling this order.': 'أدخل سبب إلغاء هذا الطلب.',
+  'Cancellation reason is required': 'سبب الإلغاء مطلوب.',
+  'Enter a reason for reporting this review.': 'أدخل سبب الإبلاغ عن هذا التقييم.',
+  'Order status transition is not allowed': 'تغيير حالة الطلب غير مسموح.',
+  'Order cannot be cancelled in its current status': 'لا يمكن إلغاء الطلب في حالته الحالية.',
+  'Order not found': 'لم يتم العثور على الطلب.',
+  'Review not found': 'لم يتم العثور على التقييم.',
+  'Accept order': 'قبول الطلب',
+  'Mark ready': 'تحديد الطلب كجاهز',
+  'Mark on the way': 'تحديد الطلب في الطريق',
+  'Mark delivered': 'تحديد الطلب كمُسلّم',
+})
+
 export function getArabicTranslation(text: string): string | undefined {
   const value = translations[text]
   return typeof value === 'string' ? value : undefined
