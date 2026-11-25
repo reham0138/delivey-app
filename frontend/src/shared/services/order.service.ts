@@ -1,32 +1,140 @@
-import type { CartItem } from '@/shared/types/cart'
-import type { Order, OrderStatus, PaymentMethod } from '@/shared/types'
+import { apiRequest } from '@/shared/api/client'
 import { normalizeMockIds } from '@/shared/utils/normalizeMockIds'
+import type { Order, OrderStatus, PaginatedResponse, PaymentMethod } from '@/shared/types'
 
-const STORAGE_KEY = 'crown-anchor-orders'
-const ADDRESS_KEY = 'crown-anchor-addresses'
+export type { PaginatedResponse } from '@/shared/types'
+
+export interface OrderAddress { id: string; label: string; address: string; phone: string }
+export interface CreateOrderItemInput { menuItemId: string; quantity: number }
+export interface CreateOrderInput {
+  restaurantId: string
+  items: CreateOrderItemInput[]
+  deliveryAddress: string
+  phone: string
+  paymentMethod: PaymentMethod
+  notes?: string
+  promoCode?: string | null
+  tip?: number
+  scheduledFor?: string | null
+}
+export interface OrderListFilters { status?: string; search?: string; from?: string; to?: string }
+export interface OrderTotals {
+  subtotal: number; deliveryFee: number; serviceFee: number; tax: number; discount: number; tip: number; total: number
+}
+
+function buildOrderBody(input: CreateOrderInput): Record<string, unknown> {
+  const body: Record<string, unknown> = {
+    restaurantId: input.restaurantId,
+    items: input.items.map((item) => ({ menuItemId: item.menuItemId, quantity: item.quantity })),
+    deliveryAddress: input.deliveryAddress,
+    phone: input.phone,
+    paymentMethod: input.paymentMethod,
+  }
+  const notes = input.notes?.trim()
+  if (notes) body.notes = notes
+  const promoCode = input.promoCode?.trim().toUpperCase()
+  if (promoCode) body.promoCode = promoCode
+  if (input.tip && input.tip > 0) body.tip = input.tip
+  if (input.scheduledFor) body.scheduledFor = input.scheduledFor
+  return body
+}
+
+export const orderService = {
+  async listOrders(
+    customerId: string,
+    page = 1,
+    limit = 8,
+    filters?: OrderListFilters,
+  ): Promise<PaginatedResponse<Order>> {
+    void customerId // the backend scopes orders to the authenticated customer
+    return apiRequest<PaginatedResponse<Order>>('/orders', {
+      query: {
+        status: filters?.status && filters.status !== 'all' ? filters.status : undefined,
+        search: filters?.search?.trim() || undefined,
+        from: filters?.from ? `${filters.from}T00:00:00.000Z` : undefined,
+        to: filters?.to ? `${filters.to}T23:59:59.999Z` : undefined,
+        page,
+        limit: Math.min(limit, 50),
+      },
+    })
+  },
+
+  async getOrder(id: string): Promise<Order> {
+    return apiRequest<Order>(`/orders/${encodeURIComponent(id)}`)
+  },
+
+  async createOrder(input: CreateOrderInput): Promise<Order> {
+    return apiRequest<Order>('/orders', { method: 'POST', body: buildOrderBody(input) })
+  },
+
+  async quoteOrder(input: CreateOrderInput): Promise<OrderTotals> {
+    return apiRequest<OrderTotals>('/orders/quote', { method: 'POST', body: buildOrderBody(input) })
+  },
+
+  async cancelOrder(id: string, customerId: string, reason?: string): Promise<Order> {
+    void customerId // the backend scopes orders to the authenticated customer
+    return apiRequest<Order>(`/orders/${encodeURIComponent(id)}/cancel`, {
+      method: 'POST',
+      body: reason?.trim() ? { reason: reason.trim() } : {},
+    })
+  },
+
+  async listAddresses(): Promise<OrderAddress[]> {
+    const result = await apiRequest<{ data: OrderAddress[] }>('/users/me/addresses')
+    return result.data
+  },
+
+  async saveAddress(address: OrderAddress): Promise<OrderAddress> {
+    return apiRequest<OrderAddress>('/users/me/addresses', {
+      method: 'POST',
+      body: { label: address.label, address: address.address, phone: address.phone },
+    })
+  },
+
+  async updateAddress(id: string, address: OrderAddress): Promise<OrderAddress> {
+    return apiRequest<OrderAddress>(`/users/me/addresses/${encodeURIComponent(id)}`, {
+      method: 'PATCH',
+      body: { label: address.label, address: address.address, phone: address.phone },
+    })
+  },
+
+  async deleteAddress(id: string): Promise<void> {
+    await apiRequest<void>(`/users/me/addresses/${encodeURIComponent(id)}`, { method: 'DELETE' })
+  },
+
+  // TODO remove when the dashboard tabs are connected
+  // Mock-only: still used by dashboard.service, restaurantDashboard.service and admin.service.
+  async listAllOrders(): Promise<Order[]> {
+    return (await loadMockOrders()).sort((first, second) => second.createdAt.localeCompare(first.createdAt))
+  },
+
+  // TODO remove when the dashboard tabs are connected
+  // Mock-only: still used by admin.service for the admin orders page.
+  async deleteOrder(id: string): Promise<void> {
+    const orders = await loadMockOrders()
+    const remaining = orders.filter(order => order.id !== id)
+    if (remaining.length === orders.length) throw new Error('Order not found.')
+    writeMockOrders(remaining)
+  },
+}
+
+// TODO remove when the dashboard tabs are connected
+// Mock-only adapter kept for dashboard.service, restaurantDashboard.service
+// and admin.service, which still render mock order data.
+const MOCK_ORDERS_KEY = 'crown-anchor-orders'
 const TERMINAL: OrderStatus[] = ['delivered', 'cancelled']
 const FLOW: OrderStatus[] = ['pending', 'preparing', 'ready', 'on_the_way', 'delivered']
 
-
-export interface OrderAddress { id: string; label: string; address: string; phone: string }
-export interface CreateOrderInput {
-  customerId: string; customerName: string; phone: string; restaurantId: string
-  items: CartItem[]; deliveryAddress: string; paymentMethod: PaymentMethod; notes: string
-  subtotal: number; deliveryFee: number; serviceFee: number; tax: number; discount: number
-  tip: number; promoCode: string | null; scheduledFor: string | null; estimatedDeliveryAt: string
-}
-export interface PaginatedResponse<T> { data: T[]; meta: { total: number; page: number; limit: number; total_pages: number } }
-
-function readOrders(): Order[] {
+function readMockOrders(): Order[] {
   try {
-    const value = localStorage.getItem(STORAGE_KEY)
-    return value ? JSON.parse(value) as Order[] : []
+    const value = localStorage.getItem(MOCK_ORDERS_KEY)
+    return value ? (JSON.parse(value) as Order[]) : []
   } catch { return [] }
 }
-function writeOrders(orders: Order[]) {
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(orders))
+function writeMockOrders(orders: Order[]) {
+  localStorage.setItem(MOCK_ORDERS_KEY, JSON.stringify(orders))
 }
-function advanceOrder(order: Order): Order {
+function advanceMockOrder(order: Order): Order {
   if (!order.simulatedTracking || TERMINAL.includes(order.status) || !Array.isArray(order.statusHistory) || order.statusHistory.length === 0) return order
   const start = new Date(order.createdAt).getTime()
   const elapsed = Math.max(0, (Date.now() - start) / 60000)
@@ -45,82 +153,16 @@ function advanceOrder(order: Order): Order {
   if (next === order.status && history.length === order.statusHistory.length) return order
   return { ...order, status: next, statusHistory: history }
 }
-async function seedOrders(): Promise<Order[]> {
+async function seedMockOrders(): Promise<Order[]> {
   const response = await fetch('/mock/orders.json')
   if (!response.ok) throw new Error('Could not load order history.')
   return normalizeMockIds(await response.json() as Order[])
 }
-async function allOrders(): Promise<Order[]> {
-  const stored = readOrders()
-  if (stored !== null) return stored.map(advanceOrder)
-  const seed = await seedOrders()
-  writeOrders(seed)
-  return seed.map(advanceOrder)
+async function loadMockOrders(): Promise<Order[]> {
+  const stored = readMockOrders()
+  if (stored.length) return stored.map(advanceMockOrder)
+  const seed = await seedMockOrders()
+  writeMockOrders(seed)
+  return seed.map(advanceMockOrder)
 }
-export const orderService = {
-  async listOrders(customerId: string, page = 1, limit = 6, filters?: { status?: string; search?: string; from?: string; to?: string }): Promise<PaginatedResponse<Order>> {
-    const all = (await allOrders()).filter(order => order.customerId === customerId).sort((a,b) => b.createdAt.localeCompare(a.createdAt))
-    const filtered = all.filter(order => (!filters?.status || filters.status === 'all' || order.status === filters.status) && (!filters?.search || (String(order.id) + ' ' + order.items.map(item => item.name).join(' ')).toLowerCase().includes(filters.search.toLowerCase())) && (!filters?.from || order.createdAt.slice(0,10) >= filters.from) && (!filters?.to || order.createdAt.slice(0,10) <= filters.to))
-    const stored = readOrders() ?? []
-    writeOrders(all.length ? [...stored.filter(o => o.customerId !== customerId), ...all] : stored)
-    const start = (page - 1) * limit
-    return { data: filtered.slice(start, start + limit), meta: { total: filtered.length, page, limit, total_pages: Math.max(1, Math.ceil(filtered.length / limit)) } }
-  },
-  async listAllOrders(): Promise<Order[]> {
-    return (await allOrders()).sort((first, second) => second.createdAt.localeCompare(first.createdAt))
-  },
-  async deleteOrder(id: string): Promise<void> {
-    const orders = await allOrders()
-    const remaining = orders.filter(order => order.id !== id)
-    if (remaining.length === orders.length) throw new Error('Order not found.')
-    writeOrders(remaining)
-  },
-  async getOrder(id: string, customerId: string): Promise<Order | null> {
-    return (await allOrders()).find(order => order.id === id && order.customerId === customerId) ?? null
-  },
-  async createOrder(input: CreateOrderInput): Promise<Order> {
-    const orders = await allOrders()
-    const createdAt = new Date().toISOString()
-    const order: Order = {
-      id: String(Math.max(1000, ...orders.map(item => Number(item.id) || 0)) + 1),
-      customerId: input.customerId, customerName: input.customerName, phone: input.phone,
-      restaurantId: input.restaurantId, status: 'pending',
-      items: input.items.map(item => ({ menuItemId: item.menuItemId, name: item.name, quantity: item.quantity, unitPrice: item.price })),
-      subtotal: input.subtotal, deliveryFee: input.deliveryFee, total: input.subtotal + input.deliveryFee + input.serviceFee + input.tax - input.discount + input.tip,
-      deliveryAddress: input.deliveryAddress, paymentMethod: input.paymentMethod, notes: input.notes || null,
-      createdAt, statusHistory: [{ status: 'pending', at: createdAt }], cancelledBy: null, cancellationReason: null,
-      serviceFee: input.serviceFee, tax: input.tax, discount: input.discount, tip: input.tip,
-      promoCode: input.promoCode, scheduledFor: input.scheduledFor, estimatedDeliveryAt: input.estimatedDeliveryAt,
-      paymentStatus: input.paymentMethod === 'card' ? 'simulated' : 'pending', simulatedTracking: true,
-    }
-    writeOrders([order, ...orders])
-    return order
-  },
-  async cancelOrder(id: string, customerId: string): Promise<Order> {
-    const orders = await allOrders()
-    const index = orders.findIndex(order => order.id === id && order.customerId === customerId)
-    if (index < 0) throw new Error('Order not found.')
-    const current = advanceOrder(orders[index])
-    if (current.status !== 'pending' && current.status !== 'preparing') throw new Error('This order can no longer be cancelled.')
-    const cancelled: Order = { ...current, status: 'cancelled', cancelledBy: 'customer', cancellationReason: 'Cancelled by customer', statusHistory: [...current.statusHistory, { status: 'cancelled', at: new Date().toISOString() }] }
-    orders[index] = cancelled
-    writeOrders(orders)
-    return cancelled
-  },
-  async saveAddress(address: OrderAddress): Promise<void> {
-    const values = this.getAddresses().filter(item => item.id !== address.id)
-    localStorage.setItem(ADDRESS_KEY, JSON.stringify([...values, address]))
-  },
-  deleteAddress(id: string): void {
-    localStorage.setItem(ADDRESS_KEY, JSON.stringify(this.getAddresses().filter(item => item.id !== id)))
-  },
-  getAddresses(): OrderAddress[] {
-    try { return JSON.parse(localStorage.getItem(ADDRESS_KEY) ?? '[]') as OrderAddress[] } catch { return [] }
-  },
-  async validatePromo(code: string, subtotal: number, deliveryFee: number): Promise<{ code: string; discount: number; deliveryFee: number } | null> {
-    const normalized = code.trim().toUpperCase()
-    if (normalized === 'WELCOME10') return { code: normalized, discount: Number((subtotal * 0.1).toFixed(2)), deliveryFee }
-    if (normalized === 'FREESHIP') return { code: normalized, discount: 0, deliveryFee: 0 }
-    return null
-  },
-}
+

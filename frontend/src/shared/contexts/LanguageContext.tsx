@@ -721,6 +721,19 @@ Object.assign(translations, {
   'Something went wrong': 'حدث خطأ ما',
   Availability: 'التوفر',
   'No meals match your filters': 'لا توجد وجبات تطابق عوامل التصفية',
+  demo: 'تجريبي',
+  Paid: 'مدفوع',
+  Admin: 'مشرف',
+  'Cancelled by': 'ألغي بواسطة',
+  'Reason (optional)': 'السبب (اختياري)',
+  'Tell us why you are cancelling': 'أخبرنا لماذا تلغي الطلب',
+  "Your order is below the restaurant's minimum order amount.": 'طلبك أقل من الحد الأدنى للطلب لدى المطعم.',
+  'Some items in your cart are no longer available. Please review your cart.': 'بعض العناصر في سلتك لم تعد متاحة. يرجى مراجعة سلتك.',
+  'This restaurant is currently unavailable.': 'هذا المطعم غير متاح حاليًا.',
+  'Please check your order details and try again.': 'يرجى مراجعة تفاصيل طلبك والمحاولة مرة أخرى.',
+  'Too many requests. Please wait a moment and try again.': 'طلبات كثيرة جدًا. يرجى الانتظار قليلًا والمحاولة مرة أخرى.',
+  'We could not place the order for {restaurant}: {message}': ({ restaurant, message }: Record<string, string | number>) => `تعذر إنشاء الطلب لدى ${restaurant}: ${message}`,
+  'The promo code and driver tip are applied to each restaurant order separately.': 'يتم تطبيق رمز الخصم وإكرامية السائق على طلب كل مطعم على حدة.',
 })
 
 export function getArabicTranslation(text: string): string | undefined {

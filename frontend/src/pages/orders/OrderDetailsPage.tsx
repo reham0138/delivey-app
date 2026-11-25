@@ -11,14 +11,26 @@ import { Spinner } from '@/shared/components/Spinner'
 import { useAuth } from '@/shared/hooks/useAuth'
 import { useCart } from '@/shared/hooks/useCart'
 import { useOrder } from '@/shared/hooks/useOrders'
+import { ApiError, apiErrorMessage } from '@/shared/api/client'
 import { orderService } from '@/shared/services/order.service'
 import { restaurantService } from '@/shared/services/restaurant.service'
 import OrderTimeline from './OrderTimeline'
+import type { OrderStatus } from '@/shared/types'
 import { formatCurrency, formatDateTime, formatTime } from '@/shared/utils/format'
+import { orderNumber } from '@/shared/utils/orderNumber'
 import MealReviewForm from './MealReviewForm'
 import { useLanguage } from '@/shared/hooks/useLanguage'
 
 const money = (value: number) => formatCurrency(value)
+
+const STATUS_PROGRESS: Record<OrderStatus, number> = {
+  pending: 15,
+  preparing: 40,
+  ready: 65,
+  on_the_way: 85,
+  delivered: 100,
+  cancelled: 0,
+}
 
 export default function OrderDetailsPage() {
   const { t } = useLanguage()
@@ -34,6 +46,7 @@ export default function OrderDetailsPage() {
   )
 
   const [cancelOpen, setCancelOpen] = useState(false)
+  const [cancelReason, setCancelReason] = useState('')
   const [busy, setBusy] = useState(false)
   const [message, setMessage] = useState('')
   const [now, setNow] = useState(() => Date.now())
@@ -84,19 +97,7 @@ export default function OrderDetailsPage() {
   const remaining =
     eta === null ? 0 : Math.max(0, Math.ceil((eta - now) / 60000))
 
-  const startedAt = new Date(order.createdAt).getTime()
-
-  const progress =
-    order.status === 'delivered'
-      ? 100
-      : order.status === 'cancelled'
-        ? 0
-        : eta !== null && eta > startedAt
-          ? Math.min(
-              95,
-              Math.max(5, ((now - startedAt) / (eta - startedAt)) * 100)
-            )
-          : 5
+  const progress = STATUS_PROGRESS[order.status]
 
   const reorder = async () => {
     try {
@@ -153,15 +154,18 @@ export default function OrderDetailsPage() {
     setBusy(true)
 
     try {
-      await orderService.cancelOrder(order.id, user?.id ?? '')
+      await orderService.cancelOrder(order.id, user?.id ?? '', cancelReason)
       setCancelOpen(false)
+      setCancelReason('')
       setMessage(t('Order cancelled.'))
       await retry()
     } catch (reason) {
       setMessage(
-        reason instanceof Error
-          ? reason.message
-          : t('Unable to cancel this order.')
+        reason instanceof ApiError && reason.code === 'ORDER_NOT_CANCELLABLE'
+          ? t('This order can no longer be cancelled.')
+          : reason instanceof ApiError && reason.statusCode === 404
+            ? t('Order not found.')
+            : apiErrorMessage(reason, t('Unable to cancel this order.'))
       )
     } finally {
       setBusy(false)
@@ -182,7 +186,7 @@ export default function OrderDetailsPage() {
 
     if (navigator.share) {
       try {
-        await navigator.share({ title: t('Order #{id}', { id: order.id }), url })
+        await navigator.share({ title: t('Order #{id}', { id: orderNumber(order.id) }), url })
       } catch {
         /* dismissed */
       }
@@ -207,7 +211,7 @@ export default function OrderDetailsPage() {
             {t("Order tracking")}
           </p>
           <h1 className="mt-1 text-3xl font-bold">
-            {t('Order #{id}', { id: order.id })}
+            {t('Order #{id}', { id: orderNumber(order.id) })}
           </h1>
           <p className="mt-2 text-sm text-text-slate">
             {t("Placed")} {formatDateTime(order.createdAt)}
@@ -237,6 +241,13 @@ export default function OrderDetailsPage() {
                 status={order.status}
                 history={order.statusHistory}
               />
+
+              {order.status === 'cancelled' && (order.cancelledBy || order.cancellationReason) && (
+                <p className="mt-3 text-sm text-text-slate">
+                  {order.cancelledBy && `${t('Cancelled by')} ${t(order.cancelledBy[0].toUpperCase() + order.cancelledBy.slice(1))}.`}
+                  {order.cancellationReason && ` ${order.cancellationReason}`}
+                </p>
+              )}
             </div>
 
             {eta !== null &&
@@ -304,7 +315,7 @@ export default function OrderDetailsPage() {
                 <dt className="text-text-slate">{t("Payment")}</dt>
                 <dd className="font-medium capitalize">
                   {t(order.paymentMethod === 'cash' ? 'Cash on delivery' : 'Card')}
-                  {order.paymentStatus === 'simulated' ? ' (demo)' : ''}
+                  {order.paymentStatus === 'simulated' ? ` (${t('demo')})` : order.paymentStatus === 'paid' ? ` (${t('Paid')})` : ''}
                 </dd>
               </div>
               <div>
@@ -414,7 +425,7 @@ export default function OrderDetailsPage() {
             <Button
               size="sm"
               variant="outline"
-              onClick={() => void copy(String(order.id))}
+              onClick={() => void copy(orderNumber(order.id))}
             >
               <Copy size={14} />
               {t("Copy ID")}
@@ -447,9 +458,22 @@ export default function OrderDetailsPage() {
         title={t("Cancel this order")}
       >
         <p className="text-sm text-text-slate">
-          {t("Are you sure you want to cancel order #{id}?", { id: order.id })}
+          {t("Are you sure you want to cancel order #{id}?", { id: orderNumber(order.id) })}
           {t("This action cannot be undone.")}
         </p>
+
+        <label className="mt-4 block text-sm font-medium text-text-main" htmlFor="cancel-reason">
+          {t('Reason (optional)')}
+        </label>
+        <textarea
+          id="cancel-reason"
+          value={cancelReason}
+          onChange={(event) => setCancelReason(event.target.value)}
+          rows={2}
+          maxLength={500}
+          placeholder={t('Tell us why you are cancelling')}
+          className="mt-1 w-full rounded-lg border border-border-subtle bg-surface-white p-3 text-sm text-text-main"
+        />
 
         <div className="mt-5 flex justify-end gap-2">
           <Button

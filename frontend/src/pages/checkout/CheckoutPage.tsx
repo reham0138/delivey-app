@@ -21,6 +21,7 @@ import { Select } from "@/shared/components/Select";
 import { Spinner } from "@/shared/components/Spinner";
 import { useAuth } from "@/shared/hooks/useAuth";
 import { useCart } from "@/shared/hooks/useCart";
+import { ApiError, NETWORK_ERROR_CODE } from "@/shared/api/client";
 import {
   orderService,
   type OrderAddress,
@@ -95,15 +96,9 @@ export default function CheckoutPage() {
   });
   const [restaurants, setRestaurants] = useState<Restaurant[]>([]);
   const [loadingRestaurant, setLoadingRestaurant] = useState(true);
-  const [addresses, setAddresses] = useState<OrderAddress[]>(() =>
-    orderService.getAddresses(),
-  );
+  const [addresses, setAddresses] = useState<OrderAddress[]>([]);
   const [selectedAddressId, setSelectedAddressId] = useState("");
-  const [promo, setPromo] = useState<{
-    code: string;
-    discount: number;
-    deliveryFee: number;
-  } | null>(null);
+  const [promoCode, setPromoCode] = useState<string | null>(null);
   const [promoMessage, setPromoMessage] = useState("");
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState("");
@@ -128,6 +123,12 @@ export default function CheckoutPage() {
   useEffect(() => {
     localStorage.setItem(DRAFT_KEY, JSON.stringify(form));
   }, [form]);
+  useEffect(() => {
+    orderService
+      .listAddresses()
+      .then(setAddresses)
+      .catch(() => setAddresses([]));
+  }, []);
 
   const cartGroups = useMemo(() => {
     const groups = new Map<string, { restaurant: Restaurant | null; items: typeof cart.items; subtotal: number }>();
@@ -146,36 +147,22 @@ export default function CheckoutPage() {
     });
     return Array.from(groups.entries()).map(([restaurantId, group]) => ({ restaurantId, ...group }));
   }, [cart.items, restaurants]);
-  const deliveryFee = promo?.deliveryFee ?? cartGroups.reduce(
-    (total, group) => total + (group.restaurant?.deliveryFee ?? 0), 0
-  );
   const tip = form.customTip.trim()
     ? Math.max(0, Number(form.customTip) || 0)
     : form.tip;
   const groupedTotals = useMemo(() => {
-    let allocatedDiscount = 0;
-    let allocatedTip = 0;
-    return cartGroups.map((group, index) => {
-      const isLast = index === cartGroups.length - 1;
-      const discountShare = isLast
-        ? Number(((promo?.discount ?? 0) - allocatedDiscount).toFixed(2))
-        : Number(((promo?.discount ?? 0) * group.subtotal / (cart.subtotal || 1)).toFixed(2));
-      const tipShare = isLast
-        ? Number((tip - allocatedTip).toFixed(2))
-        : Number((tip * group.subtotal / (cart.subtotal || 1)).toFixed(2));
-      allocatedDiscount += discountShare;
-      allocatedTip += tipShare;
-      return {
-        ...group,
-        totals: calculateOrderTotals({
-          subtotal: group.subtotal,
-          deliveryFee: promo?.deliveryFee === 0 ? 0 : (group.restaurant?.deliveryFee ?? 0),
-          discount: discountShare,
-          tip: tipShare,
-        }),
-      };
-    });
-  }, [cartGroups, promo, tip, cart.subtotal]);
+    // The promo code and the tip apply to EACH restaurant's order on the
+    // backend, so the preview computes them per group the same way.
+    return cartGroups.map((group) => ({
+      ...group,
+      totals: calculateOrderTotals({
+        subtotal: group.subtotal,
+        deliveryFee: promoCode === "FREESHIP" ? 0 : (group.restaurant?.deliveryFee ?? 0),
+        discount: promoCode === "WELCOME10" ? Number((group.subtotal * 0.1).toFixed(2)) : 0,
+        tip,
+      }),
+    }));
+  }, [cartGroups, promoCode, tip]);
   const totals = useMemo(
     () => groupedTotals.reduce((sum, group) => ({
       subtotal: sum.subtotal + group.totals.subtotal,
@@ -231,21 +218,66 @@ export default function CheckoutPage() {
     setErrors(next);
     return Object.keys(next).length === 0;
   };
+  const orderErrorMessage = (reason: unknown): string => {
+    if (reason instanceof ApiError) {
+      switch (reason.code) {
+        case "INVALID_PROMO_CODE":
+          return t("That promo code is not valid.");
+        case "MIN_ORDER_NOT_MET":
+          return t("Your order is below the restaurant's minimum order amount.");
+        case "ITEM_UNAVAILABLE":
+          return t("Some items in your cart are no longer available. Please review your cart.");
+        case "RESTAURANT_UNAVAILABLE":
+          return t("This restaurant is currently unavailable.");
+        case "VALIDATION_ERROR":
+          return reason.details?.length
+            ? reason.details.map((detail) => `${detail.field}: ${detail.message}`).join(", ")
+            : t("Please check your order details and try again.");
+        case "TOO_MANY_REQUESTS":
+          return t("Too many requests. Please wait a moment and try again.");
+        case "ACCOUNT_SUSPENDED":
+          return t("This account has been suspended.");
+        case NETWORK_ERROR_CODE:
+          return t("Network error. Please check your connection.");
+        default:
+          return reason.message;
+      }
+    }
+    return reason instanceof Error && reason.message
+      ? reason.message
+      : t("We could not place your order. Please try again.");
+  };
   const applyPromo = async () => {
-    const result = await orderService.validatePromo(
-      form.promo,
-      cart.subtotal,
-      deliveryFee,
-    );
-    setPromo(result);
-    setPromoMessage(
-      result
-        ? result.code === "FREESHIP"
+    const code = form.promo.trim().toUpperCase();
+    const first = cartGroups[0];
+    if (!code) {
+      setPromoCode(null);
+      setPromoMessage("");
+      return;
+    }
+    if (!first) return;
+    try {
+      // The quote endpoint validates the code server-side without creating an order.
+      // Address/phone are required by the DTO but ignored by the quote calculation.
+      await orderService.quoteOrder({
+        restaurantId: first.restaurantId,
+        items: first.items.map((item) => ({ menuItemId: item.menuItemId, quantity: item.quantity })),
+        deliveryAddress: form.address.trim() || "-",
+        phone: form.phone.trim() || "-",
+        paymentMethod: form.payment,
+        promoCode: code,
+      });
+      setPromoCode(code);
+      setPromoMessage(
+        code === "FREESHIP"
           ? t("Free delivery applied.")
-          : t("10% discount applied.")
-        : t("That promo code is not valid."),
-    );
-    if (!result) update("promo", form.promo.toUpperCase());
+          : t("10% discount applied."),
+      );
+      update("promo", code);
+    } catch (reason) {
+      setPromoCode(null);
+      setPromoMessage(orderErrorMessage(reason));
+    }
   };
   const submit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -258,52 +290,60 @@ export default function CheckoutPage() {
     }
     setSubmitting(true);
     setError("");
+    const scheduledFor = form.delivery === "scheduled" ? form.slot : undefined;
+    const orders: Order[] = [];
+    const succeededGroups: typeof groupedTotals = [];
     try {
-      const scheduledFor = form.delivery === "scheduled" ? form.slot : null;
-      const orders: Order[] = [];
       for (const group of groupedTotals) {
         const currentRestaurant = group.restaurant;
         if (!currentRestaurant) throw new Error(t('Some restaurant details could not be loaded. Please refresh and try again.'));
-        const groupTotals = group.totals;
-        const estimated = new Date(
-          Date.now() + (currentRestaurant.deliveryTimeMinutes + 15) * 60000,
-        );
-        const createdOrder = await orderService.createOrder({
-          customerId: user.id,
-          customerName: form.name.trim(),
-          phone: form.phone.trim(),
-          restaurantId: currentRestaurant.id,
-          items: group.items,
-          deliveryAddress: form.address.trim(),
-          paymentMethod: form.payment,
-          notes: form.notes.trim(),
-          subtotal: groupTotals.subtotal,
-          deliveryFee: groupTotals.deliveryFee,
-          serviceFee: groupTotals.serviceFee,
-          tax: groupTotals.tax,
-          discount: groupTotals.discount,
-          tip: groupTotals.tip,
-          promoCode: promo?.code ?? null,
-          scheduledFor,
-          estimatedDeliveryAt: new Date(
-            Math.max(
-              estimated.getTime(),
-              scheduledFor ? new Date(scheduledFor).getTime() : 0,
+        try {
+          const createdOrder = await orderService.createOrder({
+            restaurantId: currentRestaurant.id,
+            items: group.items.map((item) => ({ menuItemId: item.menuItemId, quantity: item.quantity })),
+            deliveryAddress: form.address.trim(),
+            phone: form.phone.trim(),
+            paymentMethod: form.payment,
+            notes: form.notes.trim() || undefined,
+            promoCode: promoCode ?? undefined,
+            tip: tip > 0 ? tip : undefined,
+            scheduledFor,
+          });
+          orders.push(createdOrder);
+          succeededGroups.push(group);
+        } catch (reason) {
+          // Keep the failed restaurant's items (and any not yet attempted) in
+          // the cart; remove only the orders that were actually created so a
+          // retry can never duplicate them.
+          succeededGroups.forEach((succeeded) =>
+            succeeded.items.forEach((item) =>
+              cart.removeFromCart(item.restaurantId, item.menuItemId),
             ),
-          ).toISOString(),
-        });
-        orders.push(createdOrder);
+          );
+          setError(
+            t("We could not place the order for {restaurant}: {message}", {
+              restaurant: t(currentRestaurant.name),
+              message: orderErrorMessage(reason),
+            }),
+          );
+          return;
+        }
       }
       if (saveAddress) {
-        await orderService.saveAddress({
-          id: selectedAddressId || crypto.randomUUID(),
+        const addressPayload = {
+          id: selectedAddressId || "",
           label:
             addresses.find((item) => item.id === selectedAddressId)?.label ??
             t("Saved address"),
           address: form.address.trim(),
           phone: form.phone.trim(),
-        });
-        setAddresses(orderService.getAddresses());
+        };
+        if (selectedAddressId) {
+          await orderService.updateAddress(selectedAddressId, addressPayload);
+        } else {
+          await orderService.saveAddress(addressPayload);
+        }
+        setAddresses(await orderService.listAddresses());
       }
       localStorage.removeItem(DRAFT_KEY);
       cart.clearCart();
@@ -312,11 +352,7 @@ export default function CheckoutPage() {
       const relatedIds = orders.slice(1).map((order) => order.id).join(',');
       navigate(`/orders/${firstOrder.id}/confirmation${relatedIds ? `?related=${relatedIds}` : ''}`, { replace: true });
     } catch (reason) {
-      setError(
-        reason instanceof Error
-          ? reason.message
-          : t("We could not place your order. Please try again."),
-      );
+      setError(orderErrorMessage(reason));
     } finally {
       setSubmitting(false);
     }
@@ -413,9 +449,11 @@ export default function CheckoutPage() {
                   <button
                     type="button"
                     onClick={() => {
-                      orderService.deleteAddress(selectedAddressId);
-                      setAddresses(orderService.getAddresses());
-                      setSelectedAddressId("");
+                      void (async () => {
+                        await orderService.deleteAddress(selectedAddressId);
+                        setAddresses(await orderService.listAddresses());
+                        setSelectedAddressId("");
+                      })();
                     }}
                     className="mt-2 text-xs font-semibold text-danger underline"
                   >
@@ -720,7 +758,7 @@ export default function CheckoutPage() {
                 {promoMessage && (
                   <p
                     role="status"
-                    className={`mt-2 text-xs ${promo ? "text-green-700" : "text-danger"}`}
+                    className={`mt-2 text-xs ${promoCode ? "text-green-700" : "text-danger"}`}
                   >
                     {promoMessage}
                   </p>
@@ -799,6 +837,11 @@ export default function CheckoutPage() {
               {cartGroups.some((group) => !group.restaurant) && (
                 <p role="alert" className="mt-3 text-sm text-danger">
                   {t('A restaurant in your cart is no longer available. Remove its items to continue.')}
+                </p>
+              )}
+              {cartGroups.length > 1 && (promoCode || tip > 0) && (
+                <p className="mt-3 text-xs text-text-slate">
+                  {t('The promo code and driver tip are applied to each restaurant order separately.')}
                 </p>
               )}
               <Button

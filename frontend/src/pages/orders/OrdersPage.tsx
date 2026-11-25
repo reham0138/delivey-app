@@ -1,6 +1,6 @@
-import { useMemo, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { Link } from 'react-router-dom'
-import { CalendarDays, ChevronRight, Search } from 'lucide-react'
+import { CalendarDays, ChevronRight } from 'lucide-react'
 import { Badge } from '@/shared/components/Badge'
 import { Button } from '@/shared/components/Button'
 import { Pagination } from '@/shared/components/Pagination'
@@ -14,6 +14,7 @@ import { useOrders } from '@/shared/hooks/useOrders'
 import { formatCurrency, formatDateTime } from '@/shared/utils/format'
 import type { OrderStatus } from '@/shared/types'
 import { useLanguage } from '@/shared/hooks/useLanguage'
+import { orderNumber } from '@/shared/utils/orderNumber'
 
 const money = (value: number) => formatCurrency(value)
 
@@ -25,7 +26,12 @@ export default function OrdersPage() {
   const [search, setSearch] = useState('')
   const [from, setFrom] = useState('')
   const [to, setTo] = useState('')
-  const { data = [], meta, loading, error, retry } = useOrders(user?.id ?? '', page, 8, { status, search, from, to })
+  const [debouncedSearch, setDebouncedSearch] = useState('')
+  useEffect(() => {
+    const timer = window.setTimeout(() => setDebouncedSearch(search.trim()), 400)
+    return () => window.clearTimeout(timer)
+  }, [search])
+  const { data = [], meta, loading, error, retry } = useOrders(user?.id ?? '', page, 8, { status, search: debouncedSearch, from, to })
   const counts = useMemo(
     () => data.reduce<Record<string, number>>((all, order) => {
       all[order.status] = (all[order.status] ?? 0) + 1
@@ -76,7 +82,7 @@ export default function OrdersPage() {
             <Card key={order.id}>
               <div className="flex flex-wrap items-start justify-between gap-3">
                 <div>
-                  <p className="text-xs font-semibold uppercase tracking-wider text-text-slate">{t('Order #{id}', { id: order.id })}</p>
+                  <p className="text-xs font-semibold uppercase tracking-wider text-text-slate">{t('Order #{id}', { id: orderNumber(order.id) })}</p>
                   <h2 className="mt-1 font-semibold">{order.items.map(item => t(item.name)).join(', ')}</h2>
                   <p className="mt-1 flex items-center gap-2 text-xs text-text-slate"><CalendarDays size={14} />{formatDateTime(order.createdAt)}</p>
                 </div>
@@ -96,7 +102,6 @@ export default function OrdersPage() {
       )}
 
       {meta && <Pagination currentPage={page} totalPages={meta.total_pages} onPageChange={setPage} />}
-      <p className="mt-5 flex items-center gap-2 text-xs text-text-slate"><Search size={14} /> {t('Filters apply to the current page of results.')}</p>
     </section>
   )
 }
