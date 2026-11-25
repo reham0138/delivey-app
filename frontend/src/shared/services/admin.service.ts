@@ -1,31 +1,12 @@
 import { menuItemService } from '@/shared/services/menuItem.service'
 import { orderService } from '@/shared/services/order.service'
 import { reviewService } from '@/shared/services/review.service'
-import { adminState } from '@/shared/services/adminState.service'
 import { apiRequest } from '@/shared/api/client'
-import type { AccountStatus, MenuItem, Order, PaginatedResponse, Restaurant, Review, User, UserRole } from '@/shared/types'
-import { normalizeMockIds } from '@/shared/utils/normalizeMockIds'
+import { adminUsersService } from '@/shared/services/adminUsers.service'
+import type { AdminUserRow } from '@/shared/services/adminUsers.service'
+import type { MenuItem, Order, PaginatedResponse, Restaurant, Review } from '@/shared/types'
 
 // Replace the bodies with Axios calls when the backend is ready. Keep the signatures and return types.
-
-async function fetchJson<T>(url: string): Promise<T> {
-  const response = await fetch(url)
-  if (!response.ok) throw new Error(`Unable to load admin data (HTTP ${response.status}).`)
-  return Promise.resolve(normalizeMockIds((await response.json()) as T))
-}
-
-export interface AdminUserRow {
-  id: string
-  name: string
-  email: string
-  phone: string
-  role: UserRole
-  /** The admin's decision if there is one, otherwise the status from the fixture. */
-  status: AccountStatus
-  /** null for accounts made with the sign-up form (the mock does not store a date). */
-  createdAt: string | null
-  source: 'demo' | 'registered'
-}
 
 export interface AdminReviewRow extends Review {
   menuItemName: string
@@ -89,20 +70,9 @@ async function listMealsPage(
 }
 
 export const adminService = {
-  /** Demo accounts from users.json. Registered accounts live on the backend (admin service is still mock-driven). */
-  async listUsers(): Promise<AdminUserRow[]> {
-    const fixtures = await fetchJson<User[]>('/mock/users.json')
-    const demoRows: AdminUserRow[] = fixtures.map((user) => ({
-      id: user.id,
-      name: user.name,
-      email: user.email,
-      phone: user.phone,
-      role: user.role,
-      status: adminState.getUserStatus(user.email, user.status),
-      createdAt: user.createdAt,
-      source: 'demo',
-    }))
-    return demoRows
+  /** All users for the admin overview stats; the paged list lives in adminUsers.service. */
+  listUsers(): Promise<AdminUserRow[]> {
+    return adminUsersService.listAllUsers()
   },
 
   listRestaurants,
@@ -155,13 +125,6 @@ export const adminService = {
 
   async setMealAvailability(id: string, isAvailable: boolean): Promise<void> {
     await menuItemService.setAvailability(id, isAvailable)
-  },
-
-  async setUserStatus(email: string, status: AccountStatus): Promise<void> {
-    const user = (await this.listUsers()).find((row) => row.email.toLowerCase() === email.toLowerCase())
-    if (!user) throw new Error('User not found.')
-    if (user.role === 'admin') throw new Error('Admin accounts cannot be suspended.')
-    adminState.setUserStatus(user.email, status)
   },
 }
 
