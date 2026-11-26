@@ -1,19 +1,14 @@
 import { menuItemService } from '@/shared/services/menuItem.service'
-import { orderService } from '@/shared/services/order.service'
 import { reviewService } from '@/shared/services/review.service'
 import { apiRequest } from '@/shared/api/client'
 import { adminUsersService } from '@/shared/services/adminUsers.service'
 import type { AdminUserRow } from '@/shared/services/adminUsers.service'
-import type { MenuItem, Order, PaginatedResponse, Restaurant, Review } from '@/shared/types'
+import type { MenuItem, PaginatedResponse, Restaurant, Review } from '@/shared/types'
 
 // Replace the bodies with Axios calls when the backend is ready. Keep the signatures and return types.
 
 export interface AdminReviewRow extends Review {
   menuItemName: string
-  restaurantName: string
-}
-
-export interface AdminOrderRow extends Order {
   restaurantName: string
 }
 
@@ -102,22 +97,6 @@ export const adminService = {
 
   async deleteReview(id: string): Promise<void> {
     await reviewService.deleteReview(id)
-  },
-
-  async listOrders(): Promise<AdminOrderRow[]> {
-    const [orders, restaurants] = await Promise.all([
-      orderService.listAllOrders(),
-      this.listRestaurants(),
-    ])
-    const restaurantsById = new Map(restaurants.map((restaurant) => [restaurant.id, restaurant.name]))
-    return orders.map((order) => ({
-      ...order,
-      restaurantName: restaurantsById.get(order.restaurantId) ?? `Restaurant #${order.restaurantId}`,
-    }))
-  },
-
-  async deleteOrder(id: string): Promise<void> {
-    await orderService.deleteOrder(id)
   },
 
   listMeals,

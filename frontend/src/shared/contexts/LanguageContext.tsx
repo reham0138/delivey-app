@@ -739,6 +739,10 @@ Object.assign(translations, {
   'Reviews are available only for meals in delivered orders.': 'التقييمات متاحة فقط للوجبات في الطلبات المُسلّمة.',
   'You have already reviewed this meal.': 'لقد قيّمت هذه الوجبة مسبقًا.',
   'Please check your review and try again.': 'يرجى مراجعة تقييمك والمحاولة مرة أخرى.',
+  'Total': 'الإجمالي',
+  'Customer': 'العميل',
+  'Restaurant': 'المطعم',
+  'Orders': 'الطلبات',
 })
 
 Object.assign(translations, {
