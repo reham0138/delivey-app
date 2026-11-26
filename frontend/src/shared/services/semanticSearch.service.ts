@@ -1,5 +1,7 @@
-const SEARCH_API_URL =
-  import.meta.env.VITE_SEARCH_API_URL ?? 'http://127.0.0.1:8000'
+const SEARCH_API_URL = import.meta.env.VITE_SEARCH_API_URL as string | undefined
+
+/** False when VITE_SEARCH_API_URL is unset — callers must skip semantic search entirely. */
+export const SEMANTIC_SEARCH_ENABLED = Boolean(SEARCH_API_URL?.trim())
 
 export interface SemanticSearchResult<T> {
   id: string

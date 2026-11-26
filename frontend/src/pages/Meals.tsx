@@ -14,7 +14,7 @@ import { useCategories } from '../shared/hooks/useCategories'
 import { useLanguage } from '../shared/hooks/useLanguage'
 import { menuItemService } from '../shared/services/menuItem.service'
 import { restaurantService } from '../shared/services/restaurant.service'
-import { searchMealsSemantically } from '../shared/services/semanticSearch.service'
+import { searchMealsSemantically, SEMANTIC_SEARCH_ENABLED } from '../shared/services/semanticSearch.service'
 import { getArabicTranslation } from '../shared/contexts/LanguageContext'
 import type { MenuItem, PaginatedResponse, Restaurant } from '../shared/types'
 
@@ -97,7 +97,7 @@ export default function Meals() {
   }, [fetchRestaurants])
 
   useEffect(() => {
-    if (!trimmedSearch || meals.length === 0) {
+    if (!SEMANTIC_SEARCH_ENABLED || !trimmedSearch || meals.length === 0) {
       setSemanticSearch({ key: searchKey, mealIds: [] })
       return
     }

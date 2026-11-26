@@ -1,104 +1,98 @@
 # Crown & Anchor Delivery
 
-This repository contains the Crown & Anchor delivery frontend and the shared design references for the team.
+Food-delivery app: React + TypeScript + Vite frontend, NestJS + MongoDB backend. Customers browse meals, order, track and review; restaurant owners manage orders and reviews; admins moderate users, restaurants, meals, orders and reviews.
 
-> **Current status:** The frontend is an early React shell with branded navigation/footer and sample JSON files. There is no backend or working ordering, authentication, or checkout flow yet. The broader feature list in [Delevery-app.md](./Delevery-app.md) is a product vision, not a description of features that are already implemented.
+> API contract: [`docs/API_CONTRACT.md`](./docs/API_CONTRACT.md) — the source of truth for endpoints, payloads and error codes.
 
-## Get started
-
-### Requirements
-
-- Node.js `^20.19.0` or `>=22.12.0` (required by the installed Vite version)
-- npm
-
-Check your versions:
-
-```bash
-node --version
-npm --version
-```
-
-### Install and run
-
-Run these commands from the repository root:
-
-```bash
-cd frontend
-npm ci
-npm run dev
-```
-
-Open the local URL printed by Vite (normally <http://localhost:5173>).
-
-### Available commands
-
-Run these from `frontend/`:
-
-| Command | Purpose |
-|---|---|
-| `npm run dev` | Start the local Vite development server |
-| `npm run lint` | Run ESLint |
-| `npm run build` | Run the TypeScript project build and create the production bundle in `dist/` |
-| `npm run preview` | Preview the production bundle locally after building |
-
-No `.env` file is required. The only optional setting is `VITE_SEARCH_API_URL` (see [Semantic search](#semantic-search-meals-page)). Do not add credentials or private keys to frontend environment variables; values prefixed with `VITE_` are included in browser code.
-
-### Semantic search (Meals page)
-
-The Meals page search box searches by meaning, in Arabic and English, using the shared [semantic-search-engine](https://github.com/reham0138/semantic-search-engine) service (the store app uses the same service). To use it locally:
-
-1. Clone and start the service by following **Run it** in its README. In short: `pip install -r requirements.txt`, then `python -m uvicorn app.main:app --port 8000`. The first start downloads a ~470 MB model.
-2. Keep it running and start the frontend as usual with `npm run dev`.
-
-The frontend calls `http://127.0.0.1:8000` by default. To use another address, create `frontend/.env.local` containing `VITE_SEARCH_API_URL=http://your-host:8000`.
-
-If the service is not running, the Meals page still works: it falls back to plain name search and shows a notice.
-
-## What is in this repository
+## Repository layout
 
 ```text
 .
-├── frontend/                         # React + TypeScript + Vite application
-│   ├── public/
-│   │   ├── brand/                    # App logos and social images
-│   │   └── mock/                     # Static sample JSON served from /mock/*
-│   └── src/
-│       ├── App.tsx                   # React Router setup
-│       ├── App.css                   # Global styles and Tailwind v4 theme tokens
-│       ├── pages/                    # Route-level screens
-│       └── shared/                   # Components, layouts, contexts, hooks, etc.
-├── Crown_Anchor_Shared_Design_Reference/
-│   ├── README.md                     # Index to shared design and team guidance
-│   ├── docs/                         # Design system, structure, component, handoff docs
-│   ├── design-reference/tokens/      # Machine-readable brand tokens
-│   ├── logo/                         # Brand logo source files
-│   ├── social/                       # Social media logo exports
-│   └── shared-conventions/           # Cross-project frontend conventions
-└── Delevery-app.md                   # Proposed product scope and future direction
+├── frontend/      # React + TypeScript + Vite app (this is what users see)
+├── backend/       # NestJS API + MongoDB (all business logic and persistence)
+├── docs/          # API_CONTRACT.md
+├── Crown_Anchor_Shared_Design_Reference/   # shared design tokens and conventions
+└── Delevery-app.md                         # product vision
 ```
 
-### Frontend notes
+## Requirements
 
-- The application entry point is `frontend/src/main.tsx`; routes are currently composed in `frontend/src/App.tsx`.
-- Shared layout and branding components live in `frontend/src/shared/`.
-- Files in `frontend/public/mock/` are static examples, not a database or API. They can be requested by their public paths, for example `/mock/restaurants.json`.
-- Brand images belong in `frontend/public/brand/` when they need to be referenced by a public URL.
-- The styling setup uses Tailwind CSS v4 through `@tailwindcss/vite`; shared CSS theme tokens are in `frontend/src/App.css`.
-- Check the existing source and dependencies before assuming a planned feature, API, or folder is already implemented.
+- Node.js `^20.19.0` or `>=22.12.0`, npm
+- MongoDB (Atlas URI works; local MongoDB also fine)
+- Optional: the shared semantic-search service for smart meal search (see below)
+
+## Run locally
+
+### Backend
+
+```bash
+cd backend
+cp .env.example .env   # fill in real values (see backend/.env.example)
+npm ci
+npm run seed           # optional: load fixture users/restaurants/meals/orders
+npm run start:dev      # http://localhost:3000/api/v1
+```
+
+`npm run seed` creates the fixture catalog plus demo users. All fixture users share `SEED_USER_PASSWORD` from `.env`; the admin uses `ADMIN_EMAIL` / `ADMIN_PASSWORD`.
+
+### Frontend
+
+```bash
+cd frontend
+cp .env.example .env   # VITE_API_URL must point at the backend, e.g. http://localhost:3000/api/v1
+npm ci
+npm run dev            # http://localhost:5173
+```
+
+`VITE_*` variables are baked in at **build time** — restart `npm run dev` or rebuild after changing them.
+
+## Roles
+
+| Role | What it can do |
+|---|---|
+| `customer` | browse, cart, checkout, track orders, cancel (pending only), review delivered meals |
+| `restaurant` | owner dashboard: accept/advance orders, cancel with reason, view and report reviews, manage own meals |
+| `admin` | users (suspend), restaurants (activate/deactivate), meals (availability), orders (cancel with reason), reviews (hide / dismiss report), categories, platform stats |
+
+Suspending a user revokes all their sessions; suspended users cannot log in.
+
+## Environment variables (names only — never commit real values)
+
+**frontend/.env**
+
+- `VITE_API_URL` — backend base URL including `/api/v1` (required for anything but a static preview)
+- `VITE_SEARCH_API_URL` — optional semantic-search service; unset disables smart search
+
+**backend/.env** — see `backend/.env.example`: `PORT`, `MONGODB_URI`, `JWT_ACCESS_SECRET`, `JWT_ACCESS_TTL`, `REFRESH_TTL_DAYS`, `FRONTEND_URL` (CORS origin — set to the deployed frontend URL), `CLOUDINARY_*` (image uploads), `ADMIN_EMAIL`, `ADMIN_PASSWORD`, `SEED_USER_PASSWORD`.
+
+## Checks
+
+```bash
+cd frontend && npm run lint && npm run build && npm test   # eslint, tsc+vite build, vitest
+cd backend  && npm test                                    # jest
+```
+
+## Deployment (Render)
+
+- **Backend** — Render *Web Service*, root directory `backend`, build `npm ci && npm run build`, start `node dist/main`. Set all `backend/.env` vars in the dashboard; `FRONTEND_URL` must be the deployed frontend origin or browser calls will be CORS-blocked. Free-plan instances sleep after ~15 min idle — the first request can take ~1 min.
+- **Frontend** — Render *Static Site*, root directory `frontend`, build `npm ci && npm run build`, publish directory `dist`. Set `VITE_API_URL` to the backend's `https://.../api/v1` URL **before** building (it is inlined into the bundle). `public/_redirects` already rewrites all routes to `index.html` for client-side routing; on Render also add a rewrite rule `/* → /index.html` (or deploy via a blueprint) so deep links don't 404.
+- Image uploads go through Cloudinary — configure `CLOUDINARY_*` on the backend or uploads will fail.
+
+## Semantic search (optional)
+
+The Meals page can rank results by meaning (Arabic + English) via the shared [semantic-search-engine](https://github.com/reham0138/semantic-search-engine) service:
+
+1. Run it locally (`pip install -r requirements.txt`, then `python -m uvicorn app.main:app --port 8000`; first start downloads a ~470 MB model).
+2. Set `VITE_SEARCH_API_URL=http://127.0.0.1:8000` in `frontend/.env` and restart the dev server.
+
+If unset, the feature is fully hidden and normal backend search is used — safe for production.
+
+## Security note
+
+If any `.env` values, passwords or API keys were ever pasted into chat or committed anywhere, **rotate them** (JWT secrets, Cloudinary keys, MongoDB credentials, admin password) before real users touch the deployment.
 
 ## Team workflow
 
-- Create a focused branch for each task, such as `feature/restaurant-list` or `fix/mobile-header`.
-- Before editing shared components, types, routes, or design tokens, coordinate with teammates who may be working in those files.
-- Keep page-specific UI with its page; move code into `shared/` when it is genuinely reused.
-- Use the shared design references for colors, typography, spacing, accessibility, and RTL/LTR behavior. Keep domain-specific page structure specific to this app.
-- Open a pull request with a short summary, screenshots for visible UI changes, and the checks you ran.
-- Before requesting review, run `npm run lint` and `npm run build` from `frontend/`.
-- Never commit secrets, credentials, or real customer data.
-
-## Documentation
-
-- [Frontend setup and code guide](./frontend/README.md)
-- [Shared design reference index](./Crown_Anchor_Shared_Design_Reference/README.md)
-- [Shared team handoff](./Crown_Anchor_Shared_Design_Reference/docs/TEAM_HANDOFF.md)
-- [Product vision and planned features](./Delevery-app.md)
+- Branch per task (`feat/...`), open a PR with a summary + screenshots for UI changes.
+- Before review: `npm run lint && npm run build` in `frontend/`, `npm test` in both.
+- Never commit secrets, credentials, or real customer data. `frontend/public/mock/` fixtures are static samples still read by the backend seed — do not delete them.
