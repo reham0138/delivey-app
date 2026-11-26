@@ -1,4 +1,4 @@
-import { BadGatewayException, BadRequestException, Injectable } from '@nestjs/common'
+import { BadGatewayException, BadRequestException, Injectable, Logger } from '@nestjs/common'
 import { createHash } from 'node:crypto'
 import { ConfigService } from '@nestjs/config'
 
@@ -33,6 +33,8 @@ function isSupportedImage(file: UploadFile): boolean {
 
 @Injectable()
 export class UploadsService {
+  private readonly logger = new Logger(UploadsService.name)
+
   constructor(private readonly config: ConfigService) {}
 
   async upload(file: UploadFile): Promise<{ url: string }> {
@@ -67,7 +69,10 @@ export class UploadsService {
 
     const result = (await response.json().catch(() => null)) as CloudinaryResponse | null
     if (!response.ok || !result?.secure_url) {
-      throw new BadGatewayException(result?.error?.message ?? 'Image upload failed. Please try again.')
+      this.logger.warn(
+        `Cloudinary upload failed: status=${response.status} error=${result?.error?.message ?? 'none'}`,
+      )
+      throw new BadGatewayException('Image upload failed. Please try again.')
     }
     return { url: result.secure_url }
   }

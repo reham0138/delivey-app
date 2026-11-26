@@ -771,6 +771,7 @@ Object.assign(translations, {
   'This removes the review from public lists and rating totals.': 'سيؤدي هذا إلى إزالة التقييم من القوائم العامة وإجماليات التقييمات.',
   'Dismiss report': 'رفض البلاغ',
   'Currently active': 'نشط حاليًا',
+  'The image is too large. Maximum size is 5 MB.': 'حجم الصورة كبير جدًا. الحد الأقصى 5 ميغابايت.',
 })
 
 export function getArabicTranslation(text: string): string | undefined {
