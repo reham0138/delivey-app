@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import { Star } from 'lucide-react'
 import { Button } from '@/shared/components/Button'
+import { ApiError } from '@/shared/api/client'
 import { reviewService } from '@/shared/services/review.service'
 import type { Order, Review } from '@/shared/types'
 import { useLanguage } from '@/shared/hooks/useLanguage'
@@ -23,13 +24,22 @@ export default function MealReviewForm({ order, menuItemId, customerName }: { or
     return () => { active = false }
   }, [order.customerId, menuItemId, t])
 
+  const submitErrorMessage = (reason: unknown): string => {
+    if (reason instanceof ApiError) {
+      if (reason.code === 'REVIEW_NOT_ELIGIBLE') return t('Reviews are available only for meals in delivered orders.')
+      if (reason.code === 'REVIEW_ALREADY_EXISTS') return t('You have already reviewed this meal.')
+      if (reason.code === 'VALIDATION_ERROR') return t('Please check your review and try again.')
+    }
+    return reason instanceof Error ? t(reason.message) : t('Could not save your review.')
+  }
+
   const submit = async () => {
     setSubmitting(true)
     setError('')
     try {
       setReview(await reviewService.createReview(order, customerName, menuItemId, rating, comment))
     } catch (reason) {
-      setError(reason instanceof Error ? t(reason.message) : t('Could not save your review.'))
+      setError(submitErrorMessage(reason))
     } finally {
       setSubmitting(false)
     }
@@ -69,6 +79,7 @@ export default function MealReviewForm({ order, menuItemId, customerName }: { or
         placeholder={t('Share a few words (optional)')}
         className="w-full rounded-lg border border-border-subtle bg-surface-white p-2 text-sm text-text-main"
       />
+      <p className="mt-1 text-end text-xs text-text-slate">{comment.length}/500</p>
       {error && <p role="alert" className="mt-2 text-xs text-danger">{error}</p>}
       <Button size="sm" className="mt-2" loading={submitting} onClick={() => void submit()}>{t('Submit review')}</Button>
     </div>
