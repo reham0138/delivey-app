@@ -1,7 +1,10 @@
 import { apiRequest } from '@/shared/api/client'
 import type { Order, PaginatedResponse } from '@/shared/types'
 
-export type AdminOrderRow = Order
+/** Contract AdminOrderRow = Order + restaurantName; backend omits the name (see report). */
+export interface AdminOrderRow extends Order {
+  restaurantName?: string
+}
 
 export interface AdminOrdersListQuery {
   page: number

@@ -761,6 +761,18 @@ Object.assign(translations, {
   'Mark delivered': 'تحديد الطلب كمُسلّم',
 })
 
+Object.assign(translations, {
+  'Filter by visibility': 'التصفية حسب الظهور',
+  'Hidden only': 'المخفية فقط',
+  'Visible only': 'الظاهرة فقط',
+  'Hidden': 'مخفي',
+  'Hide review': 'إخفاء التقييم',
+  'Hide this review?': 'هل تريد إخفاء هذا التقييم؟',
+  'This removes the review from public lists and rating totals.': 'سيؤدي هذا إلى إزالة التقييم من القوائم العامة وإجماليات التقييمات.',
+  'Dismiss report': 'رفض البلاغ',
+  'Currently active': 'نشط حاليًا',
+})
+
 export function getArabicTranslation(text: string): string | undefined {
   const value = translations[text]
   return typeof value === 'string' ? value : undefined

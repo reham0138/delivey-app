@@ -9,6 +9,7 @@ import { EmptyState } from "@/shared/components/EmptyState";
 import { useLanguage } from "@/shared/hooks/useLanguage";
 import type { AdminOverview } from "@/shared/services/dashboard.service";
 import type { OrderStatus } from "@/shared/types";
+import { orderNumber } from "@/shared/utils/orderNumber";
 import { formatCurrency, formatDateTime } from "@/shared/utils/format";
 
 const STATUS_ORDER: OrderStatus[] = [
@@ -38,11 +39,8 @@ function shortDate(isoDate: string): string {
 export function AdminOverviewView({ overview }: { overview: AdminOverview }) {
   const { t } = useLanguage();
   const [metric, setMetric] = useState<Metric>("orders");
-  const { stats, orders, restaurants } = overview;
+  const { stats, orders } = overview;
 
-  const restaurantNames = new Map<string, string>(
-    restaurants.map((restaurant) => [restaurant.id, restaurant.name] as const),
-  );
   const totalUsers =
     stats.usersByRole.admin +
     stats.usersByRole.restaurant +
@@ -87,7 +85,7 @@ export function AdminOverviewView({ overview }: { overview: AdminOverview }) {
           label={t("Active restaurants")}
           value={String(stats.activeRestaurants)}
           icon={Store}
-          hint={t("of {total} registered", { total: restaurants.length })}
+          hint={t("Currently active")}
         />
         <StatCard
           label={t("Users")}
@@ -281,14 +279,13 @@ export function AdminOverviewView({ overview }: { overview: AdminOverview }) {
                         scope="row"
                         className="py-3 pe-3 text-start font-medium text-text-main"
                       >
-                        #{order.id}
+                        #{orderNumber(order.id)}
                       </th>
                       <td className="py-3 pe-3 text-text-main">
                         {order.customerName}
                       </td>
                       <td className="py-3 pe-3 text-text-main">
-                        {restaurantNames.get(order.restaurantId) ??
-                          `#${order.restaurantId}`}
+                        {order.restaurantName ?? `#${orderNumber(order.restaurantId)}`}
                       </td>
                       <td className="py-3 pe-3">
                         <Badge status={order.status} />
