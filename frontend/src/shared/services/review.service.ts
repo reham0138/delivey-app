@@ -1,6 +1,5 @@
 import { apiRequest, ApiError } from '@/shared/api/client'
 import type { Order, PaginatedResponse, Review } from '@/shared/types'
-import { normalizeMockIds } from '@/shared/utils/normalizeMockIds'
 
 const PAGE_LIMIT = 50
 
@@ -68,32 +67,4 @@ export const reviewService = {
       },
     })
   },
-
-  // TODO remove in the admin-reviews phase — mock-only, still used by admin.service.
-  async listAll(): Promise<Review[]> {
-    return (await getAllMock()).sort((first, second) => second.createdAt.localeCompare(first.createdAt))
-  },
-
-  // TODO remove in the admin-reviews phase — mock-only, still used by admin.service.
-  async deleteReview(id: string): Promise<void> {
-    const reviews = await getAllMock()
-    const remaining = reviews.filter(review => review.id !== id)
-    if (remaining.length === reviews.length) throw new Error('Review not found.')
-    localStorage.setItem(MOCK_REVIEWS_KEY, JSON.stringify(remaining))
-  },
-}
-
-// Mock-only adapter kept until the admin reviews page moves to the real API.
-const MOCK_REVIEWS_KEY = 'crown-anchor-reviews'
-
-async function getAllMock(): Promise<Review[]> {
-  try {
-    const stored = localStorage.getItem(MOCK_REVIEWS_KEY)
-    if (stored) return JSON.parse(stored) as Review[]
-  } catch { /* load the fixture if local storage is unavailable or malformed */ }
-  const response = await fetch('/mock/reviews.json')
-  if (!response.ok) throw new Error('Could not load reviews.')
-  const reviews = normalizeMockIds(await response.json() as Review[])
-  try { localStorage.setItem(MOCK_REVIEWS_KEY, JSON.stringify(reviews)) } catch { /* keep the current session usable */ }
-  return reviews
 }

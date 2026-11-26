@@ -1,16 +1,10 @@
 import { menuItemService } from '@/shared/services/menuItem.service'
-import { reviewService } from '@/shared/services/review.service'
 import { apiRequest } from '@/shared/api/client'
 import { adminUsersService } from '@/shared/services/adminUsers.service'
 import type { AdminUserRow } from '@/shared/services/adminUsers.service'
-import type { MenuItem, PaginatedResponse, Restaurant, Review } from '@/shared/types'
+import type { MenuItem, PaginatedResponse, Restaurant } from '@/shared/types'
 
 // Replace the bodies with Axios calls when the backend is ready. Keep the signatures and return types.
-
-export interface AdminReviewRow extends Review {
-  menuItemName: string
-  restaurantName: string
-}
 
 export interface AdminMealRow extends MenuItem {
   restaurantName: string
@@ -78,25 +72,6 @@ export const adminService = {
       method: 'PATCH',
       body: { isActive },
     })
-  },
-
-  async listReviews(): Promise<AdminReviewRow[]> {
-    const [reviews, meals, restaurants] = await Promise.all([
-      reviewService.listAll(),
-      menuItemService.getAll(),
-      this.listRestaurants(),
-    ])
-    const mealsById = new Map(meals.map((meal) => [meal.id, meal.name]))
-    const restaurantsById = new Map(restaurants.map((restaurant) => [restaurant.id, restaurant.name]))
-    return reviews.map((review) => ({
-      ...review,
-      menuItemName: mealsById.get(review.menuItemId) ?? `Meal #${review.menuItemId}`,
-      restaurantName: restaurantsById.get(review.restaurantId) ?? `Restaurant #${review.restaurantId}`,
-    }))
-  },
-
-  async deleteReview(id: string): Promise<void> {
-    await reviewService.deleteReview(id)
   },
 
   listMeals,

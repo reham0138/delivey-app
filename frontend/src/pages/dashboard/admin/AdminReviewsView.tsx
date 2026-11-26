@@ -3,74 +3,79 @@ import { ConfirmDialog } from '@/pages/dashboard/components/ConfirmDialog'
 import { DataTable } from '@/pages/dashboard/components/DataTable'
 import type { Column } from '@/pages/dashboard/components/DataTable'
 import { ErrorBanner } from '@/pages/dashboard/components/ErrorBanner'
-import { SearchField } from '@/pages/dashboard/components/SearchField'
 import { StatusPill } from '@/pages/dashboard/components/StatusPill'
 import { Button } from '@/shared/components/Button'
 import { Card } from '@/shared/components/Card'
 import { EmptyState } from '@/shared/components/EmptyState'
 import { Pagination } from '@/shared/components/Pagination'
 import { Select } from '@/shared/components/Select'
+import { ApiError } from '@/shared/api/client'
 import { useAdminAction } from '@/shared/hooks/useAdminAction'
 import { useLanguage } from '@/shared/hooks/useLanguage'
-import { adminService } from '@/shared/services/admin.service'
-import type { AdminReviewRow } from '@/shared/services/admin.service'
+import { adminReviewsService } from '@/shared/services/adminReviews.service'
+import type { AdminReviewRow, AdminReviewsListQuery, ReviewLookups } from '@/shared/services/adminReviews.service'
+import type { PaginatedResponse } from '@/shared/types'
 
-const PAGE_SIZE = 8
-type ReportFilter = 'all' | 'reported' | 'not-reported'
-
-function matchesQuery(review: AdminReviewRow, query: string): boolean {
-  const needle = query.trim().toLowerCase()
-  return !needle || [
-    String(review.id),
-    review.customerName,
-    review.menuItemName,
-    review.restaurantName,
-    review.comment ?? '',
-    review.reportReason ?? '',
-  ].some((value) => value.toLowerCase().includes(needle))
-}
+type TriState = 'all' | 'yes' | 'no'
 
 interface AdminReviewsViewProps {
   reviews: AdminReviewRow[]
+  meta: PaginatedResponse<AdminReviewRow>['meta']
+  lookups: ReviewLookups
+  query: AdminReviewsListQuery
+  onQueryChange: (query: AdminReviewsListQuery) => void
+  /** Called after every change so the list reloads. */
   onChanged: () => void
 }
 
-export function AdminReviewsView({ reviews, onChanged }: AdminReviewsViewProps) {
+function toTriState(value: boolean | undefined): TriState {
+  return value === undefined ? 'all' : value ? 'yes' : 'no'
+}
+
+function fromTriState(value: string): boolean | undefined {
+  return value === 'all' ? undefined : value === 'yes'
+}
+
+export function AdminReviewsView({ reviews, meta, lookups, query, onQueryChange, onChanged }: AdminReviewsViewProps) {
   const { t } = useLanguage()
-  const [query, setQuery] = useState('')
-  const [reportFilter, setReportFilter] = useState<ReportFilter>('all')
-  const [page, setPage] = useState(1)
   const [target, setTarget] = useState<AdminReviewRow | null>(null)
   const { run, busyKey, error, clearError } = useAdminAction(onChanged)
 
-  const filtered = useMemo(
-    () =>
-      reviews.filter(
-        (review) =>
-          (reportFilter === 'all' ||
-            review.isReported === (reportFilter === 'reported')) &&
-          matchesQuery(review, query),
-      ),
-    [reviews, reportFilter, query],
-  )
-  const totalPages = Math.max(1, Math.ceil(filtered.length / PAGE_SIZE))
-  const currentPage = Math.min(page, totalPages)
-  const pageRows = filtered.slice((currentPage - 1) * PAGE_SIZE, currentPage * PAGE_SIZE)
+  const namesById = useMemo(() => {
+    const meals = new Map(lookups.meals.map((meal) => [meal.id, meal.name]))
+    const restaurants = new Map(lookups.restaurants.map((restaurant) => [restaurant.id, restaurant.name]))
+    return { meals, restaurants }
+  }, [lookups])
 
-  const changeFilter = <T,>(setter: (value: T) => void) => (value: T) => {
-    setter(value)
-    setPage(1)
-  }
   const clearFilters = () => {
-    setQuery('')
-    setReportFilter('all')
-    setPage(1)
+    onQueryChange({ page: 1, limit: query.limit })
   }
 
-  const confirmDelete = async () => {
+  const reviewErrorMessage = (failure: unknown): Error => {
+    if (failure instanceof ApiError) {
+      if (failure.code === 'NOT_FOUND') return new Error(t('Review not found.'))
+    }
+    return failure instanceof Error ? failure : new Error(t('Something went wrong.'))
+  }
+
+  const hideReview = (review: AdminReviewRow) =>
+    run(`${review.id}:hide`, () =>
+      adminReviewsService.hideReview(review.id).catch((failure: unknown) => {
+        throw reviewErrorMessage(failure)
+      }),
+    )
+
+  const dismissReport = (review: AdminReviewRow) =>
+    run(`${review.id}:dismiss`, () =>
+      adminReviewsService.dismissReport(review.id).catch((failure: unknown) => {
+        throw reviewErrorMessage(failure)
+      }),
+    )
+
+  const confirmHide = async () => {
     if (!target) return
-    await run(target.id, () => adminService.deleteReview(target.id))
-    setTarget(null)
+    await hideReview(target)
+    setTarget(null) // on failure the error banner explains why
   }
 
   const columns: Column<AdminReviewRow>[] = [
@@ -78,18 +83,18 @@ export function AdminReviewsView({ reviews, onChanged }: AdminReviewsViewProps) 
       key: 'id',
       header: t('Review'),
       rowHeader: true,
-      cell: (review) => `#${review.id}`,
+      cell: (review) => `#${review.id.slice(-6).toUpperCase()}`,
     },
     { key: 'customer', header: t('Customer'), cell: (review) => review.customerName },
     {
       key: 'meal',
       header: t('Meal'),
-      cell: (review) => t(review.menuItemName),
+      cell: (review) => t(namesById.meals.get(review.menuItemId) ?? `Meal #${review.menuItemId.slice(-6).toUpperCase()}`),
     },
     {
       key: 'restaurant',
       header: t('Restaurant'),
-      cell: (review) => t(review.restaurantName),
+      cell: (review) => t(namesById.restaurants.get(review.restaurantId) ?? '—'),
     },
     { key: 'rating', header: t('Rating'), cell: (review) => `${review.rating}/5` },
     {
@@ -99,62 +104,86 @@ export function AdminReviewsView({ reviews, onChanged }: AdminReviewsViewProps) 
       cell: (review) => review.comment ?? '—',
     },
     {
-      key: 'report',
+      key: 'moderation',
       header: t('Report'),
-      cell: (review) =>
-        review.isReported ? (
-          <div className="space-y-1">
-            <StatusPill tone="bad">{t('Reported')}</StatusPill>
-            {review.reportReason && <p className="text-xs text-text-slate">{review.reportReason}</p>}
-          </div>
-        ) : (
-          <StatusPill tone="good">{t('Not reported')}</StatusPill>
-        ),
+      cell: (review) => (
+        <div className="space-y-1">
+          {review.isHidden ? (
+            <StatusPill tone="neutral">{t('Hidden')}</StatusPill>
+          ) : review.isReported ? (
+            <>
+              <StatusPill tone="bad">{t('Reported')}</StatusPill>
+              {review.reportReason && <p className="text-xs text-text-slate">{review.reportReason}</p>}
+            </>
+          ) : (
+            <StatusPill tone="good">{t('Not reported')}</StatusPill>
+          )}
+        </div>
+      ),
     },
     {
       key: 'actions',
       header: t('Actions'),
-      cell: (review) => (
-        <Button
-          size="sm"
-          variant="danger"
-          disabled={busyKey === review.id}
-          onClick={() => setTarget(review)}
-        >
-          {t('Delete review')}
-        </Button>
-      ),
+      cell: (review) =>
+        review.isHidden ? null : (
+          <div className="flex flex-wrap gap-2">
+            {review.isReported && (
+              <Button
+                size="sm"
+                variant="secondary"
+                loading={busyKey === `${review.id}:dismiss`}
+                onClick={() => void dismissReport(review)}
+              >
+                {t('Dismiss report')}
+              </Button>
+            )}
+            <Button
+              size="sm"
+              variant="outline"
+              disabled={busyKey !== null}
+              onClick={() => setTarget(review)}
+            >
+              {t('Hide review')}
+            </Button>
+          </div>
+        ),
     },
   ]
 
   return (
     <Card padding="lg" className="space-y-4">
       <div className="flex flex-wrap items-center gap-3">
-        <SearchField
-          className="min-w-60 flex-1"
-          label={t('Search reviews')}
-          placeholder={t('Search by comment, customer or meal')}
-          value={query}
-          onChange={changeFilter(setQuery)}
-        />
         <Select
           aria-label={t('Filter reviews')}
-          value={reportFilter}
-          onChange={(event) => changeFilter(setReportFilter)(event.target.value as ReportFilter)}
+          value={toTriState(query.reported)}
+          onChange={(event) =>
+            onQueryChange({ ...query, reported: fromTriState(event.target.value), page: 1 })
+          }
         >
           <option value="all">{t('All reviews')}</option>
-          <option value="reported">{t('Reported only')}</option>
-          <option value="not-reported">{t('Not reported')}</option>
+          <option value="yes">{t('Reported only')}</option>
+          <option value="no">{t('Not reported')}</option>
+        </Select>
+        <Select
+          aria-label={t('Filter by visibility')}
+          value={toTriState(query.isHidden)}
+          onChange={(event) =>
+            onQueryChange({ ...query, isHidden: fromTriState(event.target.value), page: 1 })
+          }
+        >
+          <option value="all">{t('All reviews')}</option>
+          <option value="yes">{t('Hidden only')}</option>
+          <option value="no">{t('Visible only')}</option>
         </Select>
       </div>
 
       <p className="text-sm text-text-slate" aria-live="polite">
-        {t('Reviews')}: {filtered.length}
+        {t('Reviews')}: {meta.total}
       </p>
 
       {error && <ErrorBanner message={error} onDismiss={clearError} />}
 
-      {filtered.length === 0 ? (
+      {reviews.length === 0 ? (
         <EmptyState
           title={t('No reviews match your filters')}
           description={t('Try a different search or clear the filters.')}
@@ -162,19 +191,23 @@ export function AdminReviewsView({ reviews, onChanged }: AdminReviewsViewProps) 
         />
       ) : (
         <>
-          <DataTable caption={t('Reviews')} columns={columns} rows={pageRows} getRowKey={(review) => review.id} />
-          <Pagination currentPage={currentPage} totalPages={totalPages} onPageChange={setPage} />
+          <DataTable caption={t('Reviews')} columns={columns} rows={reviews} getRowKey={(review) => review.id} />
+          <Pagination
+            currentPage={query.page}
+            totalPages={meta.total_pages}
+            onPageChange={(page) => onQueryChange({ ...query, page })}
+          />
         </>
       )}
 
       <ConfirmDialog
         open={target !== null}
-        title={t('Delete this review?')}
-        message={t('This permanently deletes the review and its comment.')}
-        confirmLabel={t('Delete review')}
-        busy={target !== null && busyKey === target.id}
+        title={t('Hide this review?')}
+        message={t('This removes the review from public lists and rating totals.')}
+        confirmLabel={t('Hide review')}
+        busy={target !== null && busyKey === `${target.id}:hide`}
         destructive
-        onConfirm={() => void confirmDelete()}
+        onConfirm={() => void confirmHide()}
         onClose={() => setTarget(null)}
       />
     </Card>
