@@ -1,5 +1,4 @@
-import { useMemo, useState } from 'react'
-import { ConfirmDialog } from '@/pages/dashboard/components/ConfirmDialog'
+import { useMemo, useState, type FormEvent } from 'react'
 import { DataTable } from '@/pages/dashboard/components/DataTable'
 import type { Column } from '@/pages/dashboard/components/DataTable'
 import { ErrorBanner } from '@/pages/dashboard/components/ErrorBanner'
@@ -8,84 +7,84 @@ import { StatusPill } from '@/pages/dashboard/components/StatusPill'
 import { Button } from '@/shared/components/Button'
 import { Card } from '@/shared/components/Card'
 import { EmptyState } from '@/shared/components/EmptyState'
+import { Modal } from '@/shared/components/Modal'
 import { Pagination } from '@/shared/components/Pagination'
 import { Select } from '@/shared/components/Select'
+import { ApiError } from '@/shared/api/client'
 import { useAdminAction } from '@/shared/hooks/useAdminAction'
 import { useLanguage } from '@/shared/hooks/useLanguage'
-import { adminService } from '@/shared/services/admin.service'
-import type { AdminOrderRow } from '@/shared/services/admin.service'
-import type { OrderStatus } from '@/shared/types'
-import { formatCurrency } from '@/shared/utils/format'
-import { formatDateTime } from '@/shared/utils/format'
+import { adminOrdersService } from '@/shared/services/adminOrders.service'
+import type { AdminOrdersListQuery, RestaurantOption } from '@/shared/services/adminOrders.service'
+import type { Order, OrderStatus, PaginatedResponse } from '@/shared/types'
+import { formatCurrency, formatDateTime } from '@/shared/utils/format'
+import { orderNumber } from '@/shared/utils/orderNumber'
 
-const PAGE_SIZE = 8
 const ORDER_STATUSES: OrderStatus[] = ['pending', 'preparing', 'ready', 'on_the_way', 'delivered', 'cancelled']
-type StatusFilter = OrderStatus | 'all'
-
-function matchesQuery(order: AdminOrderRow, query: string): boolean {
-  const needle = query.trim().toLowerCase()
-  return !needle || [
-    String(order.id),
-    order.customerName,
-    order.restaurantName,
-    ...order.items.map((item) => item.name),
-  ].some((value) => value.toLowerCase().includes(needle))
-}
+const FINAL_STATUSES: OrderStatus[] = ['delivered', 'cancelled']
 
 interface AdminOrdersViewProps {
-  orders: AdminOrderRow[]
+  orders: Order[]
+  meta: PaginatedResponse<Order>['meta']
+  restaurants: RestaurantOption[]
+  query: AdminOrdersListQuery
+  onQueryChange: (query: AdminOrdersListQuery) => void
+  /** Called after every change so the list reloads. */
   onChanged: () => void
 }
 
-export function AdminOrdersView({ orders, onChanged }: AdminOrdersViewProps) {
+export function AdminOrdersView({ orders, meta, restaurants, query, onQueryChange, onChanged }: AdminOrdersViewProps) {
   const { t } = useLanguage()
-  const [query, setQuery] = useState('')
-  const [status, setStatus] = useState<StatusFilter>('all')
-  const [page, setPage] = useState(1)
-  const [target, setTarget] = useState<AdminOrderRow | null>(null)
+  const [target, setTarget] = useState<Order | null>(null)
+  const [reason, setReason] = useState('')
   const { run, busyKey, error, clearError } = useAdminAction(onChanged)
 
-  const filtered = useMemo(
-    () =>
-      orders.filter(
-        (order) =>
-          (status === 'all' || order.status === status) &&
-          matchesQuery(order, query),
-      ),
-    [orders, status, query],
+  const restaurantsById = useMemo(
+    () => new Map(restaurants.map((restaurant) => [restaurant.id, restaurant.name])),
+    [restaurants],
   )
-  const totalPages = Math.max(1, Math.ceil(filtered.length / PAGE_SIZE))
-  const currentPage = Math.min(page, totalPages)
-  const pageRows = filtered.slice((currentPage - 1) * PAGE_SIZE, currentPage * PAGE_SIZE)
 
-  const changeFilter = <T,>(setter: (value: T) => void) => (value: T) => {
-    setter(value)
-    setPage(1)
-  }
   const clearFilters = () => {
-    setQuery('')
-    setStatus('all')
-    setPage(1)
+    onQueryChange({ page: 1, limit: query.limit })
   }
 
-  const confirmDelete = async () => {
-    if (!target) return
-    await run(target.id, () => adminService.deleteOrder(target.id))
-    setTarget(null)
+  const cancelOrder = (order: Order, cancellationReason: string) =>
+    run(order.id, () =>
+      adminOrdersService.cancelOrder(order.id, cancellationReason).catch((failure: unknown) => {
+        if (failure instanceof ApiError) {
+          if (failure.code === 'ORDER_NOT_CANCELLABLE') throw new Error(t('This order can no longer be cancelled.'))
+          if (failure.code === 'NOT_FOUND') throw new Error(t('Order not found.'))
+          if (failure.code === 'VALIDATION_ERROR') throw new Error(t('Please check your order details and try again.'))
+        }
+        throw failure
+      }),
+    )
+
+  const submitCancellation = async (event: FormEvent<HTMLFormElement>) => {
+    event.preventDefault()
+    if (!target || !reason.trim()) return
+    if (await cancelOrder(target, reason.trim())) {
+      setTarget(null)
+      setReason('')
+    }
   }
 
-  const columns: Column<AdminOrderRow>[] = [
+  const openCancel = (order: Order) => {
+    setTarget(order)
+    setReason('')
+  }
+
+  const columns: Column<Order>[] = [
     {
       key: 'id',
       header: t('Order no.'),
       rowHeader: true,
-      cell: (order) => `#${order.id}`,
+      cell: (order) => `#${orderNumber(order.id)}`,
     },
     { key: 'customer', header: t('Customer'), cell: (order) => order.customerName },
     {
       key: 'restaurant',
       header: t('Restaurant'),
-      cell: (order) => t(order.restaurantName),
+      cell: (order) => restaurantsById.get(order.restaurantId) ?? '—',
     },
     {
       key: 'items',
@@ -109,16 +108,17 @@ export function AdminOrdersView({ orders, onChanged }: AdminOrdersViewProps) {
     {
       key: 'actions',
       header: t('Actions'),
-      cell: (order) => (
-        <Button
-          size="sm"
-          variant="danger"
-          disabled={busyKey === order.id}
-          onClick={() => setTarget(order)}
-        >
-          {t('Delete order')}
-        </Button>
-      ),
+      cell: (order) =>
+        FINAL_STATUSES.includes(order.status) ? null : (
+          <Button
+            size="sm"
+            variant="outline"
+            disabled={busyKey === order.id}
+            onClick={() => openCancel(order)}
+          >
+            {t('Cancel order')}
+          </Button>
+        ),
     },
   ]
 
@@ -129,26 +129,48 @@ export function AdminOrdersView({ orders, onChanged }: AdminOrdersViewProps) {
           className="min-w-60 flex-1"
           label={t('Search orders')}
           placeholder={t('Search by order, customer or restaurant')}
-          value={query}
-          onChange={changeFilter(setQuery)}
+          value={query.search ?? ''}
+          onChange={(search) => onQueryChange({ ...query, search: search || undefined, page: 1 })}
         />
         <Select
           aria-label={t('Filter by status')}
-          value={status}
-          onChange={(event) => changeFilter(setStatus)(event.target.value as StatusFilter)}
+          value={query.status ?? 'all'}
+          onChange={(event) =>
+            onQueryChange({
+              ...query,
+              status: event.target.value === 'all' ? undefined : (event.target.value as OrderStatus),
+              page: 1,
+            })
+          }
         >
           <option value="all">{t('All statuses')}</option>
           {ORDER_STATUSES.map((value) => <option key={value} value={value}>{t(value)}</option>)}
         </Select>
+        <Select
+          aria-label={t('Filter by restaurant')}
+          value={query.restaurantId ?? 'all'}
+          onChange={(event) =>
+            onQueryChange({
+              ...query,
+              restaurantId: event.target.value === 'all' ? undefined : event.target.value,
+              page: 1,
+            })
+          }
+        >
+          <option value="all">{t('All restaurants')}</option>
+          {restaurants.map((restaurant) => (
+            <option key={restaurant.id} value={restaurant.id}>{t(restaurant.name)}</option>
+          ))}
+        </Select>
       </div>
 
       <p className="text-sm text-text-slate" aria-live="polite">
-        {t('Orders')}: {filtered.length}
+        {t('Orders')}: {meta.total}
       </p>
 
       {error && <ErrorBanner message={error} onDismiss={clearError} />}
 
-      {filtered.length === 0 ? (
+      {orders.length === 0 ? (
         <EmptyState
           title={t('No orders match your filters')}
           description={t('Try a different search or clear the filters.')}
@@ -156,21 +178,47 @@ export function AdminOrdersView({ orders, onChanged }: AdminOrdersViewProps) {
         />
       ) : (
         <>
-          <DataTable caption={t('Orders')} columns={columns} rows={pageRows} getRowKey={(order) => order.id} />
-          <Pagination currentPage={currentPage} totalPages={totalPages} onPageChange={setPage} />
+          <DataTable caption={t('Orders')} columns={columns} rows={orders} getRowKey={(order) => order.id} />
+          <Pagination
+            currentPage={query.page}
+            totalPages={meta.total_pages}
+            onPageChange={(page) => onQueryChange({ ...query, page })}
+          />
         </>
       )}
 
-      <ConfirmDialog
+      <Modal
         open={target !== null}
-        title={t('Delete this order?')}
-        message={t('This permanently removes the order from order history.')}
-        confirmLabel={t('Delete order')}
-        busy={target !== null && busyKey === target.id}
-        destructive
-        onConfirm={() => void confirmDelete()}
-        onClose={() => setTarget(null)}
-      />
+        onClose={() => {
+          setTarget(null)
+          setReason('')
+        }}
+        title={t('Cancel order')}
+      >
+        <form className="space-y-4" onSubmit={(event) => void submitCancellation(event)}>
+          <p className="text-sm text-text-slate">
+            {t('Order #{id}', { id: target ? orderNumber(target.id) : '' })} · {target?.customerName}
+          </p>
+          <label className="grid gap-2 text-sm font-semibold text-text-main">
+            {t('Cancellation reason')}
+            <textarea
+              className="min-h-24 rounded-lg border border-border-subtle bg-surface-white px-3 py-2 font-normal text-text-main"
+              value={reason}
+              onChange={(event) => setReason(event.target.value)}
+              maxLength={500}
+              required
+            />
+          </label>
+          <div className="flex justify-end gap-2">
+            <Button variant="secondary" disabled={busyKey === target?.id} onClick={() => setTarget(null)}>
+              {t('Keep order')}
+            </Button>
+            <Button type="submit" variant="danger" loading={busyKey === target?.id} disabled={!reason.trim()}>
+              {t('Confirm cancellation')}
+            </Button>
+          </div>
+        </form>
+      </Modal>
     </Card>
   )
 }

@@ -1,58 +1,22 @@
-import { orderService } from '@/shared/services/order.service'
-import { restaurantService } from '@/shared/services/restaurant.service'
-import { reviewService } from '@/shared/services/review.service'
-import type { AdminStats, Order, Restaurant, RestaurantStats } from '@/shared/types'
-import { computeAdminStats, computeRestaurantStats } from '@/shared/utils/stats'
-import { adminService } from '@/shared/services/admin.service'
-import { normalizeMockIds } from '@/shared/utils/normalizeMockIds'
-// Replace the bodies with Axios calls when the backend is ready. Keep the signatures and return types.
+import { apiRequest } from '@/shared/api/client'
+import { adminOrdersService } from '@/shared/services/adminOrders.service'
+import type { AdminOrderRow } from '@/shared/services/adminOrders.service'
+import type { AdminStats } from '@/shared/types'
 
-async function fetchJson<T>(url: string): Promise<T> {
-  const response = await fetch(url)
-  if (!response.ok) throw new Error(`Unable to load dashboard data (HTTP ${response.status}).`)
-  return Promise.resolve(normalizeMockIds((await response.json()) as T))
-}
-
-export interface RestaurantOverview {
-  /** null when this account has no restaurant linked to it. */
-  restaurant: Restaurant | null
-  stats: RestaurantStats | null
-  orders: Order[]
-}
+const RECENT_ORDERS_LIMIT = 8
 
 export interface AdminOverview {
   stats: AdminStats
-  /** Every order on the platform, newest first. */
-  orders: Order[]
-  /** Needed to show restaurant names next to orders. */
-  restaurants: Restaurant[]
+  /** Newest orders first — used for the recent-orders table. */
+  orders: AdminOrderRow[]
 }
 
 export const dashboardService = {
-  async getRestaurantOverview(ownerId: string): Promise<RestaurantOverview> {
-    const restaurant = await restaurantService.getOwnedByOwnerId(ownerId)
-    if (!restaurant) return { restaurant: null, stats: null, orders: [] }
-
-    const [orders, reviews] = await Promise.all([
-      fetchJson<Order[]>('/mock/orders.json').then((allOrders) =>
-        allOrders.filter((order) => order.restaurantId === restaurant.id),
-      ),
-      reviewService.listAll(),
-    ])
-    return { restaurant, stats: computeRestaurantStats(restaurant.id, orders, reviews), orders }
-  },
-
   async getAdminOverview(): Promise<AdminOverview> {
-    const [orders, users, restaurants, reviews] = await Promise.all([
-        orderService.listAllOrders(),
-      adminService.listUsers(),
-      adminService.listRestaurants(),
-      reviewService.listAll(),
+    const [stats, ordersPage] = await Promise.all([
+      apiRequest<AdminStats>('/admin/stats'),
+      adminOrdersService.listOrdersPage({ page: 1, limit: RECENT_ORDERS_LIMIT }),
     ])
-    // The fixtures were written for 2026-11-03, so anchor the "last 14 days" to the newest order
-    // instead of the real clock; otherwise the chart would slowly empty out as the real date moves on.
-    const newest = orders[0]?.createdAt
-    const now = newest ? new Date(newest) : new Date()
-    return { stats: computeAdminStats({ orders, users, restaurants, reviews }, now), orders, restaurants }
+    return { stats, orders: ordersPage.data }
   },
 }

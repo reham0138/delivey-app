@@ -1,6 +1,5 @@
 import { apiRequest } from '@/shared/api/client'
-import { normalizeMockIds } from '@/shared/utils/normalizeMockIds'
-import type { Order, OrderStatus, PaginatedResponse, PaymentMethod } from '@/shared/types'
+import type { Order, PaginatedResponse, PaymentMethod } from '@/shared/types'
 
 export type { PaginatedResponse } from '@/shared/types'
 
@@ -101,68 +100,5 @@ export const orderService = {
   async deleteAddress(id: string): Promise<void> {
     await apiRequest<void>(`/users/me/addresses/${encodeURIComponent(id)}`, { method: 'DELETE' })
   },
-
-  // TODO remove when the dashboard tabs are connected
-  // Mock-only: still used by dashboard.service, restaurantDashboard.service and admin.service.
-  async listAllOrders(): Promise<Order[]> {
-    return (await loadMockOrders()).sort((first, second) => second.createdAt.localeCompare(first.createdAt))
-  },
-
-  // TODO remove when the dashboard tabs are connected
-  // Mock-only: still used by admin.service for the admin orders page.
-  async deleteOrder(id: string): Promise<void> {
-    const orders = await loadMockOrders()
-    const remaining = orders.filter(order => order.id !== id)
-    if (remaining.length === orders.length) throw new Error('Order not found.')
-    writeMockOrders(remaining)
-  },
-}
-
-// TODO remove when the dashboard tabs are connected
-// Mock-only adapter kept for dashboard.service, restaurantDashboard.service
-// and admin.service, which still render mock order data.
-const MOCK_ORDERS_KEY = 'crown-anchor-orders'
-const TERMINAL: OrderStatus[] = ['delivered', 'cancelled']
-const FLOW: OrderStatus[] = ['pending', 'preparing', 'ready', 'on_the_way', 'delivered']
-
-function readMockOrders(): Order[] {
-  try {
-    const value = localStorage.getItem(MOCK_ORDERS_KEY)
-    return value ? (JSON.parse(value) as Order[]) : []
-  } catch { return [] }
-}
-function writeMockOrders(orders: Order[]) {
-  localStorage.setItem(MOCK_ORDERS_KEY, JSON.stringify(orders))
-}
-function advanceMockOrder(order: Order): Order {
-  if (!order.simulatedTracking || TERMINAL.includes(order.status) || !Array.isArray(order.statusHistory) || order.statusHistory.length === 0) return order
-  const start = new Date(order.createdAt).getTime()
-  const elapsed = Math.max(0, (Date.now() - start) / 60000)
-  const totalMinutes = Math.max(10, (new Date(order.estimatedDeliveryAt ?? order.createdAt).getTime() - start) / 60000)
-  const durations = [0.1, 0.4, 0.2, 0.3].map(weight => totalMinutes * weight)
-  let total = 0
-  let next: OrderStatus = 'pending'
-  const history = [{ status: 'pending' as OrderStatus, at: order.createdAt }]
-  for (let index = 0; index < durations.length; index += 1) {
-    total += durations[index]
-    if (elapsed >= total) {
-      next = FLOW[index + 1]
-      history.push({ status: next, at: new Date(start + total * 60000).toISOString() })
-    } else break
-  }
-  if (next === order.status && history.length === order.statusHistory.length) return order
-  return { ...order, status: next, statusHistory: history }
-}
-async function seedMockOrders(): Promise<Order[]> {
-  const response = await fetch('/mock/orders.json')
-  if (!response.ok) throw new Error('Could not load order history.')
-  return normalizeMockIds(await response.json() as Order[])
-}
-async function loadMockOrders(): Promise<Order[]> {
-  const stored = readMockOrders()
-  if (stored.length) return stored.map(advanceMockOrder)
-  const seed = await seedMockOrders()
-  writeMockOrders(seed)
-  return seed.map(advanceMockOrder)
 }
 

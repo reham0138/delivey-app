@@ -290,7 +290,7 @@ Rate limit: 10 requests per minute per IP on `/auth/login`, `/auth/register`, `/
 | POST | `/users/me/addresses` | customer | `{ label, address, phone }` | 201 Address | 400 |
 | PATCH | `/users/me/addresses/:id` | customer | partial Address | 200 Address | 404 |
 | DELETE | `/users/me/addresses/:id` | customer | none | 204 | 404 |
-| POST | `/uploads` | restaurant, admin | multipart, field `file` (jpeg, png, webp, max 5 MB) | 201 `{ url }` | 400 |
+| POST | `/uploads` | restaurant, admin | multipart, field `file` (jpeg, png, webp, max 5 MB) | 201 `{ url }` | 400, 413 (file over 5 MB) |
 | GET | `/health` | public | none | 200 `{ status: "ok" }` | |
 
 Rules
